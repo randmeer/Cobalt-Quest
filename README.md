@@ -1,2 +1,3 @@
 # WWOPW
- Small Game using Python and the pygame-library
+
+ Small game using Python and the pygame-library.
