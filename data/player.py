@@ -24,6 +24,3 @@ class Player(pygame.sprite.Sprite):
             self.rect.y -= velocity
         if d and self.rect.right < 500:
             self.rect.x += velocity
-
-        #if self.rect.left > WIDTH:
-        #    self.rect.right = 0

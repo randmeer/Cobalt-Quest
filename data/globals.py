@@ -11,7 +11,7 @@ level1 = None
 level2 = None
 
 
-difficulty = 0
+difficulty = 1
 
 # variables for the numbers pygame assigns to the keys. If you change these,
 # the keybinds change (so, dont)
@@ -35,3 +35,8 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 
+# variables used for the gameplay
+victimdirection1 = None
+victimdirection2 = None
+victimdirection3 = None
+victimdirection4 = None

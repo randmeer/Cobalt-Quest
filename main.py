@@ -18,10 +18,12 @@ while run:
         if event.type == pygame.QUIT:
             run = False
 
-    utils.playCurrentState()
-
     if globals.quitgame:
         run = False
+        print("DETECTED ORDER TO QUIT GAME")
+
+    else:
+        utils.playCurrentState()
 
     print("MAIN LOOP ROUND END")
     print(" ")
