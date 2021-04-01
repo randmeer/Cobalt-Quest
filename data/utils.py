@@ -1,11 +1,9 @@
 import pygame
-from data import level1
 from data import globals
 from data import title_screen
 from data import menu
 from data import level_selection
 from data import level1
-from data import level2
 
 
 LEFT = 1
@@ -22,7 +20,6 @@ def setGlobalDefaults():
     globals.level_selection = False
     globals.rndebug = False
     globals.level1 = False
-    globals.level2 = False
 
 
 def playCurrentState():
@@ -34,8 +31,6 @@ def playCurrentState():
         level_selection.showLevelSelection()
     elif globals.level1:
         level1.playLevel1(globals.difficulty)
-    elif globals.level2:
-        level2.playLevel2(globals.difficulty)
     else:
         print("yeah so there is no current state u f**ked up")
     print("CYCLED TROUGH CURRENT STATES")

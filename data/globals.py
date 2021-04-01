@@ -8,7 +8,6 @@ menu = None
 level_selection = None
 rndebug = None
 level1 = None
-level2 = None
 
 
 difficulty = 1

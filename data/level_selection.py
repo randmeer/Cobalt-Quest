@@ -29,7 +29,7 @@ def showLevelSelection():
                     print(posX, " ", posY)
                     if 111 < posY < 189 and 26 < posX < 165:
                         run = False
-                        globals.level2 = True
+                        globals.level1 = True
                     if 26 < posY < 92 and 26 < posX < 474:
                         run = False
                         globals.menu = True
