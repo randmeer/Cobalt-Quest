@@ -82,7 +82,7 @@ def playLevel2(difficulty):
         if victimSummonCooldown > 0:
             victimSummonCooldown = victimSummonCooldown - 1
         else:
-            victimSummonCooldown = 300 / (globals.difficulty * 2)
+            victimSummonCooldown = 600 / (globals.difficulty * 2)
             position = random.randint(50, 450)
             if victimCycler == 1:
                 victimCycler = 2
