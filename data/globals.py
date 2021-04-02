@@ -39,3 +39,4 @@ RED = (255, 0, 0)
 direction = []
 victims = []
 
+victimspawns = 15

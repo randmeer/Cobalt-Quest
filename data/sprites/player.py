@@ -1,9 +1,5 @@
 import pygame
-
-WHITE = (255, 255, 255)
-WIDTH = 500
-HEIGHT = 500
-
+from data import globals
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -13,7 +9,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(elia_original, (50, 50))
         #self.image.fill(WHITE)
         self.rect = self.image.get_rect()
-        self.rect.center = (WIDTH / 2, HEIGHT / 2)
+        self.rect.center = (globals.WIDTH / 2, globals.HEIGHT / 2)
 
     def update(self, w, a, s, d, velocity):
         if s and self.rect.bottom < 500:

@@ -11,6 +11,7 @@ def playLevel1(difficulty):
     utils.setGlobalDefaults()
     window = utils.setupWindow()
     clock = pygame.time.Clock()
+    globals.victimspawns = (16 * difficulty)
 
     background = utils.background()
     playersprite = player.Player()
@@ -57,12 +58,11 @@ def playLevel1(difficulty):
 
         if victimSummonCooldown > 0:
             victimSummonCooldown = victimSummonCooldown - 1
-        elif not victimcounter == 15:
+        elif not victimcounter == globals.victimspawns:
             victimSummonCooldown = 100 / (globals.difficulty * (globals.difficulty / 2))
             print("VICTIM SUMMONED")
             globals.victims[victimcounter].summon(globals.direction[victimcounter])
-            if not victimcounter == 15:
-                victimcounter += 1
+            victimcounter += 1
 
         window.blit(background, (0, 0))
         playersprite.update(w, a, s, d, velocity)

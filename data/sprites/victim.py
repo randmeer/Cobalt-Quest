@@ -1,10 +1,6 @@
 import pygame
 import random
 
-WHITE = (255, 255, 255)
-WIDTH = 500
-HEIGHT = 500
-
 
 class Victim(pygame.sprite.Sprite):
 

@@ -33,7 +33,7 @@ def playCurrentState():
 
 
 def generateDirections():
-    i = 15
+    i = globals.victimspawns
     while i >= 0:
         globals.direction.append(random.randint(1, 4))
         i -= 1
@@ -42,7 +42,7 @@ def generateDirections():
 def generateVictims(victimgroup):
     victimcounter = 0
 
-    while victimcounter <= 15:
+    while victimcounter <= globals.victimspawns:
         victimprogram = 'victim' + str(victimcounter) + ' = victim.Victim()\nvictimgroup.add(victim' + str(victimcounter) + ')\nglobals.victims.append(victim' + str(victimcounter) + ')'
         exec(victimprogram)
         print(victimprogram)
@@ -52,7 +52,7 @@ def generateVictims(victimgroup):
 
 
 def updateVictims(velocity):
-    i = 15
+    i = globals.victimspawns
     while i >= 0:
         globals.victims[i].update(globals.direction[i], velocity)
         i -= 1
