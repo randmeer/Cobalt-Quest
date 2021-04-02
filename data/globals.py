@@ -35,7 +35,7 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 
 # variables used for the gameplay
-victimdirection1 = None
-victimdirection2 = None
-victimdirection3 = None
-victimdirection4 = None
+
+direction = []
+victims = []
+

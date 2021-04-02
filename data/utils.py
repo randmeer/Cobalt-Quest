@@ -1,10 +1,6 @@
-import pygame
-from data import globals
-from data import title_screen
-from data import menu
-from data import level_selection
-from data import level1
-
+import pygame, random
+from data import globals, title_screen, menu, level_selection, level1
+from data.sprites import victim, player
 
 LEFT = 1
 MIDDLE = 2
@@ -34,6 +30,32 @@ def playCurrentState():
     else:
         print("yeah so there is no current state u f**ked up")
     print("CYCLED TROUGH CURRENT STATES")
+
+
+def generateDirections():
+    i = 15
+    while i >= 0:
+        globals.direction.append(random.randint(1, 4))
+        i -= 1
+
+
+def generateVictims(victimgroup):
+    victimcounter = 0
+
+    while victimcounter <= 15:
+        victimprogram = 'victim' + str(victimcounter) + ' = victim.Victim()\nvictimgroup.add(victim' + str(victimcounter) + ')\nglobals.victims.append(victim' + str(victimcounter) + ')'
+        exec(victimprogram)
+        print(victimprogram)
+        print("EXECUTED")
+        victimcounter += 1
+    print(globals.victims)
+
+
+def updateVictims(velocity):
+    i = 15
+    while i >= 0:
+        globals.victims[i].update(globals.direction[i], velocity)
+        i -= 1
 
 
 def setupWindow():
@@ -103,7 +125,7 @@ def showPauseScreen(window):
                 if event.button == LEFT:
                     posX = (pygame.mouse.get_pos()[0])
                     posY = (pygame.mouse.get_pos()[1])
-                    #print(posX, " ", posY)
+                    # print(posX, " ", posY)
                     if 207 < posY < 272 and 26 < posX < 475:
                         run = False
                     if 287 < posY < 352 and 26 < posX < 475:
@@ -114,7 +136,8 @@ def showPauseScreen(window):
                 if event.key == ESCAPE:
                     run = False
     playClick()
-    #pygame.time.delay(1000)
+    # pygame.time.delay(1000)
+
 
 def checkCollision(sprite1, sprite2):
     col = pygame.sprite.collide_rect(sprite1, sprite2)

@@ -1,5 +1,5 @@
 import pygame
-
+import random
 
 WHITE = (255, 255, 255)
 WIDTH = 500
@@ -7,6 +7,7 @@ HEIGHT = 500
 
 
 class Victim(pygame.sprite.Sprite):
+
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         # self.image = pygame.Surface((100, 100))
@@ -16,7 +17,8 @@ class Victim(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (-100, -100)
 
-    def summon(self, direction, position):
+    def summon(self, direction):
+        position = random.randint(50, 450)
         if direction == 1:
             self.rect.center = (position, -50)
         if direction == 3:
@@ -29,9 +31,20 @@ class Victim(pygame.sprite.Sprite):
     def update(self, direction, velocity):
         if direction == 1:
             self.rect.y += velocity
-        if direction == 2:
+        elif direction == 2:
             self.rect.x -= velocity
-        if direction == 3:
+        elif direction == 3:
             self.rect.y -= velocity
-        if direction == 4:
+        elif direction == 4:
             self.rect.x += velocity
+
+        if -100 < self.rect.x > 600:
+            self.kill()
+        if -100 < self.rect.y > 600:
+            self.kill()
+
+    def draw(self, window):
+        window.blit(self.image, self.rect)
+
+    #def die(self):
+    #    self.kill()

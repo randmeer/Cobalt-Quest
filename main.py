@@ -1,7 +1,6 @@
 import pygame
 
-from data import utils
-from data import globals
+from data import utils, globals
 
 utils.playTheme()
 utils.setGlobalDefaults()
