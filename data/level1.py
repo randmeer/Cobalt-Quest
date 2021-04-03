@@ -75,7 +75,7 @@ def playLevel1():
         victimgroup.draw(window)
         playersprite.draw(window)
 
-        damage_player.set_alpha((globals.maxcooldown * 256 / 100) - (globals.damagecooldown * 256 / 100))
+        damage_player.set_alpha(256 - (globals.damagecooldown * 256 / globals.maxcooldown))
 
         window.blit(damage_player, (0, 0))
 
