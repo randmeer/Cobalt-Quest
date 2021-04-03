@@ -25,11 +25,11 @@ class Victim(pygame.sprite.Sprite):
             if direction == 4:
                 self.rect.center = (-50, position)
 
-    def update(self, direction, velocity, player, number, click):
+    def update(self, direction, velocity, player, number, click, damagecooldown):
         if globals.on_screen[number]:
 
-            point = pygame.mouse.get_pos()
-            collide = self.rect.collidepoint(point)
+            collidemouse = self.rect.collidepoint(pygame.mouse.get_pos())
+            collideplayer = self.rect.colliderect(player.rect)
 
             if direction == 1:
                 self.rect.y += velocity
@@ -46,8 +46,12 @@ class Victim(pygame.sprite.Sprite):
                 globals.on_screen[number] = False
                 globals.victimhealth[number] = -1
 
-            if collide and click:
+            if collidemouse and click:
                 globals.victimhealth[number] -= 1
+
+            if collideplayer and damagecooldown >= globals.maxcooldown:
+                globals.playerhealthpoints -= 1
+                globals.damagecooldown = 0
 
             if globals.victimhealth[number] == 0:
                 self.kill()
@@ -61,9 +65,5 @@ class Victim(pygame.sprite.Sprite):
                 globals.victimsmissed += 1
                 globals.on_screen[number] = False
 
-
     def draw(self, window):
         window.blit(self.image, self.rect)
-
-    # def die(self):
-    #    self.kill()

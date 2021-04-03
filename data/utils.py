@@ -30,6 +30,12 @@ def setGameDefaults():
     globals.victimspawns = 0
     globals.victimspawns = 0
 
+    globals.victimspawns = (15 * globals.difficulty + globals.difficulty - 1)
+    globals.playerhealthpoints = (32 / globals.difficulty + globals.difficulty - 1)
+    globals.maxcooldown = (60 / globals.difficulty)
+
+    damagecooldown = 100
+    maxcooldown = 0
 
 def playCurrentState():
     if globals.titlescreen:
@@ -39,7 +45,7 @@ def playCurrentState():
     elif globals.level_selection:
         level_selection.showLevelSelection()
     elif globals.level1:
-        level1.playLevel1(globals.difficulty)
+        level1.playLevel1()
     else:
         print("yeah so there is no current state u f**ked up")
     print("CYCLED TROUGH CURRENT STATES")
@@ -57,7 +63,8 @@ def generateVictims(victimgroup):
     i = globals.victimspawns
 
     while i >= 0:
-        victimprogram = 'victim' + str(i) + ' = victim.Victim()\nvictimgroup.add(victim' + str(i) + ')\nglobals.victims.append(victim' + str(i) + ')'
+        victimprogram = 'victim' + str(i) + ' = victim.Victim()\nvictimgroup.add(victim' + str(
+            i) + ')\nglobals.victims.append(victim' + str(i) + ')'
         globals.victimhealth.append(globals.victimhealthpoints)
         exec(victimprogram)
         print(victimprogram)
@@ -69,7 +76,7 @@ def generateVictims(victimgroup):
 def updateVictims(velocity, playersprite, click):
     i = globals.victimspawns
     while i >= 0:
-        globals.victims[i].update(globals.direction[i], velocity, playersprite, i, click)
+        globals.victims[i].update(globals.direction[i], velocity, playersprite, i, click, globals.damagecooldown)
         i -= 1
 
 
@@ -84,6 +91,14 @@ def setupWindow():
 def renderText(window, text, position, color, size):
     font = pygame.freetype.Font("data/fonts/standart.otf", size)
     font.render_to(window, position, text, color)
+
+
+def renderIngameText(window):
+    renderText(window, str(int(globals.playerhealthpoints)), (35, 10), globals.WHITE, 24)
+    renderText(window, str((sum(i > 0 for i in globals.victimhealth))), (127, 10), globals.WHITE, 24)
+    # renderText(window, str(sum(globals.on_screen)), (127, 10), globals.WHITE, 24)
+    renderText(window, str(globals.victimskilled), (215, 10), globals.WHITE, 24)
+    renderText(window, str(globals.victimsmissed), (305, 10), globals.WHITE, 24)
 
 
 def playClick():

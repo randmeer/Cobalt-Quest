@@ -46,3 +46,6 @@ playerhealthpoints = int(48 / difficulty)
 victimspawns = 0
 victimskilled = 0
 victimsmissed = 0
+
+damagecooldown = 0
+maxcooldown = 0
