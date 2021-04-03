@@ -34,8 +34,11 @@ def setGameDefaults():
     globals.playerhealthpoints = (32 / globals.difficulty + globals.difficulty - 1)
     globals.maxcooldown = (60 / globals.difficulty)
 
-    damagecooldown = 100
-    maxcooldown = 0
+    globals.damagecooldown = 0
+    globals.maxcooldown = 100
+    globals.damageoverlaycooldown = 0
+    globals.tookdamage = False
+
 
 def playCurrentState():
     if globals.titlescreen:

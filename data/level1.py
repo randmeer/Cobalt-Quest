@@ -10,7 +10,6 @@ def playLevel1():
     window = utils.setupWindow()
     clock = pygame.time.Clock()
 
-
     background = utils.background()
     playersprite = player.Player()
     victimgroup = pygame.sprite.Group()
@@ -24,6 +23,7 @@ def playLevel1():
     keksi = pygame.transform.scale(pygame.image.load("data/textures/IchKeksi.png"), (20, 20))
     tick = pygame.transform.scale(pygame.image.load("data/textures/tick.png"), (18, 18))
     cross = pygame.transform.scale(pygame.image.load("data/textures/cross.png"), (18, 18))
+    damage_player = pygame.transform.scale(pygame.image.load("data/textures/damage_player.png"), (500, 500))
 
     run = True
     while run:
@@ -75,6 +75,10 @@ def playLevel1():
 
         victimgroup.draw(window)
         playersprite.draw(window)
+
+        if globals.tookdamage:
+            damage_player.set_alpha(globals.damagecooldown * -1 + 120)
+            window.blit(damage_player, (0, 0))
 
         window.blit(heart, (10, 10))
         window.blit(keksi, (100, 10))
