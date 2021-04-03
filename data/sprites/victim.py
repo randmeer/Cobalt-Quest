@@ -49,6 +49,11 @@ class Victim(pygame.sprite.Sprite):
             if collidemouse and click:
                 globals.victimhealth[number] -= 1
 
+            # TEMPORARY CODE TO KILL VICTIMS FASTER
+            if collidemouse:
+                globals.victimhealth[number] -= 1
+            # REMOVE AFTER
+
             if collideplayer and damagecooldown >= globals.maxcooldown:
                 globals.playerhealthpoints -= 1
                 globals.damagecooldown = 0

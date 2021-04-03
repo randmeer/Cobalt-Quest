@@ -90,6 +90,12 @@ def playLevel1():
         if globals.damagecooldown < globals.maxcooldown:
             globals.damagecooldown += 1
 
+        if globals.victimskilled == globals.victimspawns + 1:
+            utils.showVictoryScreen(window)
+        if globals.victimskilled + globals.victimsmissed == globals.victimspawns + 1:
+            run = False
+            globals.menu = True
+
         if globals.exittomenu:
             run = False
             globals.menu = True

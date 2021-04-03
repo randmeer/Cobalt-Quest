@@ -84,7 +84,7 @@ def updateVictims(velocity, playersprite, click):
 def setupWindow():
     pygame.init()
     window = pygame.display.set_mode((500, 500))
-    pygame.display.set_caption("WWOPW version 0.5 by Rande")
+    pygame.display.set_caption("WWOPW version 0.7 by Rande")
     pygame.display.flip()
     return window
 
@@ -126,6 +126,18 @@ def playSwing():
     pygame.mixer.Channel(2).play(pygame.mixer.Sound("data/sounds/swing.wav"))
 
 
+def playVictory():
+    pygame.mixer.init()
+    # pygame.mixer.music.load("sounds/click.wav")
+    pygame.mixer.Channel(3).play(pygame.mixer.Sound("data/sounds/victory.wav"))
+
+
+def playDefeat():
+    pygame.mixer.init()
+    # pygame.mixer.music.load("sounds/click.wav")
+    pygame.mixer.Channel(3).play(pygame.mixer.Sound("data/sounds/defeat.wav"))
+
+
 def playTheme():
     pygame.mixer.init()
     pygame.mixer.music.load("data/sounds/theme.wav")
@@ -136,10 +148,8 @@ def playTheme():
 def showPauseScreen(window):
     setGlobalDefaults()
 
-    overlay_original = pygame.image.load("data/textures/overlay.png")
-    overlay = pygame.transform.scale(overlay_original, (500, 500))
-    pausemenu_original = pygame.image.load("data/textures/pause_menu.png")
-    pausemenu = pygame.transform.scale(pausemenu_original, (500, 500))
+    overlay = pygame.transform.scale(pygame.image.load("data/textures/overlay.png"), (500, 500))
+    pausemenu = pygame.transform.scale(pygame.image.load("data/textures/pause_menu.png"), (500, 500))
 
     window.blit(overlay, (0, 0))
     window.blit(pausemenu, (0, 0))
@@ -172,7 +182,43 @@ def showPauseScreen(window):
                 if event.key == ESCAPE:
                     run = False
     playClick()
-    # pygame.time.delay(1000)
+
+
+def showVictoryScreen(window):
+    setGlobalDefaults()
+
+    victory = pygame.transform.scale(pygame.image.load("data/textures/victory.png"), (500, 500))
+    overlay = pygame.transform.scale(pygame.image.load("data/textures/overlay.png"), (500, 500))
+
+    window.blit(overlay, (0, 0))
+    window.blit(victory, (0, 0))
+    pygame.display.flip()
+
+    playVictory()
+
+    clock = pygame.time.Clock()
+
+    run = True
+    while run:
+        clock.tick(60)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                globals.exittomenu = True
+                globals.quitgame = True
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == LEFT:
+                    posX = (pygame.mouse.get_pos()[0])
+                    posY = (pygame.mouse.get_pos()[1])
+                    if 207 < posY < 272 and 26 < posX < 475:
+                        run = False
+                        globals.exittomenu = True
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == ESCAPE:
+                    run = False
+                    globals.exittomenu = True
+    playClick()
 
 
 def checkCollision(sprite1, sprite2):
