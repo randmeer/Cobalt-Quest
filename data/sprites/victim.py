@@ -51,7 +51,6 @@ class Victim(pygame.sprite.Sprite):
 
             if collideplayer and damagecooldown >= globals.maxcooldown:
                 globals.playerhealthpoints -= 1
-                globals.tookdamage = True
                 globals.damagecooldown = 0
 
             if globals.victimhealth[number] == 0:
