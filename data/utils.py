@@ -1,4 +1,4 @@
-import pygame, random
+import pygame, random, pygame.freetype
 from data import globals, title_screen, menu, level_selection, level1
 from data.sprites import victim, player
 
@@ -16,6 +16,19 @@ def setGlobalDefaults():
     globals.level_selection = False
     globals.rndebug = False
     globals.level1 = False
+
+
+def setGameDefaults():
+    globals.direction = []
+    globals.victims = []
+    globals.victimhealth = []
+    globals.on_screen = []
+
+    globals.victimsmissed = 0
+    globals.victimskilled = 0
+    globals.playerhealthpoints = 0
+    globals.victimspawns = 0
+    globals.victimspawns = 0
 
 
 def playCurrentState():
@@ -36,25 +49,27 @@ def generateDirections():
     i = globals.victimspawns
     while i >= 0:
         globals.direction.append(random.randint(1, 4))
+        globals.on_screen.append(False)
         i -= 1
 
 
 def generateVictims(victimgroup):
-    victimcounter = 0
+    i = globals.victimspawns
 
-    while victimcounter <= globals.victimspawns:
-        victimprogram = 'victim' + str(victimcounter) + ' = victim.Victim()\nvictimgroup.add(victim' + str(victimcounter) + ')\nglobals.victims.append(victim' + str(victimcounter) + ')'
+    while i >= 0:
+        victimprogram = 'victim' + str(i) + ' = victim.Victim()\nvictimgroup.add(victim' + str(i) + ')\nglobals.victims.append(victim' + str(i) + ')'
+        globals.victimhealth.append(globals.victimhealthpoints)
         exec(victimprogram)
         print(victimprogram)
         print("EXECUTED")
-        victimcounter += 1
+        i -= 1
     print(globals.victims)
 
 
-def updateVictims(velocity):
+def updateVictims(velocity, playersprite, click):
     i = globals.victimspawns
     while i >= 0:
-        globals.victims[i].update(globals.direction[i], velocity)
+        globals.victims[i].update(globals.direction[i], velocity, playersprite, i, click)
         i -= 1
 
 
@@ -64,6 +79,11 @@ def setupWindow():
     pygame.display.set_caption("WWOPW version 0.5 by Rande")
     pygame.display.flip()
     return window
+
+
+def renderText(window, text, position, color, size):
+    font = pygame.freetype.Font("data/fonts/standart.otf", size)
+    font.render_to(window, position, text, color)
 
 
 def playClick():

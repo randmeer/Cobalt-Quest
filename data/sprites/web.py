@@ -1,5 +1,4 @@
-import pygame
-import random
+import pygame, random
 
 
 class Web(pygame.sprite.Sprite):
@@ -7,7 +6,7 @@ class Web(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         # self.image = pygame.Surface((100, 100))
-        keksi_original = pygame.image.load("data/textures/IchKeksi.png")
+        keksi_original = pygame.image.load("data/textures/web.png")
         self.image = pygame.transform.scale(keksi_original, (50, 50))
         # self.image.fill(WHITE)
         self.rect = self.image.get_rect()

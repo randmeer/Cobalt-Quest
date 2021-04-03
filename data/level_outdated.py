@@ -53,7 +53,7 @@ def playLevelOutdated(difficulty):
     keksi_original = pygame.image.load("data/textures/IchKeksi.png")
     # keksi_rect = keksi_original.get_rect()
 
-    web_original = pygame.image.load("data/textures/Web.png")
+    web_original = pygame.image.load("data/textures/web.png")
 
     elia = pygame.transform.scale(elia_original, (50, 50))
     keksi = pygame.transform.scale(keksi_original, (50, 50))

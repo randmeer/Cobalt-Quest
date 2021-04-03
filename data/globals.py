@@ -38,5 +38,11 @@ RED = (255, 0, 0)
 
 direction = []
 victims = []
+victimhealth = []
+on_screen = []
 
-victimspawns = 15
+victimhealthpoints = 32
+playerhealthpoints = int(48 / difficulty)
+victimspawns = 0
+victimskilled = 0
+victimsmissed = 0

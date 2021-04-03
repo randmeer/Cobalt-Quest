@@ -1,13 +1,14 @@
 import pygame
 from data import globals
 
+
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        #self.image = pygame.Surface((100, 100))
+        # self.image = pygame.Surface((100, 100))
         elia_original = pygame.image.load("data/textures/3lia03.png")
         self.image = pygame.transform.scale(elia_original, (50, 50))
-        #self.image.fill(WHITE)
+        # self.image.fill(WHITE)
         self.rect = self.image.get_rect()
         self.rect.center = (globals.WIDTH / 2, globals.HEIGHT / 2)
 
