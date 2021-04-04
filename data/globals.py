@@ -52,3 +52,4 @@ maxcooldown = 0
 
 damageoverlayalpha = 64
 tookdamage = False
+damagesum = 0

@@ -23,7 +23,9 @@ def playLevel1():
     keksi = pygame.transform.scale(pygame.image.load("data/textures/IchKeksi.png"), (20, 20))
     tick = pygame.transform.scale(pygame.image.load("data/textures/tick.png"), (18, 18))
     cross = pygame.transform.scale(pygame.image.load("data/textures/cross.png"), (18, 18))
+    broken_heart = pygame.transform.scale(pygame.image.load("data/textures/broken_heart.png"), (18, 18))
     damage_player = pygame.transform.scale(pygame.image.load("data/textures/damage_player.png"), (500, 500))
+
 
     run = True
     while run:
@@ -83,6 +85,7 @@ def playLevel1():
         window.blit(keksi, (100, 10))
         window.blit(tick, (190, 10))
         window.blit(cross, (280, 10))
+        window.blit(broken_heart, (370, 10))
 
         utils.renderIngameText(window)
         pygame.display.update()
@@ -93,6 +96,9 @@ def playLevel1():
         if globals.victimskilled == globals.victimspawns + 1:
             utils.showVictoryScreen(window)
         if globals.victimskilled + globals.victimsmissed == globals.victimspawns + 1:
+            run = False
+            globals.menu = True
+        if globals.playerhealthpoints < 1:
             run = False
             globals.menu = True
 

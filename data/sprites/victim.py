@@ -1,5 +1,5 @@
 import pygame, random
-from data import globals
+from data import globals, utils
 
 
 class Victim(pygame.sprite.Sprite):
@@ -46,17 +46,24 @@ class Victim(pygame.sprite.Sprite):
                 globals.on_screen[number] = False
                 globals.victimhealth[number] = -1
 
-            if collidemouse and click:
-                globals.victimhealth[number] -= 1
+            # THIS IS THE FINAL CODE
+            #if collidemouse and click:
+            #    globals.victimhealth[number] -= 1
+            #    globals.damagesum += 1
+            #    utils.playHit()
+            # UNCOMMENT AFTER
 
             # TEMPORARY CODE TO KILL VICTIMS FASTER
             if collidemouse:
                 globals.victimhealth[number] -= 1
+                globals.damagesum += 1
+                utils.playHit()
             # REMOVE AFTER
 
             if collideplayer and damagecooldown >= globals.maxcooldown:
                 globals.playerhealthpoints -= 1
                 globals.damagecooldown = 0
+                utils.playHurt()
 
             if globals.victimhealth[number] == 0:
                 self.kill()

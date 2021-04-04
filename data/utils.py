@@ -36,6 +36,7 @@ def setGameDefaults():
 
     globals.damagecooldown = globals.maxcooldown
     globals.damageoverlaycooldown = 0
+    globals.damagesum = 0
 
 
 def playCurrentState():
@@ -100,6 +101,7 @@ def renderIngameText(window):
     # renderText(window, str(sum(globals.on_screen)), (127, 10), globals.WHITE, 24)
     renderText(window, str(globals.victimskilled), (215, 10), globals.WHITE, 24)
     renderText(window, str(globals.victimsmissed), (305, 10), globals.WHITE, 24)
+    renderText(window, str(globals.damagesum), (395, 10), globals.WHITE, 24)
 
 
 def playClick():
@@ -112,6 +114,12 @@ def playHit():
     pygame.mixer.init()
     # pygame.mixer.music.load("sounds/click.wav")
     pygame.mixer.Channel(1).play(pygame.mixer.Sound("data/sounds/hit.wav"))
+
+
+def playHurt():
+    pygame.mixer.init()
+    # pygame.mixer.music.load("sounds/click.wav")
+    pygame.mixer.Channel(2).play(pygame.mixer.Sound("data/sounds/hurt.wav"))
 
 
 def playBlockPlace():
@@ -189,6 +197,13 @@ def showVictoryScreen(window):
 
     victory = pygame.transform.scale(pygame.image.load("data/textures/victory.png"), (500, 500))
     overlay = pygame.transform.scale(pygame.image.load("data/textures/overlay.png"), (500, 500))
+
+    i = 0
+    while i < 256:
+        overlay.set_alpha(i)
+        window.blit(overlay, (0, 0))
+        pygame.display.flip()
+        i -= 1
 
     window.blit(overlay, (0, 0))
     window.blit(victory, (0, 0))
