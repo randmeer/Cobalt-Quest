@@ -2,7 +2,7 @@ import pygame
 
 from data import utils, globals
 
-#utils.playTheme()
+# utils.playTheme()
 utils.setGlobalDefaults()
 globals.titlescreen = True
 window = utils.setupWindow()

@@ -251,7 +251,6 @@ def showEndScreen(window, end):
                 if event.key == ESCAPE:
                     run = False
                     globals.exittomenu = True
-    pygame.display.update()
 
     playClick()
 

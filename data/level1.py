@@ -95,7 +95,7 @@ def playLevel1():
 
         if globals.victimskilled == globals.victimspawns + 1:
             utils.showEndScreen(window, "victory")
-        if globals.victimskilled + globals.victimsmissed == globals.victimspawns + 1 or globals.playerhealthpoints < 1:
+        if globals.victimsmissed > 0 and (sum(i > 0 for i in globals.victimhealth)) == 0 or globals.playerhealthpoints < 1:
             utils.showEndScreen(window, "defeat")
 
         if globals.exittomenu:
