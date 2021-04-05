@@ -94,13 +94,9 @@ def playLevel1():
             globals.damagecooldown += 1
 
         if globals.victimskilled == globals.victimspawns + 1:
-            utils.showVictoryScreen(window)
-        if globals.victimskilled + globals.victimsmissed == globals.victimspawns + 1:
-            run = False
-            globals.menu = True
-        if globals.playerhealthpoints < 1:
-            run = False
-            globals.menu = True
+            utils.showEndScreen(window, "victory")
+        if globals.victimskilled + globals.victimsmissed == globals.victimspawns + 1 or globals.playerhealthpoints < 1:
+            utils.showEndScreen(window, "defeat")
 
         if globals.exittomenu:
             run = False

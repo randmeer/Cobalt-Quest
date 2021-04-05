@@ -27,10 +27,9 @@ def setGameDefaults():
     globals.victimsmissed = 0
     globals.victimskilled = 0
     globals.playerhealthpoints = 0
-    globals.victimspawns = 0
-    globals.victimspawns = 0
 
-    globals.victimspawns = (15 * globals.difficulty + globals.difficulty - 1)
+    # globals.victimspawns = (15 * globals.difficulty + globals.difficulty - 1)
+    globals.victimspawns = 1
     globals.playerhealthpoints = (32 / globals.difficulty + globals.difficulty - 1)
     globals.maxcooldown = (60 / globals.difficulty)
 
@@ -161,7 +160,7 @@ def showPauseScreen(window):
 
     window.blit(overlay, (0, 0))
     window.blit(pausemenu, (0, 0))
-    pygame.display.flip()
+    pygame.display.update()
 
     playClick()
 
@@ -192,26 +191,45 @@ def showPauseScreen(window):
     playClick()
 
 
-def showVictoryScreen(window):
+def showEndScreen(window, end):
     setGlobalDefaults()
 
+    if end == "victory":
+        playVictory()
+    if end == "defeat":
+        playDefeat()
+
     victory = pygame.transform.scale(pygame.image.load("data/textures/victory.png"), (500, 500))
+    defeat = pygame.transform.scale(pygame.image.load("data/textures/defeat.png"), (500, 500))
     overlay = pygame.transform.scale(pygame.image.load("data/textures/overlay.png"), (500, 500))
 
-    i = 0
-    while i < 256:
-        overlay.set_alpha(i)
-        window.blit(overlay, (0, 0))
-        pygame.display.flip()
-        i -= 1
-
-    window.blit(overlay, (0, 0))
-    window.blit(victory, (0, 0))
-    pygame.display.flip()
-
-    playVictory()
-
+    overlay.set_alpha(2)
     clock = pygame.time.Clock()
+
+    i = 0
+    animrun = True
+    while animrun:
+        clock.tick(60)
+        window.blit(overlay, (0, 0))
+        if end == "victory":
+            victory.set_alpha(i)
+            window.blit(victory, (0, 0))
+        if end == "defeat":
+            defeat.set_alpha(i)
+            window.blit(defeat, (0, 0))
+        pygame.display.update()
+        i += 1
+        if i > 64:
+            animrun = False
+
+    victory.set_alpha(256)
+    defeat.set_alpha(256)
+
+    if end == "victory":
+        window.blit(victory, (0, 0))
+    if end == "defeat":
+        window.blit(defeat, (0, 0))
+    pygame.display.update()
 
     run = True
     while run:
@@ -233,6 +251,8 @@ def showVictoryScreen(window):
                 if event.key == ESCAPE:
                     run = False
                     globals.exittomenu = True
+    pygame.display.update()
+
     playClick()
 
 
