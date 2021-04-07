@@ -1,6 +1,6 @@
 import pygame, random, pygame.freetype
 from data import globals, title_screen, menu, level_selection, level1
-from data.sprites import victim, player
+from data.sprites import victim, player, web
 
 LEFT = 1
 MIDDLE = 2
@@ -36,6 +36,9 @@ def setGameDefaults():
     globals.damagecooldown = globals.maxcooldown
     globals.damageoverlaycooldown = 0
     globals.damagesum = 0
+
+    globals.webs_left = 3
+    globals.webcounter = 0
 
 
 def playCurrentState():
@@ -74,10 +77,19 @@ def generateVictims(victimgroup):
     print(globals.victims)
 
 
-def updateVictims(velocity, playersprite, click):
+def generateWeb(webgroup):
+    webprogram = 'web' + str(globals.webcounter) + ' = web.Web()\nwebgroup.add(web' + str(
+        globals.webcounter) + ')\nweb' + str(globals.webcounter) + '.summon()'
+    exec(webprogram)
+    print(webprogram)
+    print("EXECUTED")
+    globals.webcounter += 1
+
+
+def updateVictims(velocity, playersprite, click, webgroup):
     i = globals.victimspawns
     while i >= 0:
-        globals.victims[i].update(globals.direction[i], velocity, playersprite, i, click, globals.damagecooldown)
+        globals.victims[i].update(globals.direction[i], velocity, playersprite, i, click, globals.damagecooldown, webgroup)
         i -= 1
 
 

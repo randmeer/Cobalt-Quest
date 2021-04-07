@@ -1,5 +1,6 @@
 import pygame, random
 from data import globals, utils
+from data.sprites import web
 
 
 class Victim(pygame.sprite.Sprite):
@@ -25,11 +26,15 @@ class Victim(pygame.sprite.Sprite):
             if direction == 4:
                 self.rect.center = (-50, position)
 
-    def update(self, direction, velocity, player, number, click, damagecooldown):
+    def update(self, direction, velocity, player, number, click, damagecooldown, webgroup):
         if globals.on_screen[number]:
 
             collidemouse = self.rect.collidepoint(pygame.mouse.get_pos())
+            collideweb = pygame.sprite.spritecollideany(self, webgroup)
             collideplayer = self.rect.colliderect(player.rect)
+
+            if collideweb:
+                velocity -= 0.5
 
             if direction == 1:
                 self.rect.y += velocity
@@ -47,7 +52,7 @@ class Victim(pygame.sprite.Sprite):
                 globals.victimhealth[number] = -1
 
             # THIS IS THE FINAL CODE
-            #if collidemouse and click:
+            # if collidemouse and click:
             #    globals.victimhealth[number] -= 1
             #    globals.damagesum += 1
             #    utils.playHit()

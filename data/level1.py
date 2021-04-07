@@ -15,6 +15,8 @@ def playLevel1():
     outlinesprite = outline.Outline()
 
     victimgroup = pygame.sprite.Group()
+    webgroup = pygame.sprite.Group()
+
     utils.generateDirections()
     utils.generateVictims(victimgroup)
     victimSummonCooldown = 0
@@ -32,7 +34,6 @@ def playLevel1():
     while run:
         clock.tick(60)
         click = False
-        r_click = False
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -42,7 +43,9 @@ def playLevel1():
                 if event.button == globals.LEFT:
                     click = True
                 if event.button == globals.RIGHT:
-                    r_click = True
+                    if globals.webs_left > 0:
+                        utils.generateWeb(webgroup)
+                        globals.webs_left -= 1
             if event.type == pygame.KEYDOWN:
                 if event.key == globals.ESCAPE:
                     utils.showPauseScreen(window)
@@ -76,9 +79,10 @@ def playLevel1():
 
         window.blit(background, (0, 0))
         playersprite.update(w, a, s, d, velocity)
-        utils.updateVictims(victimvelocity, playersprite, click)
+        utils.updateVictims(victimvelocity, playersprite, click, webgroup)
 
         outlinesprite.draw(window)
+        webgroup.draw(window)
         victimgroup.draw(window)
         playersprite.draw(window)
 

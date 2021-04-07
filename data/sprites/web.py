@@ -1,4 +1,8 @@
 import pygame, random
+from data import globals
+
+shrinkx = 20
+shrinky = 20
 
 
 class Web(pygame.sprite.Sprite):
@@ -9,36 +13,10 @@ class Web(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(pygame.image.load("data/textures/web.png"), (50, 50))
         # self.image.fill(WHITE)
         self.rect = self.image.get_rect()
-        self.rect.center = (-100, -100)
 
-    def summon(self, direction):
-        position = random.randint(50, 450)
-        if direction == 1:
-            self.rect.center = (position, -50)
-        if direction == 3:
-            self.rect.center = (position, 550)
-        if direction == 2:
-            self.rect.center = (550, position)
-        if direction == 4:
-            self.rect.center = (-50, position)
-
-    def update(self, direction, velocity):
-        if direction == 1:
-            self.rect.y += velocity
-        elif direction == 2:
-            self.rect.x -= velocity
-        elif direction == 3:
-            self.rect.y -= velocity
-        elif direction == 4:
-            self.rect.x += velocity
-
-        if -100 < self.rect.x > 600:
-            self.kill()
-        if -100 < self.rect.y > 600:
-            self.kill()
+    def summon(self):
+        self.rect.x = round((pygame.mouse.get_pos()[0] - 25) / 50) * 50
+        self.rect.y = round((pygame.mouse.get_pos()[1] - 25) / 50) * 50
 
     def draw(self, window):
         window.blit(self.image, self.rect)
-
-    #def die(self):
-    #    self.kill()
