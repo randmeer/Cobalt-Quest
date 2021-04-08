@@ -34,7 +34,11 @@ class Victim(pygame.sprite.Sprite):
             collideplayer = self.rect.colliderect(player.rect)
 
             if collideweb:
-                velocity -= 0.5
+                velocity -= 1
+                if globals.victimbreakcooldowns[number] > 500:
+                    collideweb.kill()
+                    globals.victimbreakcooldowns[number] = 0
+                globals.victimbreakcooldowns[number] += 1
 
             if direction == 1:
                 self.rect.y += velocity

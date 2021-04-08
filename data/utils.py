@@ -23,6 +23,8 @@ def setGameDefaults():
     globals.victims = []
     globals.victimhealth = []
     globals.on_screen = []
+    globals.victimbreakcooldowns = []
+    globals.victimbreakcooldownmax = 500 - 100 * globals.difficulty
 
     globals.victimsmissed = 0
     globals.victimskilled = 0
@@ -70,6 +72,7 @@ def generateVictims(victimgroup):
         victimprogram = 'victim' + str(i) + ' = victim.Victim()\nvictimgroup.add(victim' + str(
             i) + ')\nglobals.victims.append(victim' + str(i) + ')'
         globals.victimhealth.append(globals.victimhealthpoints)
+        globals.victimbreakcooldowns.append(globals.victimbreakcooldownmax)
         exec(victimprogram)
         print(victimprogram)
         print("EXECUTED")

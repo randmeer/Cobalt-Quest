@@ -40,6 +40,9 @@ direction = []
 victims = []
 victimhealth = []
 on_screen = []
+victimbreakcooldowns = []
+victimbreakcooldownmax = 0
+
 
 victimhealthpoints = 32
 playerhealthpoints = int(48 / difficulty)
