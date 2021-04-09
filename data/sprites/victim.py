@@ -10,7 +10,6 @@ class Victim(pygame.sprite.Sprite):
         # self.image = pygame.Surface((100, 100))
         keksi_original = pygame.image.load("data/textures/IchKeksi.png")
         self.image = pygame.transform.scale(keksi_original, (50, 50))
-        # self.image.fill(WHITE)
         self.rect = self.image.get_rect()
         self.rect.center = (-100, -100)
 
@@ -35,7 +34,7 @@ class Victim(pygame.sprite.Sprite):
 
             if collideweb:
                 velocity -= 1
-                if globals.victimbreakcooldowns[number] > 500:
+                if globals.victimbreakcooldowns[number] > globals.victimbreakcooldownmax:
                     collideweb.kill()
                     globals.victimbreakcooldowns[number] = 0
                 globals.victimbreakcooldowns[number] += 1

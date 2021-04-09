@@ -72,7 +72,7 @@ def generateVictims(victimgroup):
         victimprogram = 'victim' + str(i) + ' = victim.Victim()\nvictimgroup.add(victim' + str(
             i) + ')\nglobals.victims.append(victim' + str(i) + ')'
         globals.victimhealth.append(globals.victimhealthpoints)
-        globals.victimbreakcooldowns.append(globals.victimbreakcooldownmax)
+        globals.victimbreakcooldowns.append(0)
         exec(victimprogram)
         print(victimprogram)
         print("EXECUTED")
