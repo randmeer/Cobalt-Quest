@@ -1,6 +1,5 @@
 import pygame, random
 from data import globals, utils
-from data.sprites import web
 
 
 class Victim(pygame.sprite.Sprite):
@@ -13,59 +12,66 @@ class Victim(pygame.sprite.Sprite):
         self.rect.center = (-100, -100)
         self.floatx = 0
         self.floaty = 0
+        self.direction = random.randint(1, 4)
+        self.onscreen = True
+        self.velocity = globals.difficulty
+        self.health = globals.victimhealthpointsmax
+        self.breakcooldown = 0
 
-    def summon(self, direction, number):
-        if not globals.on_screen[number]:
+    def summon(self):
+        if self.onscreen:
             position = random.randint(50, 450)
-            if direction == 1:
+
+            if self.direction == 1:
                 self.rect.center = (position, -50)
                 self.floatx = position - 25
                 self.floaty = -50 - 25
-            if direction == 3:
+            if self.direction == 3:
                 self.rect.center = (position, 550)
                 self.floatx = position - 25
                 self.floaty = 550 - 25
-            if direction == 2:
+            if self.direction == 2:
                 self.rect.center = (550, position)
                 self.floatx = 550 - 25
                 self.floaty = position - 25
-            if direction == 4:
+            if self.direction == 4:
                 self.rect.center = (-50, position)
                 self.floatx = -50 - 25
                 self.floaty = position - 25
 
-    def update(self, direction, velocity, player, number, click, damagecooldown, webgroup):
-        if globals.on_screen[number]:
+    def update(self, player, click, damagecooldown, webgroup):
+        if self.onscreen:
 
             collidemouse = self.rect.collidepoint(pygame.mouse.get_pos())
             collideweb = pygame.sprite.spritecollideany(self, webgroup)
             collideplayer = self.rect.colliderect(player.rect)
 
             if collideweb:
-                if globals.victimbreakcooldowns[number] > globals.victimbreakcooldownmax:
+                if self.breakcooldown > globals.victimbreakcooldownmax:
                     collideweb.kill()
-                    globals.victimbreakcooldowns[number] = 0
-                globals.victimbreakcooldowns[number] += 1
-                velocity = 0.3
+                    self.breakcooldown = 0
+                self.breakcooldown += 1
+                self.velocity = 0.3
 
-            if direction == 1:
-                self.floaty += velocity
+            if self.direction == 1:
+                self.floaty += self.velocity
                 self.rect.y = self.floaty
-            elif direction == 2:
-                self.floatx -= velocity
+            elif self.direction == 2:
+                self.floatx -= self.velocity
                 self.rect.x = self.floatx
-            elif direction == 3:
-                self.floaty -= velocity
+            elif self.direction == 3:
+                self.floaty -= self.velocity
                 self.rect.y = self.floaty
-            elif direction == 4:
-                self.floatx += velocity
+            elif self.direction == 4:
+                self.floatx += self.velocity
                 self.rect.x = self.floatx
 
             if self.rect.centerx > 550 or self.rect.centerx < -50 or self.rect.centery > 550 or self.rect.centery < -50:
                 self.kill()
                 self.rect = None
-                globals.on_screen[number] = False
-                globals.victimhealth[number] = -1
+                self.onscreen = False
+                self.health = -1
+                globals.victimsmissed += 1
 
             # THIS IS THE FINAL CODE
             # if collidemouse and click:
@@ -76,7 +82,7 @@ class Victim(pygame.sprite.Sprite):
 
             # TEMPORARY CODE TO KILL VICTIMS FASTER
             if collidemouse:
-                globals.victimhealth[number] -= 1
+                self.health -= 1
                 globals.damagesum += 1
                 utils.playHit()
             # REMOVE AFTER
@@ -86,17 +92,11 @@ class Victim(pygame.sprite.Sprite):
                 globals.damagecooldown = 0
                 utils.playHurt()
 
-            if globals.victimhealth[number] == 0:
+            if self.health == 0:
                 self.kill()
                 self.rect = None
                 globals.victimskilled += 1
-                globals.on_screen[number] = False
-
-            if globals.victimhealth[number] == -1:
-                self.kill()
-                self.rect = None
-                globals.victimsmissed += 1
-                globals.on_screen[number] = False
+                self.onscreen = False
 
     def draw(self, window):
         window.blit(self.image, self.rect)

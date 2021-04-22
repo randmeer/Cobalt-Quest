@@ -1,6 +1,6 @@
 import pygame
 from data import utils, globals
-from data.sprites import player, outline
+from data.sprites import player, outline, victim
 
 
 def playLevel1():
@@ -17,11 +17,8 @@ def playLevel1():
     victimgroup = pygame.sprite.Group()
     webgroup = pygame.sprite.Group()
 
-    utils.generateDirections()
-    utils.generateVictims(victimgroup)
     victimSummonCooldown = 0
     victimcounter = 0
-    victimvelocity = globals.difficulty
 
     heart = pygame.transform.scale(pygame.image.load("data/textures/heart.png"), (18, 18))
     keksi = pygame.transform.scale(pygame.image.load("data/textures/IchKeksi.png"), (20, 20))
@@ -73,13 +70,19 @@ def playLevel1():
         else:
             if victimcounter <= globals.victimspawns:
                 victimSummonCooldown = 100 / (globals.difficulty * (globals.difficulty / 2))
-                globals.victims[victimcounter].summon(globals.direction[victimcounter], victimcounter)
-                globals.on_screen[victimcounter] = True
+                # globals.victims[victimcounter].summon()
+                # globals.on_screen[victimcounter] = True
+                #victimgroup[victimcounter].summon()
+                summonprogram = 'victim' + str(victimcounter) + ' = victim.Victim()\nvictimgroup.add(victim' + str(
+                    victimcounter) + ')\nvictim' + str(victimcounter) + '.summon()'
+                exec(summonprogram)
                 victimcounter += 1
 
         window.blit(background, (0, 0))
         playersprite.update(w, a, s, d, velocity, webgroup)
-        utils.updateVictims(victimvelocity, playersprite, click, webgroup)
+
+        #utils.updateVictims(playersprite=playersprite, click=click, victimgroup=victimgroup)
+        victimgroup.update(player=playersprite, click=click, damagecooldown=globals.damagecooldown, webgroup=webgroup)
 
         outlinesprite.draw(window)
         webgroup.draw(window)
@@ -103,8 +106,7 @@ def playLevel1():
 
         if globals.victimskilled == globals.victimspawns + 1:
             utils.showEndScreen(window, "victory")
-        if globals.victimsmissed > 0 and (
-                sum(i > 0 for i in globals.victimhealth)) == 0 or globals.playerhealthpoints < 1:
+        if globals.victimsmissed >= globals.victimspawns and globals.victimspawns-globals.victimsmissed-globals.victimskilled + 1 <= 0  or globals.playerhealthpoints < 1:
             utils.showEndScreen(window, "defeat")
 
         if globals.exittomenu:

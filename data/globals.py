@@ -1,3 +1,5 @@
+VERSION = "0.8"
+
 # settings that reset on startup
 # (plz dont change these the game will crash)
 quitgame = None
@@ -31,20 +33,15 @@ WIDTH = 500
 HEIGHT = 500
 
 WHITE = (255, 255, 255)
+GRAY = (128, 128, 128)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 
 # variables used for the gameplay
 
-direction = []
-victims = []
-victimhealth = []
-on_screen = []
-victimbreakcooldowns = []
 victimbreakcooldownmax = 0
+victimhealthpointsmax = 32
 
-
-victimhealthpoints = 32
 playerhealthpoints = int(48 / difficulty)
 victimspawns = 0
 victimskilled = 0
@@ -53,9 +50,13 @@ victimsmissed = 0
 damagecooldown = 0
 maxcooldown = 0
 
+
 damageoverlayalpha = 64
 tookdamage = False
 damagesum = 0
 
 webs_left = 3
 webcounter = 0
+
+
+skin = ''

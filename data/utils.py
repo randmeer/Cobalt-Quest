@@ -1,11 +1,11 @@
-import pygame, random, pygame.freetype
+import pygame, random, pygame.freetype, json
 from data import globals, title_screen, menu, level_selection, level1
 from data.sprites import victim, player, web
 
-LEFT = 1
-MIDDLE = 2
-RIGHT = 3
-ESCAPE = 27
+
+def background():
+    background_original = pygame.image.load("data/textures/background.png")
+    return pygame.transform.scale(background_original, (500, 500))
 
 
 def setGlobalDefaults():
@@ -19,16 +19,10 @@ def setGlobalDefaults():
 
 
 def setGameDefaults():
-    globals.direction = []
-    globals.victims = []
-    globals.victimhealth = []
-    globals.on_screen = []
-    globals.victimbreakcooldowns = []
     globals.victimbreakcooldownmax = 500 - 100 * globals.difficulty
 
     globals.victimsmissed = 0
     globals.victimskilled = 0
-    globals.playerhealthpoints = 0
 
     # globals.victimspawns = (15 * globals.difficulty + globals.difficulty - 1)
     globals.victimspawns = 1
@@ -57,29 +51,6 @@ def playCurrentState():
     print("CYCLED TROUGH CURRENT STATES")
 
 
-def generateDirections():
-    i = globals.victimspawns
-    while i >= 0:
-        globals.direction.append(random.randint(1, 4))
-        globals.on_screen.append(False)
-        i -= 1
-
-
-def generateVictims(victimgroup):
-    i = globals.victimspawns
-
-    while i >= 0:
-        victimprogram = 'victim' + str(i) + ' = victim.Victim()\nvictimgroup.add(victim' + str(
-            i) + ')\nglobals.victims.append(victim' + str(i) + ')'
-        globals.victimhealth.append(globals.victimhealthpoints)
-        globals.victimbreakcooldowns.append(0)
-        exec(victimprogram)
-        print(victimprogram)
-        print("EXECUTED")
-        i -= 1
-    print(globals.victims)
-
-
 def generateWeb(webgroup):
     webprogram = 'web' + str(globals.webcounter) + ' = web.Web()\nwebgroup.add(web' + str(
         globals.webcounter) + ')\nweb' + str(globals.webcounter) + '.summon()'
@@ -89,17 +60,10 @@ def generateWeb(webgroup):
     globals.webcounter += 1
 
 
-def updateVictims(velocity, playersprite, click, webgroup):
-    i = globals.victimspawns
-    while i >= 0:
-        globals.victims[i].update(globals.direction[i], velocity, playersprite, i, click, globals.damagecooldown, webgroup)
-        i -= 1
-
-
 def setupWindow():
     pygame.init()
     window = pygame.display.set_mode((500, 500))
-    pygame.display.set_caption("WWOPW version 0.7 by Rande")
+    pygame.display.set_caption("WWOPW version " + globals.VERSION + " by Rande")
     pygame.display.flip()
     return window
 
@@ -111,8 +75,8 @@ def renderText(window, text, position, color, size):
 
 def renderIngameText(window):
     renderText(window, str(int(globals.playerhealthpoints)), (35, 10), globals.WHITE, 24)
-    renderText(window, str((sum(i > 0 for i in globals.victimhealth))), (127, 10), globals.WHITE, 24)
-    # renderText(window, str(sum(globals.on_screen)), (127, 10), globals.WHITE, 24)
+    #renderText(window, str((sum(i > 0 for i in globals.victimhealth))), (127, 10), globals.WHITE, 24)
+    renderText(window, str(globals.victimspawns-globals.victimsmissed-globals.victimskilled + 1), (127, 10), globals.WHITE, 24)
     renderText(window, str(globals.victimskilled), (215, 10), globals.WHITE, 24)
     renderText(window, str(globals.victimsmissed), (305, 10), globals.WHITE, 24)
     renderText(window, str(globals.damagesum), (395, 10), globals.WHITE, 24)
@@ -190,7 +154,7 @@ def showPauseScreen(window):
                 globals.exittomenu = True
                 globals.quitgame = True
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == LEFT:
+                if event.button == globals.LEFT:
                     posX = (pygame.mouse.get_pos()[0])
                     posY = (pygame.mouse.get_pos()[1])
                     # print(posX, " ", posY)
@@ -199,9 +163,12 @@ def showPauseScreen(window):
                     if 287 < posY < 352 and 26 < posX < 475:
                         run = False
                         globals.exittomenu = True
+                    if 367 < posY < 432 and 26 < posX < 475:
+                        run = False
+                        showSettings(window)
 
             if event.type == pygame.KEYDOWN:
-                if event.key == ESCAPE:
+                if event.key == globals.ESCAPE:
                     run = False
     playClick()
 
@@ -255,7 +222,7 @@ def showEndScreen(window, end):
                 globals.exittomenu = True
                 globals.quitgame = True
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == LEFT:
+                if event.button == globals.LEFT:
                     posX = (pygame.mouse.get_pos()[0])
                     posY = (pygame.mouse.get_pos()[1])
                     if 207 < posY < 272 and 26 < posX < 475:
@@ -263,11 +230,122 @@ def showEndScreen(window, end):
                         globals.exittomenu = True
 
             if event.type == pygame.KEYDOWN:
-                if event.key == ESCAPE:
+                if event.key == globals.ESCAPE:
                     run = False
                     globals.exittomenu = True
 
     playClick()
+
+
+def showSettings(window):
+    setGlobalDefaults()
+
+    with open('data.json', "r") as f:
+        settings = json.loads(f.read())
+
+    # Reading from file
+
+    # Iterating through the json
+    for i in settings:
+        print(i)
+
+    print(settings['volume'])
+    print(settings['background_music'])
+
+    backgr = pygame.transform.scale(pygame.image.load("data/textures/background.png"), (500, 500))
+    settingsmenu = pygame.transform.scale(pygame.image.load("data/textures/settings_menu.png"), (500, 500))
+
+    window.blit(backgr, (0, 0))
+    window.blit(settingsmenu, (0, 0))
+    renderText(window, 'Backgr. Music:', (50, 190), globals.WHITE, 30)
+    renderText(window, 'Sound Volume:', (50, 220), globals.WHITE, 30)
+    renderText(window, 'Skin:', (50, 250), globals.WHITE, 30)
+    renderText(window, 'Nickname:', (50, 280), globals.WHITE, 30)
+    renderText(window, 'WWOPW ' + globals.VERSION + ' by Rande', (50, 310), globals.WHITE, 30)
+
+    renderText(window, str(settings['background_music']), (300, 190), globals.WHITE, 30)
+    renderText(window, '100%', (300, 220), globals.WHITE, 30)
+    renderText(window, '3lia03', (300, 250), globals.WHITE, 30)
+    renderText(window, '', (300, 280), globals.WHITE, 30)
+
+    pygame.display.update()
+
+    playClick()
+
+    clock = pygame.time.Clock()
+
+    run = True
+    while run:
+        clock.tick(60)
+
+        with open('data.json', 'r') as fr:
+            settings = json.loads(fr.read())
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                globals.exittomenu = True
+                globals.quitgame = True
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == globals.LEFT:
+                    posX = (pygame.mouse.get_pos()[0])
+                    posY = (pygame.mouse.get_pos()[1])
+                    # print(posX, " ", posY)
+                    if 367 < posY < 432 and 26 < posX < 475:
+                        run = False
+                    elif 190 < posY < 220 and 300 < posX < 450:
+                        settings['background_music'] = not settings['background_music']
+                        with open('data.json', 'w') as json_file:
+                            json.dump(settings, json_file)
+                        playClick()
+                    elif 220 < posY < 250 and 300 < posX < 450:
+                        if settings['volume'] >= 10:
+                            settings['volume'] = 0
+                        settings['volume'] += 1
+                        with open('data.json', 'w') as json_file:
+                            json.dump(settings, json_file)
+                            playClick()
+                    elif 250 < posY < 280 and 300 < posX < 450:
+                        if settings['skin'] == "3lia03":
+                            settings['skin'] = "Rande"
+                        elif settings['skin'] == "Rande":
+                            settings['skin'] = "3lia03"
+                        with open('data.json', 'w') as json_file:
+                            json.dump(settings, json_file)
+                        playClick()
+                    elif 280 < posY < 310 and 300 < posX < 450:
+                        print("test4")
+                        playClick()
+            if event.type == pygame.KEYDOWN:
+                if event.key == globals.ESCAPE:
+                    run = False
+
+        window.blit(backgr, (0, 0))
+        window.blit(settingsmenu, (0, 0))
+
+        renderText(window, 'Backgr. Music:', (50, 190), globals.WHITE, 30)
+        renderText(window, 'Sound Volume:', (50, 220), globals.WHITE, 30)
+        renderText(window, 'Skin:', (50, 250), globals.WHITE, 30)
+        renderText(window, 'Nickname:', (50, 280), globals.WHITE, 30)
+        renderText(window, 'WWOPW v0.8 by Rande', (50, 310), globals.GRAY, 30)
+        renderText(window, str(settings['background_music']), (300, 190), globals.WHITE, 30)
+        renderText(window, str(settings['volume']), (300, 220), globals.WHITE, 30)
+        renderText(window, str(settings['skin']), (300, 250), globals.WHITE, 30)
+        renderText(window, 'None', (300, 280), globals.WHITE, 30)
+        pygame.display.update()
+
+    playClick()
+
+
+def getSetting(setting):
+    with open('data.json', 'r') as fr:
+        settings = json.loads(fr.read())
+    if setting == 'background_music':
+        return settings['background_music']
+    elif setting == 'volume':
+        return settings['volume']
+    elif setting == 'skin':
+        return settings['skin']
 
 
 def checkCollision(sprite1, sprite2):
@@ -276,8 +354,3 @@ def checkCollision(sprite1, sprite2):
         return True
     else:
         return False
-
-
-def background():
-    background_original = pygame.image.load("data/textures/background.png")
-    return pygame.transform.scale(background_original, (500, 500))
