@@ -12,7 +12,12 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (globals.WIDTH / 2, globals.HEIGHT / 2)
 
-    def update(self, w, a, s, d, velocity):
+    def update(self, w, a, s, d, velocity, webgroup):
+        collideweb = pygame.sprite.spritecollideany(self, webgroup)
+
+        if collideweb:
+            velocity = velocity / 2
+
         if s and self.rect.bottom < 500:
             self.rect.y += velocity
         if a and self.rect.left > 0:

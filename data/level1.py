@@ -78,7 +78,7 @@ def playLevel1():
                 victimcounter += 1
 
         window.blit(background, (0, 0))
-        playersprite.update(w, a, s, d, velocity)
+        playersprite.update(w, a, s, d, velocity, webgroup)
         utils.updateVictims(victimvelocity, playersprite, click, webgroup)
 
         outlinesprite.draw(window)
