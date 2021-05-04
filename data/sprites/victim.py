@@ -51,7 +51,9 @@ class Victim(pygame.sprite.Sprite):
                     collideweb.kill()
                     self.breakcooldown = 0
                 self.breakcooldown += 1
-                self.velocity = 0.3
+                self.velocity = 0.2 * globals.difficulty
+            else:
+                self.velocity = globals.difficulty
 
             if self.direction == 1:
                 self.floaty += self.velocity
@@ -74,17 +76,17 @@ class Victim(pygame.sprite.Sprite):
                 globals.victimsmissed += 1
 
             # THIS IS THE FINAL CODE
-            # if collidemouse and click:
-            #    globals.victimhealth[number] -= 1
-            #    globals.damagesum += 1
-            #    utils.playHit()
-            # UNCOMMENT AFTER
-
-            # TEMPORARY CODE TO KILL VICTIMS FASTER
-            if collidemouse:
+            if collidemouse and click:
                 self.health -= 1
                 globals.damagesum += 1
                 utils.playHit()
+            # UNCOMMENT AFTER
+
+            # TEMPORARY CODE TO KILL VICTIMS FASTER
+            # if collidemouse:
+            #    self.health -= 1
+            #    globals.damagesum += 1
+            #    utils.playHit()
             # REMOVE AFTER
 
             if collideplayer and damagecooldown >= globals.maxcooldown:

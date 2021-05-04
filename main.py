@@ -1,8 +1,29 @@
-import pygame
-
+import pygame, threading
 from data import utils, globals
 
-# utils.playTheme()
+# def updateMusic():
+#    pygame.mixer.init()
+#
+#    test = utils.getSetting('background_music')
+#    while True:
+#        if test != utils.getSetting('background_music'):
+#            pygame.mixer.music.set_volume(utils.getSetting('volume') / 10)
+#        test = utils.getSetting('background_music')
+#
+#
+# musicthread = threading.Thread(target=updateMusic, daemon=True)
+#
+# if utils.getSetting('background_music') == "true":
+#    utils.playTheme()
+#    pygame.mixer.music.set_volume(utils.getSetting('volume') / 10)
+#    musicthread.start()
+
+if utils.getSetting('background_music'):
+    utils.playTheme()
+    pygame.mixer.music.set_volume(utils.getSetting('volume') / 10)
+
+print(utils.getSetting('volume'))
+
 utils.setGlobalDefaults()
 globals.titlescreen = True
 window = utils.setupWindow()

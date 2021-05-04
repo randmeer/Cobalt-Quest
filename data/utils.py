@@ -75,11 +75,30 @@ def renderText(window, text, position, color, size):
 
 def renderIngameText(window):
     renderText(window, str(int(globals.playerhealthpoints)), (35, 10), globals.WHITE, 24)
-    #renderText(window, str((sum(i > 0 for i in globals.victimhealth))), (127, 10), globals.WHITE, 24)
-    renderText(window, str(globals.victimspawns-globals.victimsmissed-globals.victimskilled + 1), (127, 10), globals.WHITE, 24)
+    # renderText(window, str((sum(i > 0 for i in globals.victimhealth))), (127, 10), globals.WHITE, 24)
+    renderText(window, str(globals.victimspawns - globals.victimsmissed - globals.victimskilled + 1), (127, 10),
+               globals.WHITE, 24)
     renderText(window, str(globals.victimskilled), (215, 10), globals.WHITE, 24)
     renderText(window, str(globals.victimsmissed), (305, 10), globals.WHITE, 24)
     renderText(window, str(globals.damagesum), (395, 10), globals.WHITE, 24)
+
+
+def playSound(sound):
+    pygame.mixer.init()
+    if sound == 'click':
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound("data/sounds/click.wav"))
+    elif sound == 'hit':
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound("data/sounds/hit.wav"))
+    elif sound == 'hurt':
+        pygame.mixer.Channel(2).play(pygame.mixer.Sound("data/sounds/hurt.wav"))
+    elif sound == 'blockplace':
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound("data/sounds/block_place.wav"))
+    elif sound == 'swing':
+        pygame.mixer.Channel(2).play(pygame.mixer.Sound("data/sounds/swing.wav"))
+    elif sound == 'victory':
+        pygame.mixer.Channel(3).play(pygame.mixer.Sound("data/sounds/victory.wav"))
+    elif sound == 'defeat':
+        pygame.mixer.Channel(3).play(pygame.mixer.Sound("data/sounds/defeat.wav"))
 
 
 def playClick():

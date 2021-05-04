@@ -1,10 +1,11 @@
 import pygame
 from data import utils, globals
-from data.sprites import player, outline, victim
+from data.sprites import player, outline, sword, victim
 
 
 def playLevel1():
     print("LEVEL1 START")
+
     utils.setGlobalDefaults()
     utils.setGameDefaults()
     window = utils.setupWindow()
@@ -16,6 +17,7 @@ def playLevel1():
 
     victimgroup = pygame.sprite.Group()
     webgroup = pygame.sprite.Group()
+    swordgroup = pygame.sprite.Group()
 
     victimSummonCooldown = 0
     victimcounter = 0
@@ -39,6 +41,9 @@ def playLevel1():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == globals.LEFT:
                     click = True
+                    # swordgroup.empty()
+                    # swordsprite = sword.Sword()
+                    # swordgroup.add(swordsprite)
                 if event.button == globals.RIGHT:
                     if globals.webs_left > 0:
                         utils.generateWeb(webgroup)
@@ -72,22 +77,24 @@ def playLevel1():
                 victimSummonCooldown = 100 / (globals.difficulty * (globals.difficulty / 2))
                 # globals.victims[victimcounter].summon()
                 # globals.on_screen[victimcounter] = True
-                #victimgroup[victimcounter].summon()
-                summonprogram = 'victim' + str(victimcounter) + ' = victim.Victim()\nvictimgroup.add(victim' + str(
-                    victimcounter) + ')\nvictim' + str(victimcounter) + '.summon()'
+                # victimgroup[victimcounter].summon()
+                summonprogram = 'victim' + str(victimcounter) + ' = victim.Victim()\nvictimgroup.add(victim' + str(victimcounter) + ')\nvictim' + str(victimcounter) + '.summon()'
+                print(summonprogram)
                 exec(summonprogram)
                 victimcounter += 1
 
         window.blit(background, (0, 0))
-        playersprite.update(w, a, s, d, velocity, webgroup)
 
-        #utils.updateVictims(playersprite=playersprite, click=click, victimgroup=victimgroup)
+        # utils.updateVictims(playersprite=playersprite, click=click, victimgroup=victimgroup)
         victimgroup.update(player=playersprite, click=click, damagecooldown=globals.damagecooldown, webgroup=webgroup)
+        swordgroup.update(posX=playersprite.rect.centerx, posY=playersprite.rect.centery)
+        playersprite.update(w=w, a=a, s=s, d=d, velocity=velocity, webgroup=webgroup)
 
         outlinesprite.draw(window)
         webgroup.draw(window)
         victimgroup.draw(window)
         playersprite.draw(window)
+        swordgroup.draw(window)
 
         damage_player.set_alpha(256 - (globals.damagecooldown * 256 / globals.maxcooldown))
 
@@ -99,14 +106,17 @@ def playLevel1():
         window.blit(broken_heart, (370, 10))
 
         utils.renderIngameText(window)
+        utils.renderText(window=window, text=str(round(clock.get_fps())) + " FPS", position=(20, 460), color=globals.WHITE, size=24)
+
         pygame.display.update()
+        #pygame.display.flip()
 
         if globals.damagecooldown < globals.maxcooldown:
             globals.damagecooldown += 1
 
         if globals.victimskilled == globals.victimspawns + 1:
             utils.showEndScreen(window, "victory")
-        if globals.victimsmissed >= globals.victimspawns and globals.victimspawns-globals.victimsmissed-globals.victimskilled + 1 <= 0  or globals.playerhealthpoints < 1:
+        if globals.victimsmissed >= globals.victimspawns and globals.victimspawns - globals.victimsmissed - globals.victimskilled + 1 <= 0 or globals.playerhealthpoints < 1:
             utils.showEndScreen(window, "defeat")
 
         if globals.exittomenu:
