@@ -91,9 +91,9 @@ def playLevel1():
         outlinesprite.draw(window)
         webgroup.draw(window)
         victimgroup.draw(window)
-        playersprite.draw(window)
         if swordsprite.visibility:
             swordgroup.draw(window)
+        playersprite.draw(window)
         window.blit(damage_player, (0, 0))
         window.blit(gui_surface, (0, 0))
 

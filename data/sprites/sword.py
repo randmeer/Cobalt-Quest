@@ -23,9 +23,10 @@ class Sword(pygame.sprite.Sprite):
         self.frame13 = pygame.transform.rotate(self.default_image, 292.5)
         self.frame14 = pygame.transform.rotate(self.default_image, 315)
         self.frame15 = pygame.transform.rotate(self.default_image, 337.5)
-        self.frame16 = self.default_image
+        self.frame0 = self.default_image
 
         self.frames = [
+            self.frame0,
             self.frame1,
             self.frame2,
             self.frame3,
@@ -41,11 +42,11 @@ class Sword(pygame.sprite.Sprite):
             self.frame13,
             self.frame14,
             self.frame15,
-            self.frame16
+            self.frame0
         ]
 
         self.rect = self.default_image.get_rect()
-        self.frame = 1
+        self.frame = 0
         self.visibility = False
 
     def update(self, posX, posY):
@@ -55,7 +56,7 @@ class Sword(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (posX, posY)
         self.frame += 1
-        if self.frame == 16:
+        if self.frame == 17:
             self.reset()
             print("RESET")
         print(self.frame)
