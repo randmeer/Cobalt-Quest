@@ -63,5 +63,5 @@ def showTitleScreen():
 
         pygame.display.update()
 
-    utils.playClick()
+    utils.playSound('click')
     print("TITLE SCREEN END")

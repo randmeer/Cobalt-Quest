@@ -3,6 +3,17 @@ from data import globals, title_screen, menu, level_selection, level1
 from data.sprites import victim, player, web
 
 
+def getSetting(setting):
+    with open('data.json', 'r') as fr:
+        settings = json.loads(fr.read())
+    if setting == 'background_music':
+        return settings['background_music']
+    elif setting == 'volume':
+        return settings['volume']
+    elif setting == 'skin':
+        return settings['skin']
+
+
 def background():
     background_original = pygame.image.load("data/textures/background.png")
     return pygame.transform.scale(background_original, (500, 500))
@@ -55,7 +66,6 @@ def generateWeb(webgroup):
     webprogram = 'web' + str(globals.webcounter) + ' = web.Web()\nwebgroup.add(web' + str(
         globals.webcounter) + ')\nweb' + str(globals.webcounter) + '.summon()'
     exec(webprogram)
-    print(webprogram)
     print("EXECUTED")
     globals.webcounter += 1
 
@@ -99,48 +109,8 @@ def playSound(sound):
         pygame.mixer.Channel(3).play(pygame.mixer.Sound("data/sounds/victory.wav"))
     elif sound == 'defeat':
         pygame.mixer.Channel(3).play(pygame.mixer.Sound("data/sounds/defeat.wav"))
-
-
-def playClick():
-    pygame.mixer.init()
-    # pygame.mixer.music.load("sounds/click.wav")
-    pygame.mixer.Channel(1).play(pygame.mixer.Sound("data/sounds/click.wav"))
-
-
-def playHit():
-    pygame.mixer.init()
-    # pygame.mixer.music.load("sounds/click.wav")
-    pygame.mixer.Channel(1).play(pygame.mixer.Sound("data/sounds/hit.wav"))
-
-
-def playHurt():
-    pygame.mixer.init()
-    # pygame.mixer.music.load("sounds/click.wav")
-    pygame.mixer.Channel(2).play(pygame.mixer.Sound("data/sounds/hurt.wav"))
-
-
-def playBlockPlace():
-    pygame.mixer.init()
-    # pygame.mixer.music.load("sounds/click.wav")
-    pygame.mixer.Channel(1).play(pygame.mixer.Sound("data/sounds/block_place.wav"))
-
-
-def playSwing():
-    pygame.mixer.init()
-    # pygame.mixer.music.load("sounds/click.wav")
-    pygame.mixer.Channel(2).play(pygame.mixer.Sound("data/sounds/swing.wav"))
-
-
-def playVictory():
-    pygame.mixer.init()
-    # pygame.mixer.music.load("sounds/click.wav")
-    pygame.mixer.Channel(3).play(pygame.mixer.Sound("data/sounds/victory.wav"))
-
-
-def playDefeat():
-    pygame.mixer.init()
-    # pygame.mixer.music.load("sounds/click.wav")
-    pygame.mixer.Channel(3).play(pygame.mixer.Sound("data/sounds/defeat.wav"))
+    # volume = getSetting(setting='volume') / 10
+    # pygame.mixer.Sound.set_volume(value=volume)
 
 
 def playTheme():
@@ -160,7 +130,7 @@ def showPauseScreen(window):
     window.blit(pausemenu, (0, 0))
     pygame.display.update()
 
-    playClick()
+    playSound('click')
 
     clock = pygame.time.Clock()
 
@@ -189,16 +159,16 @@ def showPauseScreen(window):
             if event.type == pygame.KEYDOWN:
                 if event.key == globals.ESCAPE:
                     run = False
-    playClick()
+    playSound('click')
 
 
 def showEndScreen(window, end):
     setGlobalDefaults()
 
     if end == "victory":
-        playVictory()
+        playSound('victory')
     if end == "defeat":
-        playDefeat()
+        playSound('defeat')
 
     victory = pygame.transform.scale(pygame.image.load("data/textures/victory.png"), (500, 500))
     defeat = pygame.transform.scale(pygame.image.load("data/textures/defeat.png"), (500, 500))
@@ -253,7 +223,7 @@ def showEndScreen(window, end):
                     run = False
                     globals.exittomenu = True
 
-    playClick()
+    playSound('click')
 
 
 def showSettings(window):
@@ -289,7 +259,7 @@ def showSettings(window):
 
     pygame.display.update()
 
-    playClick()
+    playSound('click')
 
     clock = pygame.time.Clock()
 
@@ -316,14 +286,14 @@ def showSettings(window):
                         settings['background_music'] = not settings['background_music']
                         with open('data.json', 'w') as json_file:
                             json.dump(settings, json_file)
-                        playClick()
+                        playSound('click')
                     elif 220 < posY < 250 and 300 < posX < 450:
                         if settings['volume'] >= 10:
                             settings['volume'] = 0
                         settings['volume'] += 1
                         with open('data.json', 'w') as json_file:
                             json.dump(settings, json_file)
-                            playClick()
+                            playSound('click')
                     elif 250 < posY < 280 and 300 < posX < 450:
                         if settings['skin'] == "3lia03":
                             settings['skin'] = "Rande"
@@ -331,10 +301,10 @@ def showSettings(window):
                             settings['skin'] = "3lia03"
                         with open('data.json', 'w') as json_file:
                             json.dump(settings, json_file)
-                        playClick()
+                        playSound('click')
                     elif 280 < posY < 310 and 300 < posX < 450:
                         print("test4")
-                        playClick()
+                        playSound('click')
             if event.type == pygame.KEYDOWN:
                 if event.key == globals.ESCAPE:
                     run = False
@@ -353,18 +323,7 @@ def showSettings(window):
         renderText(window, 'None', (300, 280), globals.WHITE, 30)
         pygame.display.update()
 
-    playClick()
-
-
-def getSetting(setting):
-    with open('data.json', 'r') as fr:
-        settings = json.loads(fr.read())
-    if setting == 'background_music':
-        return settings['background_music']
-    elif setting == 'volume':
-        return settings['volume']
-    elif setting == 'skin':
-        return settings['skin']
+    playSound('click')
 
 
 def checkCollision(sprite1, sprite2):

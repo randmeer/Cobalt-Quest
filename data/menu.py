@@ -42,7 +42,7 @@ def showMenu():
                             globals.difficulty = globals.difficulty + 1
                         else:
                             globals.difficulty = 1
-                        utils.playClick()
+                        utils.playSound('click')
 
             if event.type == pygame.KEYDOWN:
                 if event.key == globals.ESCAPE:
@@ -61,5 +61,5 @@ def showMenu():
 
         pygame.display.update()
 
-    utils.playClick()
+    utils.playSound('click')
     print("MENU END")

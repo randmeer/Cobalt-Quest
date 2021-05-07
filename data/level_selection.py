@@ -44,5 +44,5 @@ def showLevelSelection():
 
         pygame.display.update()
 
-    utils.playClick()
+    utils.playSound('click')
     print("LEVEL SELECTION END")

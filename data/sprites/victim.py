@@ -39,7 +39,7 @@ class Victim(pygame.sprite.Sprite):
                 self.floatx = -50 - 25
                 self.floaty = position - 25
 
-    def update(self, player, click, damagecooldown, webgroup):
+    def update(self, player, click, webgroup):
         if self.onscreen:
 
             collidemouse = self.rect.collidepoint(pygame.mouse.get_pos())
@@ -79,20 +79,20 @@ class Victim(pygame.sprite.Sprite):
             if collidemouse and click:
                 self.health -= 1
                 globals.damagesum += 1
-                utils.playHit()
+                utils.playSound('hit')
             # UNCOMMENT AFTER
 
             # TEMPORARY CODE TO KILL VICTIMS FASTER
             # if collidemouse:
             #    self.health -= 1
             #    globals.damagesum += 1
-            #    utils.playHit()
+            #    utils.playSound('hit')
             # REMOVE AFTER
 
-            if collideplayer and damagecooldown >= globals.maxcooldown:
+            if collideplayer and globals.damagecooldown >= globals.maxcooldown:
                 globals.playerhealthpoints -= 1
                 globals.damagecooldown = 0
-                utils.playHurt()
+                utils.playSound('hurt')
 
             if self.health == 0:
                 self.kill()
