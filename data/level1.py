@@ -1,11 +1,13 @@
 import pygame
 from data import utils, globals
 from data.sprites import player, outline, sword, victim
-
+from data.utils import relToAbsHeight
+from data.utils import relToAbs
+from data.utils import absToRel
 
 def playLevel1():
     print("LEVEL1 START")
-
+    # pygame.mouse.set_visible(False)
     # ------------------ SETUP ------------------
     utils.setGlobalDefaults()
     utils.setGameDefaults()
@@ -25,13 +27,17 @@ def playLevel1():
 
     damage_player = pygame.transform.scale(pygame.image.load("data/textures/damage_player.png"), (500, 500))
 
-    gui_surface = pygame.Surface((500, 30), pygame.SRCALPHA, 32)
-    gui_surface = gui_surface.convert_alpha()
-    gui_surface.blit(pygame.transform.scale(pygame.image.load("data/textures/heart.png"), (18, 18)), (10, 10))
-    gui_surface.blit(pygame.transform.scale(pygame.image.load("data/textures/IchKeksi.png"), (20, 20)), (100, 10))
-    gui_surface.blit(pygame.transform.scale(pygame.image.load("data/textures/tick.png"), (18, 18)), (190, 10))
-    gui_surface.blit(pygame.transform.scale(pygame.image.load("data/textures/cross.png"), (18, 18)), (280, 10))
-    gui_surface.blit(pygame.transform.scale(pygame.image.load("data/textures/broken_heart.png"), (18, 18)), (370, 10))
+    gui_surface_original = pygame.Surface((relToAbs(1, 0.06)), pygame.SRCALPHA, 32)
+    gui_surface_original = gui_surface_original.convert_alpha()
+
+    gui_surface_original.blit(pygame.transform.scale(pygame.image.load("data/textures/heart.png"), (18, 18)), (10, 10))
+    gui_surface_original.blit(pygame.transform.scale(pygame.image.load("data/textures/IchKeksi.png"), (20, 20)), (100, 10))
+    gui_surface_original.blit(pygame.transform.scale(pygame.image.load("data/textures/tick.png"), (18, 18)), (190, 10))
+    gui_surface_original.blit(pygame.transform.scale(pygame.image.load("data/textures/cross.png"), (18, 18)), (280, 10))
+    gui_surface_original.blit(pygame.transform.scale(pygame.image.load("data/textures/broken_heart.png"), (18, 18)), (370, 10))
+
+    gui_surface = gui_surface_original
+
     # ------------------ SETUP ------------------
 
     # ------------------ GAME LOOP --------------
@@ -39,6 +45,11 @@ def playLevel1():
     while run:
         clock.tick(60)
         click = False
+
+        main_surface = pygame.Surface(relToAbs(1, 1), pygame.SRCALPHA, 32)
+        gui_surface = pygame.transform.scale(gui_surface_original, (relToAbs(1, 0.06)))
+        background = pygame.transform.scale(background, (relToAbs(1, 1)))
+        damage_player = pygame.transform.scale(damage_player, (relToAbs(1, 1)))
 
         # ------------------ EVENTS -------------------
         for event in pygame.event.get():
@@ -56,6 +67,16 @@ def playLevel1():
             if event.type == pygame.KEYDOWN:
                 if event.key == globals.ESCAPE:
                     utils.showPauseScreen(window)
+            if event.type == pygame.VIDEORESIZE:
+                if event.w < 500 or event.h < 500:
+                    pygame.display.set_mode((500, 500), pygame.RESIZABLE)
+                else:
+                    pygame.display.set_mode((event.h, event.h), pygame.RESIZABLE)
+                for i in victimgroup:
+                    i.image = pygame.transform.scale(i.original_image, (relToAbs(0.1, 0.1)))
+                playersprite.original_image = pygame.transform.scale(playersprite.original_original_image, (relToAbs(0.1, 0.1)))
+
+
         # ------------------ EVENTS -------------------
 
         # ------------------ GAME LOGIC ---------------
@@ -87,19 +108,22 @@ def playLevel1():
         # ------------------ UPDATES ------------------
 
         # ------------------ DRAWING ------------------
-        window.blit(background, (0, 0))
-        outlinesprite.draw(window)
-        webgroup.draw(window)
-        victimgroup.draw(window)
+        main_surface.blit(background, (0, 0))
+        outlinesprite.draw(main_surface)
+        webgroup.draw(main_surface)
+        victimgroup.draw(main_surface)
         if swordsprite.visibility:
-            swordgroup.draw(window)
-        playersprite.draw(window)
-        window.blit(damage_player, (0, 0))
-        window.blit(gui_surface, (0, 0))
+            swordgroup.draw(main_surface)
+        playersprite.draw(main_surface)
+        main_surface.blit(damage_player, (0, 0))
+        main_surface.blit(gui_surface, (0, 0))
 
-        utils.renderIngameText(window)
-        utils.renderText(window=window, text=str(round(clock.get_fps())) + " FPS", position=(20, 460),
-                         color=globals.WHITE, size=24)
+        utils.renderIngameText(main_surface)
+        utils.renderText(window=main_surface, text=str(round(clock.get_fps())) + " FPS",
+                         position=relToAbs(0.04, 0.92),
+                         color=globals.WHITE, size=relToAbsHeight(0.048))
+        # new_main_surface = pygame.transform.scale(main_surface, pygame.display.get_surface().get_size())
+        window.blit(main_surface, (0, 0))
         pygame.display.update()
         # ------------------ DRAWING ------------------
 

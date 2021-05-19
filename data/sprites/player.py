@@ -1,15 +1,22 @@
-import pygame, math
-from data import globals, utils
+import pygame
+from math import pi
+from math import atan2
+from data import globals
+from data.utils import relToAbsHeight
+from data.utils import relToAbs
+from data.utils import getSetting
 
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.skin = utils.getSetting('skin')
+        self.skin = getSetting('skin')
         if self.skin == '3lia03':
+            self.original_original_image = pygame.Surface.convert_alpha(pygame.image.load("data/textures/3lia03.png"))
             self.original_image = pygame.Surface.convert_alpha(
                 pygame.transform.scale(pygame.image.load("data/textures/3lia03.png"), (50, 50)))
         elif self.skin == 'Rande':
+            self.original_original_image = pygame.Surface.convert_alpha(pygame.image.load("data/textures/Rande.png"))
             self.original_image = pygame.Surface.convert_alpha(
                 pygame.transform.scale(pygame.image.load("data/textures/Rande.png"), (50, 50)))
         self.image = self.original_image
@@ -41,7 +48,7 @@ class Player(pygame.sprite.Sprite):
         self.position = self.rect.center
         mouse_x, mouse_y = pygame.mouse.get_pos()
         rel_x, rel_y = mouse_x - self.rect.centerx, mouse_y - self.rect.centery
-        angle = (180 / math.pi) * -math.atan2(rel_y, rel_x) - 90
+        angle = (180 / pi) * -atan2(rel_y, rel_x) - 90
         self.image = pygame.transform.rotate(self.original_image, int(angle))
         self.rect = self.image.get_rect(center=self.position)
 

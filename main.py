@@ -1,5 +1,5 @@
 import pygame, threading
-from data import utils, globals
+from data import utils, globals, title_screen, menu, level_selection, level1
 
 # def updateMusic():
 #    pygame.mixer.init()
@@ -43,7 +43,17 @@ while run:
         print("DETECTED ORDER TO QUIT GAME")
 
     else:
-        utils.playCurrentState()
+        if globals.titlescreen:
+            title_screen.showTitleScreen()
+        elif globals.menu:
+            menu.showMenu()
+        elif globals.level_selection:
+            level_selection.showLevelSelection()
+        elif globals.level1:
+            level1.playLevel1()
+        else:
+            print("yeah so there is no current state u f**ked up")
+        print("CYCLED TROUGH CURRENT STATES")
 
     print("MAIN LOOP ROUND END")
     print(" ")

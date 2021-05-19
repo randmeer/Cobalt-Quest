@@ -1,6 +1,34 @@
 import pygame, random, pygame.freetype, json
-from data import globals, title_screen, menu, level_selection, level1
-from data.sprites import victim, player, web
+from data import globals
+from data.sprites import web
+
+
+def absToRel(input_x, input_y):
+    w, h = pygame.display.get_surface().get_size()
+    output_x = input_x / w
+    output_y = input_y / h
+    return output_x, output_y
+
+
+def relToAbs(input_x, input_y):
+    w, h = pygame.display.get_surface().get_size()
+    output_x = w * input_x
+    output_y = h * input_y
+    return int(output_x), int(output_y)
+
+
+def relToAbsHeight(input_value):
+    # because i'm to dumb to use args
+    w, h = pygame.display.get_surface().get_size()
+    output = h * input_value
+    return int(output)
+
+
+def absToRelHeight(input_value):
+    # because i'm to dumb to use args
+    w, h = pygame.display.get_surface().get_size()
+    output = input_value / h
+    return output
 
 
 def getSetting(setting):
@@ -48,20 +76,6 @@ def setGameDefaults():
     globals.webcounter = 0
 
 
-def playCurrentState():
-    if globals.titlescreen:
-        title_screen.showTitleScreen()
-    elif globals.menu:
-        menu.showMenu()
-    elif globals.level_selection:
-        level_selection.showLevelSelection()
-    elif globals.level1:
-        level1.playLevel1()
-    else:
-        print("yeah so there is no current state u f**ked up")
-    print("CYCLED TROUGH CURRENT STATES")
-
-
 def generateWeb(webgroup):
     webprogram = 'web' + str(globals.webcounter) + ' = web.Web()\nwebgroup.add(web' + str(
         globals.webcounter) + ')\nweb' + str(globals.webcounter) + '.summon()'
@@ -72,7 +86,7 @@ def generateWeb(webgroup):
 
 def setupWindow():
     pygame.init()
-    window = pygame.display.set_mode((500, 500))
+    window = pygame.display.set_mode((500, 500), pygame.RESIZABLE)
     pygame.display.set_caption("WWOPW version " + globals.VERSION + " by Rande")
     pygame.display.flip()
     return window
@@ -84,13 +98,13 @@ def renderText(window, text, position, color, size):
 
 
 def renderIngameText(window):
-    renderText(window, str(int(globals.playerhealthpoints)), (35, 10), globals.WHITE, 24)
+    renderText(window, str(int(globals.playerhealthpoints)), relToAbs(0.07, 0.02), globals.WHITE, relToAbsHeight(0.048))
     # renderText(window, str((sum(i > 0 for i in globals.victimhealth))), (127, 10), globals.WHITE, 24)
-    renderText(window, str(globals.victimspawns - globals.victimsmissed - globals.victimskilled + 1), (127, 10),
-               globals.WHITE, 24)
-    renderText(window, str(globals.victimskilled), (215, 10), globals.WHITE, 24)
-    renderText(window, str(globals.victimsmissed), (305, 10), globals.WHITE, 24)
-    renderText(window, str(globals.damagesum), (395, 10), globals.WHITE, 24)
+    renderText(window, str(globals.victimspawns - globals.victimsmissed - globals.victimskilled + 1),
+               relToAbs(0.254, 0.02), globals.WHITE, relToAbsHeight(0.048))
+    renderText(window, str(globals.victimskilled), relToAbs(0.43, 0.02), globals.WHITE, relToAbsHeight(0.048))
+    renderText(window, str(globals.victimsmissed), relToAbs(0.61, 0.02), globals.WHITE, relToAbsHeight(0.048))
+    renderText(window, str(globals.damagesum), relToAbs(0.79, 0.02), globals.WHITE, relToAbsHeight(0.048))
 
 
 def playSound(sound):
