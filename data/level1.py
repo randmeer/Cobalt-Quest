@@ -5,6 +5,7 @@ from data.utils import relToAbsHeight
 from data.utils import relToAbs
 from data.utils import absToRel
 
+
 def playLevel1():
     print("LEVEL1 START")
     # pygame.mouse.set_visible(False)
@@ -31,10 +32,12 @@ def playLevel1():
     gui_surface_original = gui_surface_original.convert_alpha()
 
     gui_surface_original.blit(pygame.transform.scale(pygame.image.load("data/textures/heart.png"), (18, 18)), (10, 10))
-    gui_surface_original.blit(pygame.transform.scale(pygame.image.load("data/textures/IchKeksi.png"), (20, 20)), (100, 10))
+    gui_surface_original.blit(pygame.transform.scale(pygame.image.load("data/textures/IchKeksi.png"), (20, 20)),
+                              (100, 10))
     gui_surface_original.blit(pygame.transform.scale(pygame.image.load("data/textures/tick.png"), (18, 18)), (190, 10))
     gui_surface_original.blit(pygame.transform.scale(pygame.image.load("data/textures/cross.png"), (18, 18)), (280, 10))
-    gui_surface_original.blit(pygame.transform.scale(pygame.image.load("data/textures/broken_heart.png"), (18, 18)), (370, 10))
+    gui_surface_original.blit(pygame.transform.scale(pygame.image.load("data/textures/broken_heart.png"), (18, 18)),
+                              (370, 10))
 
     gui_surface = gui_surface_original
 
@@ -74,8 +77,8 @@ def playLevel1():
                     pygame.display.set_mode((event.h, event.h), pygame.RESIZABLE)
                 for i in victimgroup:
                     i.image = pygame.transform.scale(i.original_image, (relToAbs(0.1, 0.1)))
-                playersprite.original_image = pygame.transform.scale(playersprite.original_original_image, (relToAbs(0.1, 0.1)))
-
+                playersprite.original_image = pygame.transform.scale(playersprite.original_original_image,
+                                                                     (relToAbs(0.1, 0.1)))
 
         # ------------------ EVENTS -------------------
 

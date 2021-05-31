@@ -2,7 +2,6 @@ import pygame, random
 from data import globals, utils
 from data.utils import relToAbs
 from data.utils import relToAbsHeight
-from data.utils import absToRel
 from data.utils import absToRelHeight
 
 
@@ -68,19 +67,18 @@ class Victim(pygame.sprite.Sprite):
 
             if self.direction == 1:
                 self.relposy += absToRelHeight(self.velocity)
-                self.rect.y = relToAbsHeight(self.relposy)
 
             elif self.direction == 2:
                 self.relposx -= absToRelHeight(self.velocity)
-                self.rect.x = relToAbsHeight(self.relposx)
 
             elif self.direction == 3:
                 self.relposy -= absToRelHeight(self.velocity)
-                self.rect.y = relToAbsHeight(self.relposy)
 
             elif self.direction == 4:
                 self.relposx += absToRelHeight(self.velocity)
-                self.rect.x = relToAbsHeight(self.relposx)
+
+            self.rect.x = relToAbsHeight(self.relposx)
+            self.rect.y = relToAbsHeight(self.relposy)
 
             if self.rect.centerx > relToAbsHeight(1.1) or self.rect.centerx < relToAbsHeight(
                     0.1) * -1 or self.rect.centery > relToAbsHeight(1.1) or self.rect.centery < relToAbsHeight(
@@ -116,8 +114,8 @@ class Victim(pygame.sprite.Sprite):
                 globals.victimskilled += 1
                 self.onscreen = False
 
-            print(round(self.relposx, 3))
-            #print(round(self.relposy, 3))
+            #print("x: " + str(round(self.relposx, 2)))
+            #print("y: " + str(round(self.relposy, 2)))
 
     def draw(self, window):
         window.blit(self.image, self.rect)

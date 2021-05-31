@@ -64,7 +64,7 @@ def setGameDefaults():
     globals.victimskilled = 0
 
     # globals.victimspawns = (15 * globals.difficulty + globals.difficulty - 1)
-    globals.victimspawns = 1
+    globals.victimspawns = 0
     globals.playerhealthpoints = (32 / globals.difficulty + globals.difficulty - 1)
     globals.maxcooldown = (60 / globals.difficulty)
 
