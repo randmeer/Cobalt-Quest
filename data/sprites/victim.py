@@ -48,34 +48,33 @@ class Victim(pygame.sprite.Sprite):
                 self.relposx = absToRelHeight(relToAbsHeight(0.1) * -1 - relToAbsHeight(0.05))
                 self.relposy = absToRelHeight(position - relToAbsHeight(0.05))
 
-    def update(self, player, click, webgroup):
+    def update(self, player, click, webgroup, delta_time):
         if self.onscreen:
 
             collidemouse = self.rect.collidepoint(pygame.mouse.get_pos())
             collideweb = pygame.sprite.spritecollideany(self, webgroup)
             collideplayer = self.rect.colliderect(player.rect)
-            w, h = pygame.display.get_surface().get_size()
 
             if collideweb:
                 if self.breakcooldown > globals.victimbreakcooldownmax:
                     collideweb.kill()
                     self.breakcooldown = 0
                 self.breakcooldown += 1
-                self.velocity = h * 0.001 * globals.difficulty
+                self.velocity = 0.05 * delta_time
             else:
-                self.velocity = h * 0.002 * globals.difficulty
+                self.velocity = 0.1 * delta_time
 
             if self.direction == 1:
-                self.relposy += absToRelHeight(self.velocity)
+                self.relposy += self.velocity
 
             elif self.direction == 2:
-                self.relposx -= absToRelHeight(self.velocity)
+                self.relposx -= self.velocity
 
             elif self.direction == 3:
-                self.relposy -= absToRelHeight(self.velocity)
+                self.relposy -= self.velocity
 
             elif self.direction == 4:
-                self.relposx += absToRelHeight(self.velocity)
+                self.relposx += self.velocity
 
             self.rect.x = relToAbsHeight(self.relposx)
             self.rect.y = relToAbsHeight(self.relposy)

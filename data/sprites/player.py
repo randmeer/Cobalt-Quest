@@ -4,7 +4,7 @@ from math import atan2
 from data import globals
 from data.utils import getSetting
 from data.utils import relToAbsHeight
-from data.utils import absToRelHeight
+
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -21,40 +21,33 @@ class Player(pygame.sprite.Sprite):
         self.image = self.original_image
         self.rect = self.image.get_rect()
         self.rect.center = (globals.WIDTH / 2, globals.HEIGHT / 2)
-        self.velocity = 0
+        self.velocity = 0.0
         self.position = (0, 0)
         self.relposx = 0.5
         self.relposy = 0.5
 
-    def update(self, webgroup):
+    def update(self, webgroup, delta_time):
 
         collideweb = pygame.sprite.spritecollideany(self, webgroup)
-        velocity = self.velocity
         w, h = pygame.display.get_surface().get_size()
 
         if collideweb:
-            self.velocity = h * 0.001 * globals.difficulty
+            self.velocity = 0.1 * delta_time
         else:
-            self.velocity = h * 0.002 * globals.difficulty
+            self.velocity = 0.2 * delta_time
 
         key = pygame.key.get_pressed()
         if key[pygame.K_LSHIFT]:
-            velocity = self.velocity / 2
+            self.velocity = 0.1 * delta_time
 
-        if key[pygame.K_s] and self.rect.bottom < 500:
-            self.relposy += absToRelHeight(self.velocity)
-            self.rect.y += velocity
+        if key[pygame.K_s] and self.rect.bottom < h:
+            self.relposy += self.velocity
         if key[pygame.K_w] and self.rect.top > 0:
-            self.relposy -= absToRelHeight(self.velocity)
-            self.rect.y -= velocity
-        if key[pygame.K_d] and self.rect.right < 500:
-            self.relposx += absToRelHeight(self.velocity)
-            self.rect.x += velocity
+            self.relposy -= self.velocity
+        if key[pygame.K_d] and self.rect.right < w:
+            self.relposx += self.velocity
         if key[pygame.K_a] and self.rect.left > 0:
-            self.relposx -= absToRelHeight(self.velocity)
-            self.rect.x -= velocity
-
-
+            self.relposx -= self.velocity
 
         self.position = self.rect.center
         mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -62,12 +55,9 @@ class Player(pygame.sprite.Sprite):
         angle = (180 / pi) * -atan2(rel_y, rel_x) - 90
         self.image = pygame.transform.rotate(self.original_image, int(angle))
         self.rect = self.image.get_rect(center=self.position)
-        #self.image.fill((255, 255, 255))
-        print(self.rect.x)
 
         self.rect.centerx = relToAbsHeight(self.relposx)
         self.rect.centery = relToAbsHeight(self.relposy)
-
 
     def draw(self, window):
         window.blit(self.image, self.rect)

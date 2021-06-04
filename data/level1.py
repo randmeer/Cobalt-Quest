@@ -1,9 +1,10 @@
+import time
+
 import pygame
 from data import utils, globals
 from data.sprites import player, outline, sword, victim
 from data.utils import relToAbsHeight
 from data.utils import relToAbs
-from data.utils import absToRel
 
 
 def playLevel1():
@@ -39,16 +40,20 @@ def playLevel1():
     gui_surface_original.blit(pygame.transform.scale(pygame.image.load("data/textures/broken_heart.png"), (18, 18)),
                               (370, 10))
 
-    gui_surface = gui_surface_original
-
+    prev_time = time.time()
     # ------------------ SETUP ------------------
 
-    # ------------------ GAME LOOP --------------
+    # ------------------ GAME LOOP -------------------------------------------------------------------------------------
     run = True
     while run:
+        # ------------------ TIME ---------------------
         clock.tick(60)
-        click = False
+        now = time.time()
+        delta_time = now - prev_time
+        prev_time = now
+        # ------------------ TIME ---------------------
 
+        click = False
         main_surface = pygame.Surface(relToAbs(1, 1), pygame.SRCALPHA, 32)
         gui_surface = pygame.transform.scale(gui_surface_original, (relToAbs(1, 0.06)))
         background = pygame.transform.scale(background, (relToAbs(1, 1)))
@@ -67,6 +72,9 @@ def playLevel1():
                     if globals.webs_left > 0:
                         utils.generateWeb(webgroup)
                         globals.webs_left -= 1
+                    for i in webgroup:
+                        i.image = pygame.transform.scale(i.original_image, (relToAbs(0.1, 0.1)))
+                        i.rect = i.image.get_rect()
             if event.type == pygame.KEYDOWN:
                 if event.key == globals.ESCAPE:
                     utils.showPauseScreen(window)
@@ -77,9 +85,13 @@ def playLevel1():
                     pygame.display.set_mode((event.h, event.h), pygame.RESIZABLE)
                 for i in victimgroup:
                     i.image = pygame.transform.scale(i.original_image, (relToAbs(0.1, 0.1)))
+                    i.rect = i.image.get_rect()
                 playersprite.original_image = pygame.transform.scale(playersprite.original_original_image,
                                                                      (relToAbs(0.1, 0.1)))
-
+                for i in webgroup:
+                    i.image = pygame.transform.scale(i.original_image, (relToAbs(0.1, 0.1)))
+                    i.rect = i.image.get_rect()
+                outlinesprite.image = pygame.transform.scale(outlinesprite.original_image, (relToAbs(0.1, 0.1)))
         # ------------------ EVENTS -------------------
 
         # ------------------ GAME LOGIC ---------------
@@ -92,21 +104,22 @@ def playLevel1():
                     victimcounter) + ')\nvictim' + str(victimcounter) + '.summon()'
                 print(summonprogram)
                 exec(summonprogram)
-                victimcounter += 1
+                victimcounter += 50 * delta_time
 
         if globals.damagecooldown < globals.maxcooldown:
-            globals.damagecooldown += 1
+            globals.damagecooldown += 50 * delta_time
 
         if globals.victimskilled == globals.victimspawns + 1:
             utils.showEndScreen(window, "victory")
-        if globals.victimsmissed >= globals.victimspawns and globals.victimspawns - globals.victimsmissed - globals.victimskilled + 1 <= 0 or globals.playerhealthpoints < 1:
+        elif globals.victimsmissed >= globals.victimspawns and globals.victimspawns - globals.victimsmissed - globals.victimskilled + 1 <= 0 or globals.playerhealthpoints < 1:
             utils.showEndScreen(window, "defeat")
         # ------------------ GAME LOGIC ---------------
 
         # ------------------ UPDATES ------------------
-        victimgroup.update(player=playersprite, click=click, webgroup=webgroup)
-        playersprite.update(webgroup=webgroup)
+        victimgroup.update(player=playersprite, click=click, webgroup=webgroup, delta_time=delta_time)
+        playersprite.update(webgroup=webgroup, delta_time=delta_time)
         swordgroup.update(posX=playersprite.rect.centerx, posY=playersprite.rect.centery)
+        webgroup.update()
         damage_player.set_alpha(256 - (globals.damagecooldown * 256 / globals.maxcooldown))
         # ------------------ UPDATES ------------------
 
@@ -136,6 +149,6 @@ def playLevel1():
             globals.menu = True
         # ------------------ EVENTUAL EXIT ------------
 
-    # ------------------ GAME LOOP --------------
+    # ------------------ GAME LOOP -------------------------------------------------------------------------------------
 
     print("LEVEL1 END")

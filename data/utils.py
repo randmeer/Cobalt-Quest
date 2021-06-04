@@ -1,6 +1,5 @@
 import pygame, random, pygame.freetype, json
 from data import globals
-from data.sprites import web
 
 
 def absToRel(input_x, input_y):
@@ -75,6 +74,7 @@ def setGameDefaults():
     globals.webs_left = 3
     globals.webcounter = 0
 
+from data.sprites import web
 
 def generateWeb(webgroup):
     webprogram = 'web' + str(globals.webcounter) + ' = web.Web()\nwebgroup.add(web' + str(
@@ -199,7 +199,7 @@ def showEndScreen(window, end):
         if end == "victory":
             victory.set_alpha(i)
             window.blit(victory, (0, 0))
-        if end == "defeat":
+        elif end == "defeat":
             defeat.set_alpha(i)
             window.blit(defeat, (0, 0))
         pygame.display.update()
@@ -212,7 +212,7 @@ def showEndScreen(window, end):
 
     if end == "victory":
         window.blit(victory, (0, 0))
-    if end == "defeat":
+    elif end == "defeat":
         window.blit(defeat, (0, 0))
     pygame.display.update()
 
@@ -225,6 +225,7 @@ def showEndScreen(window, end):
                 globals.exittomenu = True
                 globals.quitgame = True
             if event.type == pygame.MOUSEBUTTONDOWN:
+                print("click")
                 if event.button == globals.LEFT:
                     posX = (pygame.mouse.get_pos()[0])
                     posY = (pygame.mouse.get_pos()[1])
