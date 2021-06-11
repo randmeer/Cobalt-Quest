@@ -58,8 +58,8 @@ class Sword(pygame.sprite.Sprite):
         self.frame += 1
         if self.frame == 17:
             self.reset()
-            print("RESET")
-        print(self.frame)
+            #print("RESET")
+        #print(self.frame)
 
     def draw(self, window):
         window.blit(self.image, self.rect)

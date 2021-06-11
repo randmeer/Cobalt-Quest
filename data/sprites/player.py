@@ -3,7 +3,7 @@ from math import pi
 from math import atan2
 from data import globals
 from data.utils import getSetting
-from data.utils import relToAbsHeight
+from data.utils import relToAbs
 
 
 class Player(pygame.sprite.Sprite):
@@ -25,6 +25,7 @@ class Player(pygame.sprite.Sprite):
         self.position = (0, 0)
         self.relposx = 0.5
         self.relposy = 0.5
+        self.reach = 0.25
 
     def update(self, webgroup, delta_time):
 
@@ -56,8 +57,8 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.original_image, int(angle))
         self.rect = self.image.get_rect(center=self.position)
 
-        self.rect.centerx = relToAbsHeight(self.relposx)
-        self.rect.centery = relToAbsHeight(self.relposy)
+        self.rect.centerx = relToAbs(self.relposx)
+        self.rect.centery = relToAbs(self.relposy)
 
     def draw(self, window):
         window.blit(self.image, self.rect)

@@ -1,6 +1,6 @@
 import pygame
-from data.utils import absToRelHeight
-from data.utils import relToAbsHeight
+from data.utils import absToRel
+from data.utils import relToAbs
 
 
 class Outline(pygame.sprite.Sprite):
@@ -15,8 +15,8 @@ class Outline(pygame.sprite.Sprite):
         self.relposy = 0.0
 
     def draw(self, window):
-        self.relposx = round(number=(round((absToRelHeight(pygame.mouse.get_pos()[0]) - 0.05) / 0.1) * 0.1), ndigits=1)
-        self.relposy = round(number=(round((absToRelHeight(pygame.mouse.get_pos()[1]) - 0.05) / 0.1) * 0.1), ndigits=1)
-        self.rect.x = relToAbsHeight(self.relposx)
-        self.rect.y = relToAbsHeight(self.relposy)
+        self.relposx = round(number=(round((absToRel(pygame.mouse.get_pos()[0]) - 0.05) / 0.1) * 0.1), ndigits=1)
+        self.relposy = round(number=(round((absToRel(pygame.mouse.get_pos()[1]) - 0.05) / 0.1) * 0.1), ndigits=1)
+        self.rect.x = relToAbs(self.relposx)
+        self.rect.y = relToAbs(self.relposy)
         window.blit(self.image, self.rect)

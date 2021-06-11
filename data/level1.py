@@ -3,8 +3,8 @@ import time
 import pygame
 from data import utils, globals
 from data.sprites import player, outline, sword, victim
-from data.utils import relToAbsHeight
 from data.utils import relToAbs
+from data.utils import relToAbsDual
 
 
 def playLevel1():
@@ -29,7 +29,7 @@ def playLevel1():
 
     damage_player = pygame.transform.scale(pygame.image.load("data/textures/damage_player.png"), (500, 500))
 
-    gui_surface_original = pygame.Surface((relToAbs(1, 0.06)), pygame.SRCALPHA, 32)
+    gui_surface_original = pygame.Surface((relToAbsDual(1, 0.06)), pygame.SRCALPHA, 32)
     gui_surface_original = gui_surface_original.convert_alpha()
 
     gui_surface_original.blit(pygame.transform.scale(pygame.image.load("data/textures/heart.png"), (18, 18)), (10, 10))
@@ -41,6 +41,8 @@ def playLevel1():
                               (370, 10))
 
     prev_time = time.time()
+
+    resizeupdate = False
     # ------------------ SETUP ------------------
 
     # ------------------ GAME LOOP -------------------------------------------------------------------------------------
@@ -54,10 +56,10 @@ def playLevel1():
         # ------------------ TIME ---------------------
 
         click = False
-        main_surface = pygame.Surface(relToAbs(1, 1), pygame.SRCALPHA, 32)
-        gui_surface = pygame.transform.scale(gui_surface_original, (relToAbs(1, 0.06)))
-        background = pygame.transform.scale(background, (relToAbs(1, 1)))
-        damage_player = pygame.transform.scale(damage_player, (relToAbs(1, 1)))
+        main_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
+        gui_surface = pygame.transform.scale(gui_surface_original, (relToAbsDual(1, 0.06)))
+        background = pygame.transform.scale(background, (relToAbsDual(1, 1)))
+        damage_player = pygame.transform.scale(damage_player, (relToAbsDual(1, 1)))
 
         # ------------------ EVENTS -------------------
         for event in pygame.event.get():
@@ -73,25 +75,28 @@ def playLevel1():
                         utils.generateWeb(webgroup)
                         globals.webs_left -= 1
                     for i in webgroup:
-                        i.image = pygame.transform.scale(i.original_image, (relToAbs(0.1, 0.1)))
+                        i.image = pygame.transform.scale(i.original_image, (relToAbsDual(0.1, 0.1)))
                         i.rect = i.image.get_rect()
             if event.type == pygame.KEYDOWN:
                 if event.key == globals.ESCAPE:
                     utils.showPauseScreen(window)
-            if event.type == pygame.VIDEORESIZE:
-                if event.w < 500 or event.h < 500:
+                    resizeupdate = True
+            if event.type == pygame.VIDEORESIZE or resizeupdate:
+                resizeupdate = False
+                w, h = pygame.display.get_surface().get_size()
+                if w < 500 or h < 500:
                     pygame.display.set_mode((500, 500), pygame.RESIZABLE)
                 else:
-                    pygame.display.set_mode((event.h, event.h), pygame.RESIZABLE)
+                    pygame.display.set_mode((h, h), pygame.RESIZABLE)
                 for i in victimgroup:
-                    i.image = pygame.transform.scale(i.original_image, (relToAbs(0.1, 0.1)))
+                    i.image = pygame.transform.scale(i.original_image, (relToAbsDual(0.1, 0.1)))
                     i.rect = i.image.get_rect()
                 playersprite.original_image = pygame.transform.scale(playersprite.original_original_image,
-                                                                     (relToAbs(0.1, 0.1)))
+                                                                     (relToAbsDual(0.1, 0.1)))
                 for i in webgroup:
-                    i.image = pygame.transform.scale(i.original_image, (relToAbs(0.1, 0.1)))
+                    i.image = pygame.transform.scale(i.original_image, (relToAbsDual(0.1, 0.1)))
                     i.rect = i.image.get_rect()
-                outlinesprite.image = pygame.transform.scale(outlinesprite.original_image, (relToAbs(0.1, 0.1)))
+                outlinesprite.image = pygame.transform.scale(outlinesprite.original_image, (relToAbsDual(0.1, 0.1)))
         # ------------------ EVENTS -------------------
 
         # ------------------ GAME LOGIC ---------------
@@ -136,8 +141,8 @@ def playLevel1():
 
         utils.renderIngameText(main_surface)
         utils.renderText(window=main_surface, text=str(round(clock.get_fps())) + " FPS",
-                         position=relToAbs(0.04, 0.92),
-                         color=globals.WHITE, size=relToAbsHeight(0.048))
+                         position=relToAbsDual(0.04, 0.92),
+                         color=globals.WHITE, size=relToAbs(0.048))
         # new_main_surface = pygame.transform.scale(main_surface, pygame.display.get_surface().get_size())
         window.blit(main_surface, (0, 0))
         pygame.display.update()

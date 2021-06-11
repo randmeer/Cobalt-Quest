@@ -1,30 +1,30 @@
+import time
+
 import pygame, random, pygame.freetype, json
 from data import globals
 
 
-def absToRel(input_x, input_y):
+def absToRelDual(input_x, input_y):
     w, h = pygame.display.get_surface().get_size()
     output_x = input_x / w
     output_y = input_y / h
     return output_x, output_y
 
 
-def relToAbs(input_x, input_y):
+def relToAbsDual(input_x, input_y):
     w, h = pygame.display.get_surface().get_size()
     output_x = w * input_x
     output_y = h * input_y
     return int(output_x), int(output_y)
 
 
-def relToAbsHeight(input_value):
-    # because i'm to dumb to use args
+def relToAbs(input_value):
     w, h = pygame.display.get_surface().get_size()
     output = h * input_value
     return int(output)
 
 
-def absToRelHeight(input_value):
-    # because i'm to dumb to use args
+def absToRel(input_value):
     w, h = pygame.display.get_surface().get_size()
     output = input_value / h
     return output
@@ -74,7 +74,9 @@ def setGameDefaults():
     globals.webs_left = 3
     globals.webcounter = 0
 
+
 from data.sprites import web
+
 
 def generateWeb(webgroup):
     webprogram = 'web' + str(globals.webcounter) + ' = web.Web()\nwebgroup.add(web' + str(
@@ -98,17 +100,19 @@ def renderText(window, text, position, color, size):
 
 
 def renderIngameText(window):
-    renderText(window, str(int(globals.playerhealthpoints)), relToAbs(0.07, 0.02), globals.WHITE, relToAbsHeight(0.048))
+    renderText(window, str(int(globals.playerhealthpoints)), relToAbsDual(0.07, 0.02), globals.WHITE, relToAbs(0.048))
     # renderText(window, str((sum(i > 0 for i in globals.victimhealth))), (127, 10), globals.WHITE, 24)
     renderText(window, str(globals.victimspawns - globals.victimsmissed - globals.victimskilled + 1),
-               relToAbs(0.254, 0.02), globals.WHITE, relToAbsHeight(0.048))
-    renderText(window, str(globals.victimskilled), relToAbs(0.43, 0.02), globals.WHITE, relToAbsHeight(0.048))
-    renderText(window, str(globals.victimsmissed), relToAbs(0.61, 0.02), globals.WHITE, relToAbsHeight(0.048))
-    renderText(window, str(globals.damagesum), relToAbs(0.79, 0.02), globals.WHITE, relToAbsHeight(0.048))
+               relToAbsDual(0.254, 0.02), globals.WHITE, relToAbs(0.048))
+    renderText(window, str(globals.victimskilled), relToAbsDual(0.43, 0.02), globals.WHITE, relToAbs(0.048))
+    renderText(window, str(globals.victimsmissed), relToAbsDual(0.61, 0.02), globals.WHITE, relToAbs(0.048))
+    renderText(window, str(globals.damagesum), relToAbsDual(0.79, 0.02), globals.WHITE, relToAbs(0.048))
 
 
 def playSound(sound):
     pygame.mixer.init()
+
+
     if sound == 'click':
         pygame.mixer.Channel(1).play(pygame.mixer.Sound("data/sounds/click.wav"))
     elif sound == 'hit':
@@ -126,6 +130,9 @@ def playSound(sound):
     # volume = getSetting(setting='volume') / 10
     # pygame.mixer.Sound.set_volume(value=volume)
 
+    pygame.mixer.Channel(1).set_volume(getSetting('volume') / 10)
+    pygame.mixer.Channel(2).set_volume(getSetting('volume') / 10)
+    pygame.mixer.Channel(3).set_volume(getSetting('volume') / 10)
 
 def playTheme():
     pygame.mixer.init()
@@ -137,8 +144,10 @@ def playTheme():
 def showPauseScreen(window):
     setGlobalDefaults()
 
-    overlay = pygame.transform.scale(pygame.image.load("data/textures/overlay.png"), (500, 500))
-    pausemenu = pygame.transform.scale(pygame.image.load("data/textures/pause_menu.png"), (500, 500))
+    overlay = pygame.transform.scale(pygame.image.load("data/textures/overlay.png"),
+                                     (relToAbs(1), relToAbs(1)))
+    pausemenu = pygame.transform.scale(pygame.image.load("data/textures/pause_menu.png"),
+                                       (relToAbs(1), relToAbs(1)))
 
     window.blit(overlay, (0, 0))
     window.blit(pausemenu, (0, 0))
@@ -160,6 +169,8 @@ def showPauseScreen(window):
                 if event.button == globals.LEFT:
                     posX = (pygame.mouse.get_pos()[0])
                     posY = (pygame.mouse.get_pos()[1])
+                    relPosX = absToRel(posX)
+                    relPosY = absToRel(posY)
                     # print(posX, " ", posY)
                     if 207 < posY < 272 and 26 < posX < 475:
                         run = False
@@ -169,10 +180,15 @@ def showPauseScreen(window):
                     if 367 < posY < 432 and 26 < posX < 475:
                         run = False
                         showSettings(window)
-
             if event.type == pygame.KEYDOWN:
                 if event.key == globals.ESCAPE:
                     run = False
+            if event.type == pygame.VIDEORESIZE:
+                if event.w < 500 or event.h < 500:
+                    pygame.display.set_mode((500, 500), pygame.RESIZABLE)
+                else:
+                    pygame.display.set_mode((event.h, event.h), pygame.RESIZABLE)
+
     playSound('click')
 
 
@@ -184,60 +200,56 @@ def showEndScreen(window, end):
     if end == "defeat":
         playSound('defeat')
 
-    victory = pygame.transform.scale(pygame.image.load("data/textures/victory.png"), (500, 500))
-    defeat = pygame.transform.scale(pygame.image.load("data/textures/defeat.png"), (500, 500))
-    overlay = pygame.transform.scale(pygame.image.load("data/textures/overlay.png"), (500, 500))
+    victory = pygame.transform.scale(pygame.image.load("data/textures/victory.png"), (relToAbs(1), relToAbs(1)))
+    defeat = pygame.transform.scale(pygame.image.load("data/textures/defeat.png"), (relToAbs(1), relToAbs(1)))
+    overlay = pygame.transform.scale(pygame.image.load("data/textures/overlay.png"), (relToAbs(1), relToAbs(1)))
 
     overlay.set_alpha(2)
     clock = pygame.time.Clock()
 
     i = 0
-    animrun = True
-    while animrun:
-        clock.tick(60)
-        window.blit(overlay, (0, 0))
-        if end == "victory":
-            victory.set_alpha(i)
-            window.blit(victory, (0, 0))
-        elif end == "defeat":
-            defeat.set_alpha(i)
-            window.blit(defeat, (0, 0))
-        pygame.display.update()
-        i += 1
-        if i > 64:
-            animrun = False
-
-    victory.set_alpha(256)
-    defeat.set_alpha(256)
-
-    if end == "victory":
-        window.blit(victory, (0, 0))
-    elif end == "defeat":
-        window.blit(defeat, (0, 0))
-    pygame.display.update()
 
     run = True
     while run:
         clock.tick(60)
+        i += 1
+
+        if i < 64:
+            window.blit(overlay, (0, 0))
+            if end == "victory":
+                victory.set_alpha(i)
+                window.blit(victory, (0, 0))
+            elif end == "defeat":
+                defeat.set_alpha(i)
+                window.blit(defeat, (0, 0))
+            pygame.display.update()
+
+        if i == 64:
+            victory.set_alpha(256)
+            defeat.set_alpha(256)
+            pygame.display.update()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 globals.exittomenu = True
                 globals.quitgame = True
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                print("click")
+            if event.type == pygame.MOUSEBUTTONDOWN and i > 64:
                 if event.button == globals.LEFT:
                     posX = (pygame.mouse.get_pos()[0])
                     posY = (pygame.mouse.get_pos()[1])
                     if 207 < posY < 272 and 26 < posX < 475:
                         run = False
                         globals.exittomenu = True
-
             if event.type == pygame.KEYDOWN:
                 if event.key == globals.ESCAPE:
                     run = False
                     globals.exittomenu = True
-
+            if event.type == pygame.VIDEORESIZE:
+                if event.w < 500 or event.h < 500:
+                    pygame.display.set_mode((500, 500), pygame.RESIZABLE)
+                else:
+                    pygame.display.set_mode((event.h, event.h), pygame.RESIZABLE)
     playSound('click')
 
 
@@ -247,8 +259,6 @@ def showSettings(window):
     with open('data.json', "r") as f:
         settings = json.loads(f.read())
 
-    # Reading from file
-
     # Iterating through the json
     for i in settings:
         print(i)
@@ -256,8 +266,8 @@ def showSettings(window):
     print(settings['volume'])
     print(settings['background_music'])
 
-    backgr = pygame.transform.scale(pygame.image.load("data/textures/background.png"), (500, 500))
-    settingsmenu = pygame.transform.scale(pygame.image.load("data/textures/settings_menu.png"), (500, 500))
+    backgr = pygame.transform.scale(pygame.image.load("data/textures/background.png"), (relToAbs(1), relToAbs(1)))
+    settingsmenu = pygame.transform.scale(pygame.image.load("data/textures/settings_menu.png"), (relToAbs(1), relToAbs(1)))
 
     window.blit(backgr, (0, 0))
     window.blit(settingsmenu, (0, 0))
@@ -308,7 +318,7 @@ def showSettings(window):
                         settings['volume'] += 1
                         with open('data.json', 'w') as json_file:
                             json.dump(settings, json_file)
-                            playSound('click')
+                        playSound('click')
                     elif 250 < posY < 280 and 300 < posX < 450:
                         if settings['skin'] == "3lia03":
                             settings['skin'] = "Rande"
