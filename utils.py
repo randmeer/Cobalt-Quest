@@ -113,8 +113,6 @@ def renderIngameText(window):
 
 def playSound(sound):
     pygame.mixer.init()
-
-
     if sound == 'click':
         pygame.mixer.Channel(1).play(pygame.mixer.Sound("sounds/click.wav"))
     elif sound == 'hit':
