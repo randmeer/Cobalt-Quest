@@ -28,7 +28,6 @@ def showTitleScreen():
                 globals.menu = True
                 run = False
             if event.type == pygame.KEYDOWN:
-                #print(event.key)
                 if event.key == globals.ESCAPE:
                     None
                 elif event.key == globals.KEY_R:
@@ -54,7 +53,6 @@ def showTitleScreen():
 
         if rndebugAccess == 150:
             print("ACCESS GRANTED")
-            #rndebug.showRNDebug()
             globals.rndebug = True
             run = False
 

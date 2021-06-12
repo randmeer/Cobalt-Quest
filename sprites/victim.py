@@ -1,24 +1,26 @@
 import math
-
-import pygame, random
-import utils
+import pygame
+import random
 import globals
-from utils import relToAbsDual
-from utils import relToAbs
+import utils
 from utils import absToRel
+from utils import relToAbs
+from utils import relToAbsDual
 
-original_image = pygame.image.load("textures/IchKeksi.png")
+ichkeksi_image = pygame.image.load("textures/ichkeksi.png")
+damage_image = pygame.image.load("textures/damage.png")
+
 
 class Victim(pygame.sprite.Sprite):
 
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((100, 100))
-        self.image = pygame.transform.scale(original_image, (relToAbsDual(0.1, 0.1)))
+        self.testsurface = pygame.Surface((50, 50))
+        self.original_image = ichkeksi_image
+        self.damage = damage_image
+        self.image = pygame.transform.scale(ichkeksi_image, (relToAbsDual(0.1, 0.1)))
         self.rect = self.image.get_rect()
         self.rect.center = (-100, -100)
-        # self.floatx = 0
-        # self.floaty = 0
         self.direction = random.randint(1, 4)
         self.onscreen = True
         self.velocity = globals.difficulty
@@ -26,6 +28,7 @@ class Victim(pygame.sprite.Sprite):
         self.breakcooldown = 0
         self.relposx = 0
         self.relposy = 0
+        self.tookdamage = False
 
     def summon(self):
         if self.onscreen:
@@ -92,7 +95,6 @@ class Victim(pygame.sprite.Sprite):
                 self.health = -1
                 globals.victimsmissed += 1
 
-            # THIS IS THE FINAL CODE
             if collidemouse and click and collidereach <= relToAbs(player.reach):
                 self.health -= 1
                 globals.damagesum += 1
@@ -118,8 +120,7 @@ class Victim(pygame.sprite.Sprite):
                 globals.victimskilled += 1
                 self.onscreen = False
 
-            #print("x: " + str(round(self.relposx, 2)))
-            #print("y: " + str(round(self.relposy, 2)))
-
     def draw(self, window):
         window.blit(self.image, self.rect)
+        if self.tookdamage:
+            window.blit(self.damage, self.rect)

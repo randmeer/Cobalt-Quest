@@ -1,4 +1,6 @@
 import pygame
+
+import rndebug
 import utils
 import level_selection
 import level1
@@ -62,6 +64,8 @@ if __name__ == '__main__':
                 level_selection.showLevelSelection()
             elif globals.level1:
                 level1.playLevel1()
+            elif globals.rndebug:
+                rndebug.showRNDebug()
             else:
                 print("yeah so there is no current state u f**ked up")
             print("CYCLED TROUGH CURRENT STATES")

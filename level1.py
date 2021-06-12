@@ -11,7 +11,7 @@ from utils import relToAbsDual
 damage_player_texture = pygame.image.load("textures/damage_player.png")
 
 heart_img = pygame.image.load("textures/heart.png")
-IchKeksi_img = pygame.image.load("textures/IchKeksi.png")
+ichkeksi_img = pygame.image.load("textures/ichkeksi.png")
 tick_img = pygame.image.load("textures/tick.png")
 cross_img = pygame.image.load("textures/cross.png")
 broken_heart_img = pygame.image.load("textures/broken_heart.png")
@@ -42,7 +42,7 @@ def playLevel1():
     gui_surface_original = gui_surface_original.convert_alpha()
 
     gui_surface_original.blit(pygame.transform.scale(heart_img, (18, 18)), (10, 10))
-    gui_surface_original.blit(pygame.transform.scale(IchKeksi_img, (20, 20)),(100, 10))
+    gui_surface_original.blit(pygame.transform.scale(ichkeksi_img, (20, 20)), (100, 10))
     gui_surface_original.blit(pygame.transform.scale(tick_img, (18, 18)), (190, 10))
     gui_surface_original.blit(pygame.transform.scale(cross_img, (18, 18)), (280, 10))
     gui_surface_original.blit(pygame.transform.scale(broken_heart_img, (18, 18)),(370, 10))
@@ -103,12 +103,12 @@ def playLevel1():
                 else:
                     pygame.display.set_mode((h, h), pygame.RESIZABLE)
                 for i in victimgroup:
-                    i.image = pygame.transform.scale(victim.original_image, (relToAbsDual(0.1, 0.1)))
+                    i.image = pygame.transform.scale(i.original_image, (relToAbsDual(0.1, 0.1)))
                     i.rect = i.image.get_rect()
                 playersprite.original_image = pygame.transform.scale(playersprite.original_original_image,
                                                                      (relToAbsDual(0.1, 0.1)))
                 for i in webgroup:
-                    i.image = pygame.transform.scale(victim.original_image, (relToAbsDual(0.1, 0.1)))
+                    i.image = pygame.transform.scale(i.original_image, (relToAbsDual(0.1, 0.1)))
                     i.rect = i.image.get_rect()
                 outlinesprite.image = pygame.transform.scale(outlinesprite.original_image, (relToAbsDual(0.1, 0.1)))
         # ------------------ EVENTS -------------------
