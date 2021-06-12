@@ -3,7 +3,7 @@ from data import utils
 
 ESCAPE = 27
 
-
+# debugschreen?
 def showRNDebug():
     window = utils.setupWindow()
     clock = pygame.time.Clock()

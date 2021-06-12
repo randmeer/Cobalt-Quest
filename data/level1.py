@@ -1,11 +1,11 @@
 import time
 
 import pygame
+
 from data import utils, globals
-from data.sprites import player, outline, sword, victim
+from data.sprites import player, outline, sword
 from data.utils import relToAbs
 from data.utils import relToAbsDual
-
 
 def playLevel1():
     print("LEVEL1 START")
@@ -24,7 +24,7 @@ def playLevel1():
     swordgroup = pygame.sprite.Group()
     swordgroup.add(swordsprite)
 
-    victimSummonCooldown = 0
+    victim_summon_cooldown = 0
     victimcounter = 0
 
     damage_player = pygame.transform.scale(pygame.image.load("data/textures/damage_player.png"), (500, 500))
@@ -63,13 +63,17 @@ def playLevel1():
 
         # ------------------ EVENTS -------------------
         for event in pygame.event.get():
+            # quitevent
             if event.type == pygame.QUIT:
                 run = False
                 globals.quitgame = True
+            # mousebutton event
             if event.type == pygame.MOUSEBUTTONDOWN:
+                # left button
                 if event.button == globals.LEFT:
                     click = True
                     swordsprite.visibility = True
+                # right button and spawn webs
                 if event.button == globals.RIGHT:
                     if globals.webs_left > 0:
                         utils.generateWeb(webgroup)
@@ -77,10 +81,13 @@ def playLevel1():
                     for i in webgroup:
                         i.image = pygame.transform.scale(i.original_image, (relToAbsDual(0.1, 0.1)))
                         i.rect = i.image.get_rect()
+            # keyevents
             if event.type == pygame.KEYDOWN:
+                # pausekey
                 if event.key == globals.ESCAPE:
                     utils.showPauseScreen(window)
                     resizeupdate = True
+            # update screen on screenresize
             if event.type == pygame.VIDEORESIZE or resizeupdate:
                 resizeupdate = False
                 w, h = pygame.display.get_surface().get_size()
@@ -100,23 +107,29 @@ def playLevel1():
         # ------------------ EVENTS -------------------
 
         # ------------------ GAME LOGIC ---------------
-        if victimSummonCooldown > 0:
-            victimSummonCooldown = victimSummonCooldown - 1
+        # subtract victim cooldown if possible else summon new victim to fight
+        if victim_summon_cooldown > 0:
+            victim_summon_cooldown = victim_summon_cooldown - 1
         else:
             if victimcounter <= globals.victimspawns:
-                victimSummonCooldown = 100 / (globals.difficulty * (globals.difficulty / 2))
+                victim_summon_cooldown = 100 / (globals.difficulty * (globals.difficulty / 2))
+                # WHY THE FUCK ARE YOU USING A EXEC COMMAND
+                # JUST CONSTRUCT A FUCKLING VICTIM OBJECT WITH A METHOD INSIDE THE VICTIM CLASS
                 summonprogram = 'victim' + str(victimcounter) + ' = victim.Victim()\nvictimgroup.add(victim' + str(
                     victimcounter) + ')\nvictim' + str(victimcounter) + '.summon()'
                 print(summonprogram)
                 exec(summonprogram)
                 victimcounter += 50 * delta_time
 
+        # manage damagecooldown
         if globals.damagecooldown < globals.maxcooldown:
             globals.damagecooldown += 50 * delta_time
 
+        # determin victory or defeat
         if globals.victimskilled == globals.victimspawns + 1:
             utils.showEndScreen(window, "victory")
-        elif globals.victimsmissed >= globals.victimspawns and globals.victimspawns - globals.victimsmissed - globals.victimskilled + 1 <= 0 or globals.playerhealthpoints < 1:
+        elif globals.victimsmissed >= globals.victimspawns and globals.victimspawns - globals.victimsmissed - globals.\
+                victimskilled + 1 <= 0 or globals.playerhealthpoints < 1:
             utils.showEndScreen(window, "defeat")
         # ------------------ GAME LOGIC ---------------
 

@@ -24,12 +24,18 @@ def showMenu():
     while run:
 
         clock.tick(60)
+        # event looper
         for event in pygame.event.get():
 
+            # quit event
             if event.type == pygame.QUIT:
                 run = False
                 globals.quitgame = True
+
+            # code below is boilerplate code. Just make a buttonclass and check on every loop if the cursor has clicked in its hitbox.
+            # mouse event
             if event.type == pygame.MOUSEBUTTONDOWN:
+                # left button event
                 if event.button == globals.LEFT:
                     posX = (pygame.mouse.get_pos()[0])
                     posY = (pygame.mouse.get_pos()[1])
@@ -43,12 +49,13 @@ def showMenu():
                         else:
                             globals.difficulty = 1
                         utils.playSound('click')
-
+            # quit event
             if event.type == pygame.KEYDOWN:
                 if event.key == globals.ESCAPE:
                     run = False
                     globals.titlescreen = True
 
+        # draw window
         window.blit(background, (0, 0))
         window.blit(menu, (0, 0))
 

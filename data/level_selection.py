@@ -1,27 +1,33 @@
 import pygame
-from data import utils
-from data import globals
 
+from data import globals
+from data import utils
 
 def showLevelSelection():
     print("LEVEL SELECTION START")
     utils.setGlobalDefaults()
     window = utils.setupWindow()
 
+    # set backgrounds
     lvl_selection_original = pygame.image.load("data/textures/level_selection.png")
     lvl_selection = pygame.transform.scale(lvl_selection_original, (500, 500))
     background = utils.background()
 
     clock = pygame.time.Clock()
     run = True
+    # main game loop
     while run:
 
         clock.tick(60)
+        # event looper
         for event in pygame.event.get():
-
+            # quit event
             if event.type == pygame.QUIT:
                 run = False
                 globals.quitgame = True
+
+            # code below is boilerplate code. Just make a buttonclass and check on every loop if the cursor has clicked in its hitbox.
+            # mouse event
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == globals.LEFT:
                     posX = (pygame.mouse.get_pos()[0])
@@ -39,6 +45,7 @@ def showLevelSelection():
                     run = False
                     globals.menu = True
 
+        # draw window components
         window.blit(background, (0, 0))
         window.blit(lvl_selection, (0, 0))
 

@@ -3,6 +3,7 @@ import random
 from data import utils
 from data import globals
 
+# NOT USED INGAME
 def playLevelOutdated(difficulty):
     pygame.init()
 
