@@ -18,8 +18,6 @@ from data import utils, globals, title_screen, menu, level_selection, level1
 #    pygame.mixer.music.set_volume(utils.getSetting('volume') / 10)
 #    musicthread.start()
 
-
-
 if utils.getSetting('background_music'):
     utils.playTheme()
     pygame.mixer.music.set_volume(utils.getSetting('volume') / 10)

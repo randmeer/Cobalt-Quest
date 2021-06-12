@@ -253,6 +253,11 @@ def showEndScreen(window, end):
     playSound('click')
 
 
+def save_to_json(data, name):
+    with open(f'{name}.json', 'w') as json_file:
+        json.dump(data, json_file, indent=2)
+
+
 def showSettings(window):
     setGlobalDefaults()
 
@@ -309,23 +314,19 @@ def showSettings(window):
                         run = False
                     elif 190 < posY < 220 and 300 < posX < 450:
                         settings['background_music'] = not settings['background_music']
-                        with open('data.json', 'w') as json_file:
-                            json.dump(settings, json_file)
+                        save_to_json(settings, "data")
                         playSound('click')
                     elif 220 < posY < 250 and 300 < posX < 450:
                         if settings['volume'] >= 10:
                             settings['volume'] = 0
                         settings['volume'] += 1
-                        with open('data.json', 'w') as json_file:
-                            json.dump(settings, json_file)
+                        save_to_json(settings, "data")
                         playSound('click')
                     elif 250 < posY < 280 and 300 < posX < 450:
                         if settings['skin'] == "3lia03":
                             settings['skin'] = "Rande"
                         elif settings['skin'] == "Rande":
                             settings['skin'] = "3lia03"
-                        with open('data.json', 'w') as json_file:
-                            json.dump(settings, json_file)
                         playSound('click')
                     elif 280 < posY < 310 and 300 < posX < 450:
                         print("test4")
