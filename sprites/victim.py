@@ -1,19 +1,20 @@
 import math
 
 import pygame, random
-from data import globals, utils
-from data.utils import relToAbsDual
-from data.utils import relToAbs
-from data.utils import absToRel
+import utils
+import globals
+from utils import relToAbsDual
+from utils import relToAbs
+from utils import absToRel
 
+original_image = pygame.image.load("textures/IchKeksi.png")
 
 class Victim(pygame.sprite.Sprite):
 
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        # self.image = pygame.Surface((100, 100))
-        self.original_image = pygame.image.load("data/textures/IchKeksi.png")
-        self.image = pygame.transform.scale(pygame.image.load("data/textures/IchKeksi.png"), (relToAbsDual(0.1, 0.1)))
+        self.image = pygame.Surface((100, 100))
+        self.image = pygame.transform.scale(original_image, (relToAbsDual(0.1, 0.1)))
         self.rect = self.image.get_rect()
         self.rect.center = (-100, -100)
         # self.floatx = 0
@@ -104,6 +105,7 @@ class Victim(pygame.sprite.Sprite):
             #    globals.damagesum += 1
             #    utils.playSound('hit')
             # REMOVE AFTER
+            # smarty pants
 
             if collideplayer and globals.damagecooldown >= globals.maxcooldown:
                 globals.playerhealthpoints -= 1

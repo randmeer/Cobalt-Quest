@@ -1,11 +1,12 @@
 import pygame
 
+sword_texture = pygame.image.load("textures/sword.png")
 
 class Sword(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         # self.image = pygame.Surface((100, 100))
-        self.default_image = pygame.transform.scale(pygame.image.load("data/textures/sword.png"), (75, 225))
+        self.default_image = pygame.transform.scale(sword_texture, (75, 225))
         self.image = self.default_image
 
         self.frame1 = pygame.transform.rotate(self.default_image, 22.5)

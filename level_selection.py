@@ -1,7 +1,9 @@
 import pygame
 
-from data import globals
-from data import utils
+import globals
+import utils
+
+lvl_selection_original = pygame.image.load("textures/level_selection.png")
 
 def showLevelSelection():
     print("LEVEL SELECTION START")
@@ -9,7 +11,6 @@ def showLevelSelection():
     window = utils.setupWindow()
 
     # set backgrounds
-    lvl_selection_original = pygame.image.load("data/textures/level_selection.png")
     lvl_selection = pygame.transform.scale(lvl_selection_original, (500, 500))
     background = utils.background()
 

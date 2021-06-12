@@ -2,12 +2,23 @@ import time
 
 import pygame
 
-from data import utils, globals
-from data.sprites import player, outline, sword
-from data.utils import relToAbs
-from data.utils import relToAbsDual
+import utils
+import globals
+from sprites import sword, player, outline, victim, web
+from utils import relToAbs
+from utils import relToAbsDual
+
+damage_player_texture = pygame.image.load("textures/damage_player.png")
+
+heart_img = pygame.image.load("textures/heart.png")
+IchKeksi_img = pygame.image.load("textures/IchKeksi.png")
+tick_img = pygame.image.load("textures/tick.png")
+cross_img = pygame.image.load("textures/cross.png")
+broken_heart_img = pygame.image.load("textures/broken_heart.png")
 
 def playLevel1():
+    webs = []
+    victims = []
     print("LEVEL1 START")
     # pygame.mouse.set_visible(False)
     # ------------------ SETUP ------------------
@@ -27,18 +38,14 @@ def playLevel1():
     victim_summon_cooldown = 0
     victimcounter = 0
 
-    damage_player = pygame.transform.scale(pygame.image.load("data/textures/damage_player.png"), (500, 500))
-
     gui_surface_original = pygame.Surface((relToAbsDual(1, 0.06)), pygame.SRCALPHA, 32)
     gui_surface_original = gui_surface_original.convert_alpha()
 
-    gui_surface_original.blit(pygame.transform.scale(pygame.image.load("data/textures/heart.png"), (18, 18)), (10, 10))
-    gui_surface_original.blit(pygame.transform.scale(pygame.image.load("data/textures/IchKeksi.png"), (20, 20)),
-                              (100, 10))
-    gui_surface_original.blit(pygame.transform.scale(pygame.image.load("data/textures/tick.png"), (18, 18)), (190, 10))
-    gui_surface_original.blit(pygame.transform.scale(pygame.image.load("data/textures/cross.png"), (18, 18)), (280, 10))
-    gui_surface_original.blit(pygame.transform.scale(pygame.image.load("data/textures/broken_heart.png"), (18, 18)),
-                              (370, 10))
+    gui_surface_original.blit(pygame.transform.scale(heart_img, (18, 18)), (10, 10))
+    gui_surface_original.blit(pygame.transform.scale(IchKeksi_img, (20, 20)),(100, 10))
+    gui_surface_original.blit(pygame.transform.scale(tick_img, (18, 18)), (190, 10))
+    gui_surface_original.blit(pygame.transform.scale(cross_img, (18, 18)), (280, 10))
+    gui_surface_original.blit(pygame.transform.scale(broken_heart_img, (18, 18)),(370, 10))
 
     prev_time = time.time()
 
@@ -59,7 +66,7 @@ def playLevel1():
         main_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
         gui_surface = pygame.transform.scale(gui_surface_original, (relToAbsDual(1, 0.06)))
         background = pygame.transform.scale(background, (relToAbsDual(1, 1)))
-        damage_player = pygame.transform.scale(damage_player, (relToAbsDual(1, 1)))
+        damage_player = pygame.transform.scale(damage_player_texture, (relToAbsDual(1, 1)))
 
         # ------------------ EVENTS -------------------
         for event in pygame.event.get():
@@ -76,10 +83,10 @@ def playLevel1():
                 # right button and spawn webs
                 if event.button == globals.RIGHT:
                     if globals.webs_left > 0:
-                        utils.generateWeb(webgroup)
+                        webs.append(utils.generateWeb(webgroup))
                         globals.webs_left -= 1
                     for i in webgroup:
-                        i.image = pygame.transform.scale(i.original_image, (relToAbsDual(0.1, 0.1)))
+                        i.image = pygame.transform.scale(web.web_texture, (relToAbsDual(0.1, 0.1)))
                         i.rect = i.image.get_rect()
             # keyevents
             if event.type == pygame.KEYDOWN:
@@ -96,12 +103,12 @@ def playLevel1():
                 else:
                     pygame.display.set_mode((h, h), pygame.RESIZABLE)
                 for i in victimgroup:
-                    i.image = pygame.transform.scale(i.original_image, (relToAbsDual(0.1, 0.1)))
+                    i.image = pygame.transform.scale(victim.original_image, (relToAbsDual(0.1, 0.1)))
                     i.rect = i.image.get_rect()
                 playersprite.original_image = pygame.transform.scale(playersprite.original_original_image,
                                                                      (relToAbsDual(0.1, 0.1)))
                 for i in webgroup:
-                    i.image = pygame.transform.scale(i.original_image, (relToAbsDual(0.1, 0.1)))
+                    i.image = pygame.transform.scale(victim.original_image, (relToAbsDual(0.1, 0.1)))
                     i.rect = i.image.get_rect()
                 outlinesprite.image = pygame.transform.scale(outlinesprite.original_image, (relToAbsDual(0.1, 0.1)))
         # ------------------ EVENTS -------------------
@@ -113,13 +120,12 @@ def playLevel1():
         else:
             if victimcounter <= globals.victimspawns:
                 victim_summon_cooldown = 100 / (globals.difficulty * (globals.difficulty / 2))
-                # WHY THE FUCK ARE YOU USING A EXEC COMMAND
-                # JUST CONSTRUCT A FUCKLING VICTIM OBJECT WITH A METHOD INSIDE THE VICTIM CLASS
-                summonprogram = 'victim' + str(victimcounter) + ' = victim.Victim()\nvictimgroup.add(victim' + str(
-                    victimcounter) + ')\nvictim' + str(victimcounter) + '.summon()'
-                print(summonprogram)
-                exec(summonprogram)
-                victimcounter += 50 * delta_time
+
+                victims.append(victim.Victim())
+                victimgroup.add(victims[victimcounter])
+                victims[victimcounter].summon()
+
+                victimcounter += 1
 
         # manage damagecooldown
         if globals.damagecooldown < globals.maxcooldown:

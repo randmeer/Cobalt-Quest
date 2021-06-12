@@ -1,14 +1,14 @@
 import pygame
-from data import utils
-from data import globals
+import utils
+import globals
 
+title_screen_original = pygame.image.load("textures/title_screen.png")
 
 def showTitleScreen():
     print("TITLE SCREEN START")
     utils.setGlobalDefaults()
     window = utils.setupWindow()
 
-    title_screen_original = pygame.image.load("data/textures/title_screen.png")
     title_screen = pygame.transform.scale(title_screen_original, (500, 500))
     background = utils.background()
     rndebugAccess = 0

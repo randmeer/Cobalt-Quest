@@ -1,5 +1,10 @@
-import pygame, threading
-from data import utils, globals, title_screen, menu, level_selection, level1
+import pygame
+import utils
+import level_selection
+import level1
+import title_screen
+import menu
+import globals
 
 # def updateMusic():
 #    pygame.mixer.init()

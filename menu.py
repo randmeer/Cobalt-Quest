@@ -1,18 +1,18 @@
 import pygame
-from data import utils
-from data import globals
+import utils
+import globals
 
+menu_original = pygame.image.load("textures/menu.png")
+ez_original = pygame.image.load("textures/menu_mode_1.png")
+notez_original = pygame.image.load("textures/menu_mode_2.png")
+rip_original = pygame.image.load("textures/menu_mode_3.png")
 
 def showMenu():
     print("MENU START")
     utils.setGlobalDefaults()
     window = utils.setupWindow()
 
-    menu_original = pygame.image.load("data/textures/menu.png")
     menu = pygame.transform.scale(menu_original, (500, 500))
-    ez_original = pygame.image.load("data/textures/menu_mode_1.png")
-    notez_original = pygame.image.load("data/textures/menu_mode_2.png")
-    rip_original = pygame.image.load("data/textures/menu_mode_3.png")
     ez = pygame.transform.scale(ez_original, (140, 190))
     notez = pygame.transform.scale(notez_original, (140, 190))
     rip = pygame.transform.scale(rip_original, (140, 190))

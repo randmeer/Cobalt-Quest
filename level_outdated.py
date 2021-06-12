@@ -1,7 +1,7 @@
 import pygame
 import random
-from data import utils
-from data import globals
+import utils
+import globals
 
 # NOT USED INGAME
 def playLevelOutdated(difficulty):
@@ -48,13 +48,13 @@ def playLevelOutdated(difficulty):
     hitX = 0
     hitY = 0
 
-    elia_original = pygame.image.load("data/textures/3lia03.png")
+    elia_original = pygame.image.load("textures/3lia03.png")
     # elia_rect = elia_original.get_rect()
 
-    keksi_original = pygame.image.load("data/textures/IchKeksi.png")
+    keksi_original = pygame.image.load("textures/IchKeksi.png")
     # keksi_rect = keksi_original.get_rect()
 
-    web_original = pygame.image.load("data/textures/web.png")
+    web_original = pygame.image.load("textures/web.png")
 
     elia = pygame.transform.scale(elia_original, (50, 50))
     keksi = pygame.transform.scale(keksi_original, (50, 50))
@@ -77,35 +77,35 @@ def playLevelOutdated(difficulty):
 
     selection = False
 
-    crosshair_original = pygame.image.load("data/textures/Crosshair.png")
+    crosshair_original = pygame.image.load("textures/Crosshair.png")
     crosshair = pygame.transform.scale(crosshair_original, (10, 10))
 
-    number_1_original = pygame.image.load("data/textures/1.png")
-    number_2_original = pygame.image.load("data/textures/2.png")
-    number_3_original = pygame.image.load("data/textures/3.png")
+    number_1_original = pygame.image.load("textures/1.png")
+    number_2_original = pygame.image.load("textures/2.png")
+    number_3_original = pygame.image.load("textures/3.png")
 
     number_1 = pygame.transform.scale(number_1_original, (10, 10))
     number_2 = pygame.transform.scale(number_2_original, (10, 10))
     number_3 = pygame.transform.scale(number_1_original, (10, 10))
 
-    outline_original = pygame.image.load("data/textures/Outline.png")
+    outline_original = pygame.image.load("textures/Outline.png")
     outline = pygame.transform.scale(outline_original, (50, 50))
 
-    sword1_original = pygame.image.load("data/textures/sword_1.png")
+    sword1_original = pygame.image.load("textures/sword_1.png")
     sword1 = pygame.transform.scale(sword1_original, (150, 150))
-    sword2_original = pygame.image.load("data/textures/sword_2.png")
+    sword2_original = pygame.image.load("textures/sword_2.png")
     sword2 = pygame.transform.scale(sword2_original, (150, 150))
-    sword3_original = pygame.image.load("data/textures/sword_3.png")
+    sword3_original = pygame.image.load("textures/sword_3.png")
     sword3 = pygame.transform.scale(sword3_original, (150, 150))
-    sword4_original = pygame.image.load("data/textures/sword_4.png")
+    sword4_original = pygame.image.load("textures/sword_4.png")
     sword4 = pygame.transform.scale(sword4_original, (150, 150))
-    sword5_original = pygame.image.load("data/textures/sword_5.png")
+    sword5_original = pygame.image.load("textures/sword_5.png")
     sword5 = pygame.transform.scale(sword5_original, (150, 150))
-    sword6_original = pygame.image.load("data/textures/sword_6.png")
+    sword6_original = pygame.image.load("textures/sword_6.png")
     sword6 = pygame.transform.scale(sword6_original, (150, 150))
-    sword7_original = pygame.image.load("data/textures/sword_7.png")
+    sword7_original = pygame.image.load("textures/sword_7.png")
     sword7 = pygame.transform.scale(sword7_original, (150, 150))
-    sword8_original = pygame.image.load("data/textures/sword_8.png")
+    sword8_original = pygame.image.load("textures/sword_8.png")
     sword8 = pygame.transform.scale(sword8_original, (150, 150))
 
     currentHitFrame = 0
@@ -113,7 +113,7 @@ def playLevelOutdated(difficulty):
     mousepressCooldown = 0
     cobwebcooldown = 0
 
-    damage_original = pygame.image.load("data/textures/damage.png")
+    damage_original = pygame.image.load("textures/damage.png")
     damage = pygame.transform.scale(damage_original, (50, 50))
 
     # pygame.mouse.set_system_cursor(pygame.SYSTEM_CURSOR_HAND)

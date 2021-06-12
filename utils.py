@@ -1,8 +1,14 @@
-import time
+import pygame, pygame.freetype, json
+import globals
 
-import pygame, random, pygame.freetype, json
-from data import globals
+background_original = pygame.image.load("textures/background.png")
 
+victory_texture = pygame.image.load("textures/victory.png")
+defeat_texture = pygame.image.load("textures/defeat.png")
+overlay_texture = pygame.image.load("textures/overlay.png")
+
+background_texture = pygame.image.load("textures/background.png")
+settings_menu_texture = pygame.image.load("textures/settings_menu.png")
 
 def absToRelDual(input_x, input_y):
     w, h = pygame.display.get_surface().get_size()
@@ -42,7 +48,6 @@ def getSetting(setting):
 
 
 def background():
-    background_original = pygame.image.load("data/textures/background.png")
     return pygame.transform.scale(background_original, (500, 500))
 
 
@@ -74,16 +79,13 @@ def setGameDefaults():
     globals.webs_left = 3
     globals.webcounter = 0
 
-
-from data.sprites import web
-
-
 def generateWeb(webgroup):
-    webprogram = 'web' + str(globals.webcounter) + ' = web.Web()\nwebgroup.add(web' + str(
-        globals.webcounter) + ')\nweb' + str(globals.webcounter) + '.summon()'
-    exec(webprogram)
-    print("EXECUTED")
+    from sprites.web import Web
+    web = Web()
+    webgroup.add(web)
+    web.summon()
     globals.webcounter += 1
+    return web
 
 
 def setupWindow():
@@ -95,7 +97,7 @@ def setupWindow():
 
 
 def renderText(window, text, position, color, size):
-    font = pygame.freetype.Font("data/fonts/standart.otf", size)
+    font = pygame.freetype.Font("fonts/standart.otf", size)
     font.render_to(window, position, text, color)
 
 
@@ -114,19 +116,19 @@ def playSound(sound):
 
 
     if sound == 'click':
-        pygame.mixer.Channel(1).play(pygame.mixer.Sound("data/sounds/click.wav"))
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound("sounds/click.wav"))
     elif sound == 'hit':
-        pygame.mixer.Channel(1).play(pygame.mixer.Sound("data/sounds/hit.wav"))
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound("sounds/hit.wav"))
     elif sound == 'hurt':
-        pygame.mixer.Channel(2).play(pygame.mixer.Sound("data/sounds/hurt.wav"))
+        pygame.mixer.Channel(2).play(pygame.mixer.Sound("sounds/hurt.wav"))
     elif sound == 'blockplace':
-        pygame.mixer.Channel(1).play(pygame.mixer.Sound("data/sounds/block_place.wav"))
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound("sounds/block_place.wav"))
     elif sound == 'swing':
-        pygame.mixer.Channel(2).play(pygame.mixer.Sound("data/sounds/swing.wav"))
+        pygame.mixer.Channel(2).play(pygame.mixer.Sound("sounds/swing.wav"))
     elif sound == 'victory':
-        pygame.mixer.Channel(3).play(pygame.mixer.Sound("data/sounds/victory.wav"))
+        pygame.mixer.Channel(3).play(pygame.mixer.Sound("sounds/victory.wav"))
     elif sound == 'defeat':
-        pygame.mixer.Channel(3).play(pygame.mixer.Sound("data/sounds/defeat.wav"))
+        pygame.mixer.Channel(3).play(pygame.mixer.Sound("sounds/defeat.wav"))
     # volume = getSetting(setting='volume') / 10
     # pygame.mixer.Sound.set_volume(value=volume)
 
@@ -136,7 +138,7 @@ def playSound(sound):
 
 def playTheme():
     pygame.mixer.init()
-    pygame.mixer.music.load("data/sounds/theme.wav")
+    pygame.mixer.music.load("sounds/theme.wav")
     pygame.mixer.music.play(-1)
     # pygame.mixer.Channel(0).play(pygame.mixer.Sound("sounds/theme.wav"))
 
@@ -144,9 +146,9 @@ def playTheme():
 def showPauseScreen(window):
     setGlobalDefaults()
 
-    overlay = pygame.transform.scale(pygame.image.load("data/textures/overlay.png"),
+    overlay = pygame.transform.scale(pygame.image.load("textures/overlay.png"),
                                      (relToAbs(1), relToAbs(1)))
-    pausemenu = pygame.transform.scale(pygame.image.load("data/textures/pause_menu.png"),
+    pausemenu = pygame.transform.scale(pygame.image.load("textures/pause_menu.png"),
                                        (relToAbs(1), relToAbs(1)))
 
     window.blit(overlay, (0, 0))
@@ -200,9 +202,9 @@ def showEndScreen(window, end):
     if end == "defeat":
         playSound('defeat')
 
-    victory = pygame.transform.scale(pygame.image.load("data/textures/victory.png"), (relToAbs(1), relToAbs(1)))
-    defeat = pygame.transform.scale(pygame.image.load("data/textures/defeat.png"), (relToAbs(1), relToAbs(1)))
-    overlay = pygame.transform.scale(pygame.image.load("data/textures/overlay.png"), (relToAbs(1), relToAbs(1)))
+    victory = pygame.transform.scale(victory_texture, (relToAbs(1), relToAbs(1)))
+    defeat = pygame.transform.scale( defeat_texture , (relToAbs(1), relToAbs(1)))
+    overlay = pygame.transform.scale(overlay_texture, (relToAbs(1), relToAbs(1)))
 
     overlay.set_alpha(2)
     clock = pygame.time.Clock()
@@ -270,9 +272,8 @@ def showSettings(window):
 
     print(settings['volume'])
     print(settings['background_music'])
-
-    backgr = pygame.transform.scale(pygame.image.load("data/textures/background.png"), (relToAbs(1), relToAbs(1)))
-    settingsmenu = pygame.transform.scale(pygame.image.load("data/textures/settings_menu.png"), (relToAbs(1), relToAbs(1)))
+    backgr = pygame.transform.scale(background_texture, (relToAbs(1), relToAbs(1)))
+    settingsmenu = pygame.transform.scale(settings_menu_texture, (relToAbs(1), relToAbs(1)))
 
     window.blit(backgr, (0, 0))
     window.blit(settingsmenu, (0, 0))
@@ -281,7 +282,6 @@ def showSettings(window):
     renderText(window, 'Skin:', (50, 250), globals.WHITE, 30)
     renderText(window, 'Nickname:', (50, 280), globals.WHITE, 30)
     renderText(window, 'WWOPW ' + globals.VERSION + ' by Rande', (50, 310), globals.WHITE, 30)
-
     renderText(window, str(settings['background_music']), (300, 190), globals.WHITE, 30)
     renderText(window, '100%', (300, 220), globals.WHITE, 30)
     renderText(window, '3lia03', (300, 250), globals.WHITE, 30)
@@ -337,7 +337,6 @@ def showSettings(window):
 
         window.blit(backgr, (0, 0))
         window.blit(settingsmenu, (0, 0))
-
         renderText(window, 'Backgr. Music:', (50, 190), globals.WHITE, 30)
         renderText(window, 'Sound Volume:', (50, 220), globals.WHITE, 30)
         renderText(window, 'Skin:', (50, 250), globals.WHITE, 30)

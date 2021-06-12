@@ -1,14 +1,14 @@
-import pygame, random
-from data import globals
-from data.utils import relToAbs
-from data.utils import absToRel
+import pygame
+from utils import relToAbs
+from utils import absToRel
 
+web_texture = pygame.image.load("textures/web.png")
 
 class Web(pygame.sprite.Sprite):
 
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.original_image = pygame.transform.scale(pygame.image.load("data/textures/web.png"), (50, 50))
+        self.original_image = pygame.transform.scale(web_texture, (50, 50))
         self.image = self.original_image
         self.rect = self.image.get_rect()
         self.relposx = 0.0

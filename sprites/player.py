@@ -1,23 +1,26 @@
 import pygame
 from math import pi
 from math import atan2
-from data import globals
-from data.utils import getSetting
-from data.utils import relToAbs
+import globals
+import utils
+from utils import getSetting
+from utils import relToAbs
 
+Elia03_texture = pygame.image.load("textures/3lia03.png")
+Rande_texture = pygame.image.load("textures/Rande.png")
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.skin = getSetting('skin')
         if self.skin == '3lia03':
-            self.original_original_image = pygame.Surface.convert_alpha(pygame.image.load("data/textures/3lia03.png"))
+            self.original_original_image = pygame.Surface.convert_alpha(Elia03_texture)
             self.original_image = pygame.Surface.convert_alpha(
-                pygame.transform.scale(pygame.image.load("data/textures/3lia03.png"), (50, 50)))
+                pygame.transform.scale(Elia03_texture, (50, 50)))
         elif self.skin == 'Rande':
-            self.original_original_image = pygame.Surface.convert_alpha(pygame.image.load("data/textures/Rande.png"))
+            self.original_original_image = pygame.Surface.convert_alpha(Rande_texture)
             self.original_image = pygame.Surface.convert_alpha(
-                pygame.transform.scale(pygame.image.load("data/textures/Rande.png"), (50, 50)))
+                pygame.transform.scale(Rande_texture, (50, 50)))
         self.image = self.original_image
         self.rect = self.image.get_rect()
         self.rect.center = (globals.WIDTH / 2, globals.HEIGHT / 2)

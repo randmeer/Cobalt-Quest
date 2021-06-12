@@ -1,13 +1,17 @@
 import pygame
-from data.utils import absToRel
-from data.utils import relToAbs
+from utils import absToRel
+from utils import relToAbs
 
+outline_texture = pygame.image.load("textures/Outline.png")
+
+def rel_pos(ind):
+    return round(number=(round((absToRel(pygame.mouse.get_pos()[ind]) - 0.05) / 0.1) * 0.1), ndigits=1)
 
 class Outline(pygame.sprite.Sprite):
 
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.original_image = pygame.transform.scale(pygame.image.load("data/textures/outline.png"), (50, 50))
+        self.original_image = pygame.transform.scale(outline_texture, (50, 50))
         self.image = self.original_image
         self.rect = self.image.get_rect()
         self.rect.center = (-100, -100)
@@ -15,8 +19,8 @@ class Outline(pygame.sprite.Sprite):
         self.relposy = 0.0
 
     def draw(self, window):
-        self.relposx = round(number=(round((absToRel(pygame.mouse.get_pos()[0]) - 0.05) / 0.1) * 0.1), ndigits=1)
-        self.relposy = round(number=(round((absToRel(pygame.mouse.get_pos()[1]) - 0.05) / 0.1) * 0.1), ndigits=1)
+        self.relposx = rel_pos(0)
+        self.relposy = rel_pos(1)
         self.rect.x = relToAbs(self.relposx)
         self.rect.y = relToAbs(self.relposy)
         window.blit(self.image, self.rect)
