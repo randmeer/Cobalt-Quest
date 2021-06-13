@@ -45,7 +45,7 @@ if __name__ == '__main__':
         print("MAIN LOOP ROUND START")
         clock.tick(60)
 
-        # go through every pygame event
+        # event iteration
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -54,21 +54,19 @@ if __name__ == '__main__':
         if globals.quitgame:
             run = False
             print("DETECTED ORDER TO QUIT GAME")
-
+        elif globals.titlescreen:
+            title_screen.showTitleScreen()
+        elif globals.menu:
+            menu.showMenu()
+        elif globals.level_selection:
+            level_selection.showLevelSelection()
+        elif globals.level1:
+            level1.playLevel1()
+        elif globals.rndebug:
+            rndebug.showRNDebug()
         else:
-            if globals.titlescreen:
-                title_screen.showTitleScreen()
-            elif globals.menu:
-                menu.showMenu()
-            elif globals.level_selection:
-                level_selection.showLevelSelection()
-            elif globals.level1:
-                level1.playLevel1()
-            elif globals.rndebug:
-                rndebug.showRNDebug()
-            else:
-                print("yeah so there is no current state u f**ked up")
-            print("CYCLED TROUGH CURRENT STATES")
+            print("yeah so there is no current state u f**ked up")
+        print("CYCLED TROUGH CURRENT STATES")
 
         print("MAIN LOOP ROUND END")
         print(" ")

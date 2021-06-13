@@ -1,12 +1,9 @@
 import time
-
 import pygame
-
 import utils
 import globals
 from sprites import sword, player, outline, victim, web
-from utils import relToAbs
-from utils import relToAbsDual
+from utils import relToAbs, relToAbsDual
 
 damage_player_texture = pygame.image.load("textures/damage_player.png")
 
@@ -20,7 +17,6 @@ def playLevel1():
     webs = []
     victims = []
     print("LEVEL1 START")
-    # pygame.mouse.set_visible(False)
     # ------------------ SETUP ------------------
     utils.setGlobalDefaults()
     utils.setGameDefaults()
@@ -162,7 +158,6 @@ def playLevel1():
         utils.renderText(window=main_surface, text=str(round(clock.get_fps())) + " FPS",
                          position=relToAbsDual(0.04, 0.92),
                          color=globals.WHITE, size=relToAbs(0.048))
-        # new_main_surface = pygame.transform.scale(main_surface, pygame.display.get_surface().get_size())
         window.blit(main_surface, (0, 0))
         pygame.display.update()
         # ------------------ DRAWING ------------------

@@ -6,9 +6,6 @@ from utils import relToAbsDual
 
 background_original = pygame.image.load("textures/background.png")
 menu_original = pygame.image.load("textures/menu.png")
-#ez_original = pygame.image.load("textures/menu_mode_1.png")
-#notez_original = pygame.image.load("textures/menu_mode_2.png")
-#rip_original = pygame.image.load("textures/menu_mode_3.png")
 
 def showMenu():
     print("MENU START")
@@ -17,17 +14,12 @@ def showMenu():
 
     background = pygame.transform.scale(background_original, (500, 500))
     menu = pygame.transform.scale(menu_original, (500, 500))
-    #ez = pygame.transform.scale(ez_original, (140, 190))
-    #notez = pygame.transform.scale(notez_original, (140, 190))
-    #rip = pygame.transform.scale(rip_original, (140, 190))
 
     buttongroup = pygame.sprite.Group()
     levelselection_button = button.Button(relwidth=0.9, relheight=0.135, textcontent="level selection", relpos=(0.05, 0.45))
     difficulty_button = button.Button(relwidth=0.9, relheight=0.135, textcontent=f" difficulty: {globals.difficulty}", relpos=(0.05, 0.61))
     settings_button = button.Button(relwidth=0.9, relheight=0.135, textcontent="settings", relpos=(0.05, 0.77))
-    buttongroup.add(levelselection_button)
-    buttongroup.add(difficulty_button)
-    buttongroup.add(settings_button)
+    buttongroup.add(levelselection_button, difficulty_button, settings_button)
 
     # draw window
     window.blit(background, (0, 0))
@@ -39,19 +31,18 @@ def showMenu():
     clock = pygame.time.Clock()
     run = True
     while run:
-
         clock.tick(60)
 
+        if globals.quitgame:
+            run = False
         mousepos = pygame.mouse.get_pos()
 
-        # event looper
+        # event iteration
         for event in pygame.event.get():
-
             # quit event
             if event.type == pygame.QUIT:
                 run = False
                 globals.quitgame = True
-
             # mouse event
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # left button event
@@ -77,8 +68,7 @@ def showMenu():
                         for i in buttongroup:
                             i.draw(window=window)
                         pygame.display.update()
-
-            # quit event
+            # keypress event
             if event.type == pygame.KEYDOWN:
                 if event.key == globals.ESCAPE:
                     run = False
@@ -94,12 +84,10 @@ def showMenu():
                 menu = pygame.transform.scale(menu_original, relToAbsDual(1, 1))
                 for i in buttongroup:
                     i.update()
-
                 window.blit(background, (0, 0))
                 window.blit(menu, (0, 0))
                 for i in buttongroup:
                     i.draw(window=window)
-
                 pygame.display.update()
 
     utils.playSound('click')
