@@ -8,19 +8,13 @@ from utils import relToAbs
 
 elia_texture = pygame.image.load("textures/3lia03.png")
 rande_texture = pygame.image.load("textures/rande.png")
+damage_image = pygame.image.load("textures/damage.png")
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.skin = getSetting('skin')
-        if self.skin == '3lia03':
-            self.original_original_image = pygame.Surface.convert_alpha(elia_texture)
-            self.original_image = pygame.Surface.convert_alpha(
-                pygame.transform.scale(elia_texture, (50, 50)))
-        elif self.skin == 'Rande':
-            self.original_original_image = pygame.Surface.convert_alpha(rande_texture)
-            self.original_image = pygame.Surface.convert_alpha(
-                pygame.transform.scale(rande_texture, (50, 50)))
+        self.set_default_skin()
         self.image = self.original_image
         self.rect = self.image.get_rect()
         self.rect.center = (globals.WIDTH / 2, globals.HEIGHT / 2)
@@ -57,6 +51,14 @@ class Player(pygame.sprite.Sprite):
         mouse_x, mouse_y = pygame.mouse.get_pos()
         rel_x, rel_y = mouse_x - self.rect.centerx, mouse_y - self.rect.centery
         angle = (180 / pi) * -atan2(rel_y, rel_x) - 90
+
+        globals.damage_animation_cooldown -= 1
+        if globals.damage_animation_cooldown < 1:
+            self.set_default_skin()
+        if globals.player_hurt:
+            self.original_image.blit(pygame.Surface.convert_alpha(
+                pygame.transform.scale(damage_image, (50, 50))), (0, 0))
+
         self.image = pygame.transform.rotate(self.original_image, int(angle))
         self.rect = self.image.get_rect(center=self.position)
 
@@ -65,3 +67,13 @@ class Player(pygame.sprite.Sprite):
 
     def draw(self, window):
         window.blit(self.image, self.rect)
+
+    def set_default_skin(self):
+        if self.skin == '3lia03':
+            self.original_original_image = pygame.Surface.convert_alpha(elia_texture)
+            self.original_image = pygame.Surface.convert_alpha(
+                pygame.transform.scale(elia_texture, (50, 50)))
+        elif self.skin == 'Rande':
+            self.original_original_image = pygame.Surface.convert_alpha(rande_texture)
+            self.original_image = pygame.Surface.convert_alpha(
+                pygame.transform.scale(rande_texture, (50, 50)))

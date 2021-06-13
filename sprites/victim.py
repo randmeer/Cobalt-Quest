@@ -87,6 +87,8 @@ class Victim(pygame.sprite.Sprite):
             self.rect.x = relToAbs(self.relposx)
             self.rect.y = relToAbs(self.relposy)
 
+            print(self.rect.x, self.rect.y)
+
             if self.rect.centerx > relToAbs(1.1) or self.rect.centerx < relToAbs(
                     0.1) * -1 or self.rect.centery > relToAbs(1.1) or self.rect.centery < relToAbs(
                 0.1) * -1:
@@ -120,6 +122,8 @@ class Victim(pygame.sprite.Sprite):
             if collideplayer and globals.damagecooldown >= globals.maxcooldown:
                 globals.playerhealthpoints -= 1
                 globals.damagecooldown = 0
+                globals.player_hurt = True
+                globals.damage_animation_cooldown = 10
                 utils.playSound('hurt')
 
             if self.health == 0:

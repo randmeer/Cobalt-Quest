@@ -59,6 +59,8 @@ def playLevel1():
         clock.tick(60)
         now = time.time()
         delta_time = now - prev_time
+        if delta_time > 1:
+            delta_time = 0.01
         prev_time = now
         # ------------------ TIME ---------------------
 
