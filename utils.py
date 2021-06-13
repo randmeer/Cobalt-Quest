@@ -254,11 +254,11 @@ def showSettings(window):
         settings = json.loads(f.read())
 
     # Iterating through the json
-    for i in settings:
-        print(i)
+    #for i in settings:
+    #    print(i)
 
-    print(settings['volume'])
-    print(settings['background_music'])
+    #print(settings['volume'])
+    #print(settings['background_music'])
     backgr = pygame.transform.scale(background_texture, (relToAbs(1), relToAbs(1)))
     settingsmenu = pygame.transform.scale(settings_menu_texture, (relToAbs(1), relToAbs(1)))
 

@@ -4,11 +4,11 @@ import globals
 from sprites import button
 from utils import relToAbsDual
 
-menu_original = pygame.image.load("textures/menu.png")
-ez_original = pygame.image.load("textures/menu_mode_1.png")
-notez_original = pygame.image.load("textures/menu_mode_2.png")
-rip_original = pygame.image.load("textures/menu_mode_3.png")
 background_original = pygame.image.load("textures/background.png")
+menu_original = pygame.image.load("textures/menu.png")
+#ez_original = pygame.image.load("textures/menu_mode_1.png")
+#notez_original = pygame.image.load("textures/menu_mode_2.png")
+#rip_original = pygame.image.load("textures/menu_mode_3.png")
 
 def showMenu():
     print("MENU START")
@@ -17,17 +17,24 @@ def showMenu():
 
     background = pygame.transform.scale(background_original, (500, 500))
     menu = pygame.transform.scale(menu_original, (500, 500))
-    ez = pygame.transform.scale(ez_original, (140, 190))
-    notez = pygame.transform.scale(notez_original, (140, 190))
-    rip = pygame.transform.scale(rip_original, (140, 190))
-    buttongroup = pygame.sprite.Group()
-    levelselection_button = button.Button(relwidth=0.9, relheight=0.135, textcontent="level selection", relpos=(0.05, 0.41))
-    buttongroup.add(levelselection_button)
+    #ez = pygame.transform.scale(ez_original, (140, 190))
+    #notez = pygame.transform.scale(notez_original, (140, 190))
+    #rip = pygame.transform.scale(rip_original, (140, 190))
 
-    # TODO: find easier way to get clicks on the difficulty button
-    difficultyrect = ez.get_rect()
-    difficultyrect.x = 26
-    difficultyrect.y = 287
+    buttongroup = pygame.sprite.Group()
+    levelselection_button = button.Button(relwidth=0.9, relheight=0.135, textcontent="level selection", relpos=(0.05, 0.45))
+    difficulty_button = button.Button(relwidth=0.9, relheight=0.135, textcontent=f" difficulty: {globals.difficulty}", relpos=(0.05, 0.61))
+    settings_button = button.Button(relwidth=0.9, relheight=0.135, textcontent="settings", relpos=(0.05, 0.77))
+    buttongroup.add(levelselection_button)
+    buttongroup.add(difficulty_button)
+    buttongroup.add(settings_button)
+
+    # draw window
+    window.blit(background, (0, 0))
+    window.blit(menu, (0, 0))
+    for i in buttongroup:
+        i.draw(window=window)
+    pygame.display.update()
 
     clock = pygame.time.Clock()
     run = True
@@ -49,18 +56,28 @@ def showMenu():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # left button event
                 if event.button == globals.LEFT:
-                    posX = (pygame.mouse.get_pos()[0])
-                    posY = (pygame.mouse.get_pos()[1])
-                    # print(posX, " ", posY)
                     if levelselection_button.rect.collidepoint(mousepos):
                         run = False
                         globals.level_selection = True
-                    if difficultyrect.collidepoint(mousepos):
-                        if not globals.difficulty >= 3:
-                            globals.difficulty = globals.difficulty + 1
+                    if difficulty_button.rect.collidepoint(mousepos):
+                        if globals.difficulty < 3:
+                            globals.difficulty += 1
                         else:
                             globals.difficulty = 1
+                        print(globals.difficulty)
+                        difficulty_button.text = f" difficulty: {globals.difficulty}"
+                        difficulty_button.update()
+                        difficulty_button.draw(window=window)
+                        pygame.display.update()
                         utils.playSound('click')
+                    if settings_button.rect.collidepoint(mousepos):
+                        utils.showSettings(window=window)
+                        window.blit(background, (0, 0))
+                        window.blit(menu, (0, 0))
+                        for i in buttongroup:
+                            i.draw(window=window)
+                        pygame.display.update()
+
             # quit event
             if event.type == pygame.KEYDOWN:
                 if event.key == globals.ESCAPE:
@@ -74,24 +91,16 @@ def showMenu():
                 else:
                     pygame.display.set_mode((h, h), pygame.RESIZABLE)
                 background = pygame.transform.scale(background_original, (relToAbsDual(1, 1)))
+                menu = pygame.transform.scale(menu_original, relToAbsDual(1, 1))
                 for i in buttongroup:
-                    i.resize()
+                    i.update()
 
+                window.blit(background, (0, 0))
+                window.blit(menu, (0, 0))
+                for i in buttongroup:
+                    i.draw(window=window)
 
-        # draw window
-        window.blit(background, (0, 0))
-        window.blit(menu, (0, 0))
-        #buttongroup.draw(window)
-        levelselection_button.draw(window=window)
-
-        if globals.difficulty == 1:
-            window.blit(ez, (26, 287))
-        elif globals.difficulty == 2:
-            window.blit(notez, (26, 287))
-        elif globals.difficulty == 3:
-            window.blit(rip, (26, 287))
-
-        pygame.display.update()
+                pygame.display.update()
 
     utils.playSound('click')
     print("MENU END")
