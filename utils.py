@@ -132,16 +132,25 @@ def playTheme():
     pygame.mixer.music.play(-1)
     # pygame.mixer.Channel(0).play(pygame.mixer.Sound("sounds/theme.wav"))
 
+from sprites import button
+
 def showPauseScreen(window):
     setGlobalDefaults()
 
-    overlay = pygame.transform.scale(pygame.image.load("textures/overlay.png"),
-                                     (relToAbs(1), relToAbs(1)))
-    pausemenu = pygame.transform.scale(pygame.image.load("textures/pause_menu.png"),
-                                       (relToAbs(1), relToAbs(1)))
+    overlay = pygame.transform.scale(pygame.image.load("textures/overlay.png"), (relToAbs(1), relToAbs(1)))
+    pausemenu = pygame.transform.scale(pygame.image.load("textures/pause_menu.png"), (relToAbs(1), relToAbs(1)))
+
+    buttongroup = pygame.sprite.Group()
+    resumeplaying_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="resume playing", relpos=(0.05, 0.44))
+    backtomenu_button = button.Button(relwidth=0.9, relheight=0.15, textcontent=" back to menu", relpos=(0.05, 0.62))
+    settings_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="settings", relpos=(0.05, 0.80))
+    buttongroup.add(resumeplaying_button, backtomenu_button, settings_button)
 
     window.blit(overlay, (0, 0))
     window.blit(pausemenu, (0, 0))
+    for i in buttongroup:
+        i.update()
+        i.draw(window=window)
     pygame.display.update()
 
     playSound('click')
@@ -151,6 +160,8 @@ def showPauseScreen(window):
     run = True
     while run:
         clock.tick(60)
+        mousepos = pygame.mouse.get_pos()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -158,19 +169,14 @@ def showPauseScreen(window):
                 globals.quitgame = True
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == globals.LEFT:
-                    posX = (pygame.mouse.get_pos()[0])
-                    posY = (pygame.mouse.get_pos()[1])
-                    relPosX = absToRel(posX)
-                    relPosY = absToRel(posY)
-                    # print(posX, " ", posY)
-                    if 207 < posY < 272 and 26 < posX < 475:
+                    if resumeplaying_button.rect.collidepoint(mousepos):
                         run = False
-                    if 287 < posY < 352 and 26 < posX < 475:
+                    if backtomenu_button.rect.collidepoint(mousepos):
                         run = False
                         globals.exittomenu = True
-                    if 367 < posY < 432 and 26 < posX < 475:
+                    if settings_button.rect.collidepoint(mousepos):
+                        showSettings(window=window)
                         run = False
-                        showSettings(window)
             if event.type == pygame.KEYDOWN:
                 if event.key == globals.ESCAPE:
                     run = False
