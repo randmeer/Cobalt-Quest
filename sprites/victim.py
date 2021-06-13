@@ -29,6 +29,7 @@ class Victim(pygame.sprite.Sprite):
         self.relposx = 0
         self.relposy = 0
         self.tookdamage = False
+        self.damage_animation_cooldown = 10
 
     def summon(self):
         if self.onscreen:
@@ -95,7 +96,14 @@ class Victim(pygame.sprite.Sprite):
                 self.health = -1
                 globals.victimsmissed += 1
 
-            if collidemouse and click and collidereach <= relToAbs(player.reach):
+            self.damage_animation_cooldown -= 1
+            if self.damage_animation_cooldown < 1:
+                self.image = pygame.transform.scale(ichkeksi_image, (relToAbsDual(0.1, 0.1)))
+            if click and collidemouse and collidereach <= relToAbs(player.reach):
+                self.damage_animation_cooldown = 5
+                surface = pygame.transform.scale(ichkeksi_image, (relToAbsDual(0.1, 0.1)))
+                surface.blit(pygame.transform.scale(damage_image, (relToAbsDual(0.1, 0.1))), (0, 0))
+                self.image = surface
                 self.health -= 1
                 globals.damagesum += 1
                 utils.playSound('hit')
@@ -121,6 +129,7 @@ class Victim(pygame.sprite.Sprite):
                 self.onscreen = False
 
     def draw(self, window):
+        print("hello lol")
         window.blit(self.image, self.rect)
         if self.tookdamage:
             window.blit(self.damage, self.rect)
