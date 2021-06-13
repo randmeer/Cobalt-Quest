@@ -6,12 +6,12 @@ from sprites import sword, player, outline, victim, web
 from utils import relToAbs, relToAbsDual
 
 damage_player_texture = pygame.image.load("textures/damage_player.png")
-
 heart_img = pygame.image.load("textures/heart.png")
 ichkeksi_img = pygame.image.load("textures/ichkeksi.png")
 tick_img = pygame.image.load("textures/tick.png")
 cross_img = pygame.image.load("textures/cross.png")
 broken_heart_img = pygame.image.load("textures/broken_heart.png")
+background_original = pygame.image.load("textures/background.png")
 
 def playLevel1():
     webs = []
@@ -22,8 +22,7 @@ def playLevel1():
     utils.setGameDefaults()
     window = utils.setupWindow()
     clock = pygame.time.Clock()
-    background_original = pygame.image.load("textures/background.png")
-    background = pygame.transform.scale(background_original, (500, 500))
+    background = pygame.transform.scale(background_original, (globals.windowsize, globals.windowsize))
     playersprite = player.Player()
     outlinesprite = outline.Outline()
     swordsprite = sword.Sword()
@@ -38,11 +37,15 @@ def playLevel1():
     gui_surface_original = pygame.Surface((relToAbsDual(1, 0.06)), pygame.SRCALPHA, 32)
     gui_surface_original = gui_surface_original.convert_alpha()
 
-    gui_surface_original.blit(pygame.transform.scale(heart_img, (18, 18)), (10, 10))
-    gui_surface_original.blit(pygame.transform.scale(ichkeksi_img, (20, 20)), (100, 10))
-    gui_surface_original.blit(pygame.transform.scale(tick_img, (18, 18)), (190, 10))
-    gui_surface_original.blit(pygame.transform.scale(cross_img, (18, 18)), (280, 10))
-    gui_surface_original.blit(pygame.transform.scale(broken_heart_img, (18, 18)),(370, 10))
+    gui_surface_original.blit(pygame.transform.scale(heart_img, relToAbsDual(0.036, 0.036)), relToAbsDual(0.02, 0.02))
+    gui_surface_original.blit(pygame.transform.scale(ichkeksi_img, relToAbsDual(0.04, 0.04)), relToAbsDual(0.2, 0.02))
+    gui_surface_original.blit(pygame.transform.scale(tick_img, relToAbsDual(0.036, 0.036)), relToAbsDual(0.38, 0.02))
+    gui_surface_original.blit(pygame.transform.scale(cross_img, relToAbsDual(0.036, 0.036)), relToAbsDual(0.56, 0.02))
+    gui_surface_original.blit(pygame.transform.scale(broken_heart_img, relToAbsDual(0.036, 0.036)), relToAbsDual(0.74, 0.02))
+    gui_surface = gui_surface_original
+
+    main_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
+    damage_player = pygame.transform.scale(damage_player_texture, (relToAbsDual(1, 1)))
 
     prev_time = time.time()
 
@@ -62,9 +65,6 @@ def playLevel1():
         # ------------------ TIME ---------------------
 
         click = False
-        main_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
-        gui_surface = pygame.transform.scale(gui_surface_original, (relToAbsDual(1, 0.06)))
-        damage_player = pygame.transform.scale(damage_player_texture, (relToAbsDual(1, 1)))
 
         # ------------------ EVENTS -------------------
         for event in pygame.event.get():
@@ -100,13 +100,18 @@ def playLevel1():
                     pygame.display.set_mode((500, 500), pygame.RESIZABLE)
                 else:
                     pygame.display.set_mode((h, h), pygame.RESIZABLE)
-                    background = pygame.transform.scale(background_original, (relToAbsDual(1, 1)))
+                main_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
+                damage_player = pygame.transform.scale(damage_player_texture, (relToAbsDual(1, 1)))
+                background = pygame.transform.scale(background_original, (relToAbsDual(1, 1)))
                 for i in victimgroup:
                     i.resize()
                 playersprite.update_skin()
                 for i in webgroup:
                     i.resize()
                 outlinesprite.resize()
+                globals.windowsize = h
+                gui_surface = pygame.transform.scale(gui_surface_original, (relToAbsDual(1, 0.06)))
+
         # ------------------ EVENTS -------------------
 
         # ------------------ GAME LOGIC ---------------

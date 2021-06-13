@@ -82,9 +82,8 @@ def generateWeb(webgroup):
 
 def setupWindow():
     pygame.init()
-    window = pygame.display.set_mode((500, 500), pygame.RESIZABLE)
+    window = pygame.display.set_mode((globals.windowsize, globals.windowsize), pygame.RESIZABLE)
     pygame.display.set_caption("WWOPW version " + globals.VERSION + " by Rande")
-    pygame.display.flip()
     return window
 
 def renderText(window, text, position, color, size):

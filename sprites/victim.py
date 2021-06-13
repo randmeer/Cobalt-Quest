@@ -85,8 +85,7 @@ class Victim(pygame.sprite.Sprite):
 
             self.rect.x = relToAbs(self.relposx)
             self.rect.y = relToAbs(self.relposy)
-
-            print(self.rect.x, self.rect.y)
+            #print(self.rect.x, self.rect.y)
 
             if self.rect.centerx > relToAbs(1.1) or self.rect.centerx < relToAbs(
                     0.1) * -1 or self.rect.centery > relToAbs(1.1) or self.rect.centery < relToAbs(
@@ -108,7 +107,6 @@ class Victim(pygame.sprite.Sprite):
                 self.health -= 1
                 globals.damagesum += 1
                 utils.playSound('hit')
-            # UNCOMMENT AFTER
 
             # TEMPORARY CODE TO KILL VICTIMS FASTER
             # if collidemouse:
@@ -116,7 +114,6 @@ class Victim(pygame.sprite.Sprite):
             #    globals.damagesum += 1
             #    utils.playSound('hit')
             # REMOVE AFTER
-            # smarty pants
 
             if collideplayer and globals.damagecooldown >= globals.maxcooldown:
                 globals.playerhealthpoints -= 1

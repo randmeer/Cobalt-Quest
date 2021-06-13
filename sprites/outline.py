@@ -12,7 +12,7 @@ class Outline(pygame.sprite.Sprite):
 
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.original_image = pygame.transform.scale(outline_texture, (50, 50))
+        self.original_image = pygame.transform.scale(outline_texture, relToAbsDual(0.1, 0.1))
         self.image = self.original_image
         self.rect = self.image.get_rect()
         self.rect.center = (-100, -100)

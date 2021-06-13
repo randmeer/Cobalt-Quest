@@ -1,5 +1,7 @@
 VERSION = "0.8.1"
 
+windowsize = 500
+
 # settings that reset on startup
 # (plz dont change these the game will crash)
 quitgame = None
