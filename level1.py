@@ -105,14 +105,11 @@ def playLevel1():
                 else:
                     pygame.display.set_mode((h, h), pygame.RESIZABLE)
                 for i in victimgroup:
-                    i.image = pygame.transform.scale(i.original_image, (relToAbsDual(0.1, 0.1)))
-                    i.rect = i.image.get_rect()
-                playersprite.original_image = pygame.transform.scale(playersprite.original_original_image,
-                                                                     (relToAbsDual(0.1, 0.1)))
+                    i.resize()
+                playersprite.update_skin()
                 for i in webgroup:
-                    i.image = pygame.transform.scale(i.original_image, (relToAbsDual(0.1, 0.1)))
-                    i.rect = i.image.get_rect()
-                outlinesprite.image = pygame.transform.scale(outlinesprite.original_image, (relToAbsDual(0.1, 0.1)))
+                    i.resize()
+                outlinesprite.resize()
         # ------------------ EVENTS -------------------
 
         # ------------------ GAME LOGIC ---------------

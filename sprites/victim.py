@@ -132,6 +132,10 @@ class Victim(pygame.sprite.Sprite):
                 globals.victimskilled += 1
                 self.onscreen = False
 
+    def resize(self):
+        self.image = pygame.transform.scale(self.original_image, (relToAbsDual(0.1, 0.1)))
+        self.rect = self.image.get_rect()
+
     def draw(self, window):
         print("hello lol")
         window.blit(self.image, self.rect)

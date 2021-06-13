@@ -1,5 +1,6 @@
 import pygame
 from utils import relToAbs
+from utils import relToAbsDual
 from utils import absToRel
 
 web_texture = pygame.image.load("textures/web.png")
@@ -21,6 +22,10 @@ class Web(pygame.sprite.Sprite):
     def update(self):
         self.rect.x = relToAbs(self.relposx)
         self.rect.y = relToAbs(self.relposy)
+
+    def resize(self):
+        self.image = pygame.transform.scale(self.original_image, (relToAbsDual(0.1, 0.1)))
+        self.rect = self.image.get_rect()
 
     def draw(self, window):
         window.blit(self.image, self.rect)
