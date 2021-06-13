@@ -10,7 +10,6 @@ from utils import relToAbsDual
 ichkeksi_image = pygame.image.load("textures/ichkeksi.png")
 damage_image = pygame.image.load("textures/damage.png")
 
-
 class Victim(pygame.sprite.Sprite):
 
     def __init__(self):

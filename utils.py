@@ -16,25 +16,21 @@ def absToRelDual(input_x, input_y):
     output_y = input_y / h
     return output_x, output_y
 
-
 def relToAbsDual(input_x, input_y):
     w, h = pygame.display.get_surface().get_size()
     output_x = w * input_x
     output_y = h * input_y
     return int(output_x), int(output_y)
 
-
 def relToAbs(input_value):
     w, h = pygame.display.get_surface().get_size()
     output = h * input_value
     return int(output)
 
-
 def absToRel(input_value):
     w, h = pygame.display.get_surface().get_size()
     output = input_value / h
     return output
-
 
 def getSetting(setting):
     with open('data.json', 'r') as fr:
@@ -46,10 +42,8 @@ def getSetting(setting):
     elif setting == 'skin':
         return settings['skin']
 
-
 def background():
     return pygame.transform.scale(background_original, (500, 500))
-
 
 def setGlobalDefaults():
     globals.quitgame = False
@@ -59,7 +53,6 @@ def setGlobalDefaults():
     globals.level_selection = False
     globals.rndebug = False
     globals.level1 = False
-
 
 def setGameDefaults():
     globals.victimbreakcooldownmax = 500 - 100 * globals.difficulty
@@ -87,7 +80,6 @@ def generateWeb(webgroup):
     globals.webcounter += 1
     return web
 
-
 def setupWindow():
     pygame.init()
     window = pygame.display.set_mode((500, 500), pygame.RESIZABLE)
@@ -95,11 +87,13 @@ def setupWindow():
     pygame.display.flip()
     return window
 
-
 def renderText(window, text, position, color, size):
     font = pygame.freetype.Font("fonts/standart.otf", size)
-    font.render_to(window, position, text, color)
+    font.render_to(surf=window, dest=position, text=text, fgcolor=color)
 
+def getTextRect(text, size):
+    font = pygame.freetype.Font("fonts/standart.otf", size)
+    return font.get_rect(text=text)
 
 def renderIngameText(window):
     renderText(window, str(int(globals.playerhealthpoints)), relToAbsDual(0.07, 0.02), globals.WHITE, relToAbs(0.048))
@@ -109,7 +103,6 @@ def renderIngameText(window):
     renderText(window, str(globals.victimskilled), relToAbsDual(0.43, 0.02), globals.WHITE, relToAbs(0.048))
     renderText(window, str(globals.victimsmissed), relToAbsDual(0.61, 0.02), globals.WHITE, relToAbs(0.048))
     renderText(window, str(globals.damagesum), relToAbsDual(0.79, 0.02), globals.WHITE, relToAbs(0.048))
-
 
 def playSound(sound):
     pygame.mixer.init()
@@ -139,7 +132,6 @@ def playTheme():
     pygame.mixer.music.load("sounds/theme.wav")
     pygame.mixer.music.play(-1)
     # pygame.mixer.Channel(0).play(pygame.mixer.Sound("sounds/theme.wav"))
-
 
 def showPauseScreen(window):
     setGlobalDefaults()
@@ -190,7 +182,6 @@ def showPauseScreen(window):
                     pygame.display.set_mode((event.h, event.h), pygame.RESIZABLE)
 
     playSound('click')
-
 
 def showEndScreen(window, end):
     setGlobalDefaults()
@@ -252,11 +243,9 @@ def showEndScreen(window, end):
                     pygame.display.set_mode((event.h, event.h), pygame.RESIZABLE)
     playSound('click')
 
-
 def save_to_json(data, name):
     with open(f'{name}.json', 'w') as json_file:
         json.dump(data, json_file, indent=2)
-
 
 def showSettings(window):
     setGlobalDefaults()
@@ -347,7 +336,6 @@ def showSettings(window):
         pygame.display.update()
 
     playSound('click')
-
 
 def checkCollision(sprite1, sprite2):
     col = pygame.sprite.collide_rect(sprite1, sprite2)

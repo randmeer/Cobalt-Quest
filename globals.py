@@ -1,4 +1,4 @@
-VERSION = "0.8"
+VERSION = "0.8.1"
 
 # settings that reset on startup
 # (plz dont change these the game will crash)

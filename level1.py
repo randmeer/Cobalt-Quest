@@ -26,7 +26,8 @@ def playLevel1():
     utils.setGameDefaults()
     window = utils.setupWindow()
     clock = pygame.time.Clock()
-    background = utils.background()
+    background_original = pygame.image.load("textures/background.png")
+    background = pygame.transform.scale(background_original, (500, 500))
     playersprite = player.Player()
     outlinesprite = outline.Outline()
     swordsprite = sword.Sword()
@@ -67,7 +68,6 @@ def playLevel1():
         click = False
         main_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
         gui_surface = pygame.transform.scale(gui_surface_original, (relToAbsDual(1, 0.06)))
-        background = pygame.transform.scale(background, (relToAbsDual(1, 1)))
         damage_player = pygame.transform.scale(damage_player_texture, (relToAbsDual(1, 1)))
 
         # ------------------ EVENTS -------------------
@@ -104,6 +104,7 @@ def playLevel1():
                     pygame.display.set_mode((500, 500), pygame.RESIZABLE)
                 else:
                     pygame.display.set_mode((h, h), pygame.RESIZABLE)
+                    background = pygame.transform.scale(background_original, (relToAbsDual(1, 1)))
                 for i in victimgroup:
                     i.resize()
                 playersprite.update_skin()
