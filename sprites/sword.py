@@ -1,3 +1,5 @@
+import math
+
 import pygame
 from utils import relToAbsDual
 from utils import relToAbs
@@ -13,20 +15,46 @@ class Sword(pygame.sprite.Sprite):
         self.rect.center = (-100, -100)
         self.animation = 0
         self.visibility = False
-        self.velocity = 0.0
+        #self.offsetangle = 0
+        self.absangle = 0
 
     def update(self, playersprite, delta_time):
-        self.velocity = 0.2 * delta_time
         if self.visibility and self.animation > 0:
+
+            # this cursed code below modifies the angle for our purposes
+            # basically: angle is -90 when facing neg/neg and 90 when facing pos/pos
+            #self.offsetangle = abs(playersprite.angle - 45)
+            #if self.offsetangle > 180:
+            #    self.offsetangle = 180 - self.offsetangle + 180
+            #self.offsetangle -= 90
+            # alright figured how to do it without it but keeping this here for now because it was a hella lot of work
+
+            self.absangle = abs(playersprite.angle - 90)
+
             self.image = pygame.transform.rotate(self.default_image, playersprite.angle)
+            #self.rect = self.image.get_rect(center=(playersprite.rect.centerx+int(self.offset * 100), playersprite.rect.centery+int(self.offset * 100)))
+            #self.rect = self.image.get_rect(center=(playersprite.rect.centerx+(math.cos(playersprite.angle)*self.offset), playersprite.rect.centery+(math.sin(playersprite.angle)*self.offset)))
             self.rect = self.image.get_rect(center=playersprite.rect.center)
-            self.animation -= 1
-        if self.animation == 0:
+
+            # move the sword in the correct x and y directions
+            if 0 <= self.absangle <= 90:
+                self.rect.centerx -= self.animation * (90 - self.absangle)
+                self.rect.centery -= self.animation * (self.absangle - 0)
+            elif 90 <= self.absangle <= 180:
+                self.rect.centerx += self.animation * (self.absangle - 90)
+                self.rect.centery -= self.animation * (180 - self.absangle)
+            elif 180 <= self.absangle <= 270:
+                self.rect.centerx += self.animation * (270 - self.absangle)
+                self.rect.centery += self.animation * (self.absangle - 180)
+            elif 270 <= self.absangle <= 360:
+                self.rect.centerx -= self.animation * (self.absangle - 270)
+                self.rect.centery += self.animation * (360 - self.absangle)
+
+            self.animation -= 5 * delta_time
+
+        if self.animation <= 0:
             self.visibility = False
 
     def draw(self, window):
-        window.blit(self.image, self.rect)
-
-    def reset(self):
-        self.visibility = False
-        self.frame = 0
+        if self.visibility:
+            window.blit(self.image, self.rect)

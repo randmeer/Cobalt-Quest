@@ -77,7 +77,7 @@ def playLevel1():
                 if event.button == globals.LEFT:
                     click = True
                     swordsprite.visibility = True
-                    swordsprite.animation = 100
+                    swordsprite.animation = 1
                 # right button and spawn webs
                 if event.button == globals.RIGHT:
                     if globals.webs_left > 0:
