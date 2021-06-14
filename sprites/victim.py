@@ -97,8 +97,9 @@ class Victim(pygame.sprite.Sprite):
 
             if self.damage_animation_cooldown > 0:
                 self.damage_animation_cooldown -= 1
-            else:
+            elif self.damage_animation_cooldown == 0:
                 self.image = pygame.transform.scale(ichkeksi_image, (relToAbsDual(0.1, 0.1)))
+                self.damage_animation_cooldown -= 1
 
             if click and collidemouse and collidereach <= relToAbs(player.reach):
                 self.damage_animation_cooldown = 5

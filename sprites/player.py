@@ -75,6 +75,7 @@ class Player(pygame.sprite.Sprite):
         window.blit(self.image, self.rect)
 
     def update_skin(self):
+        self.skin = getSetting('skin')
         if self.skin == '3lia03':
             self.original_image = pygame.Surface.convert_alpha(
                 pygame.transform.scale(elia_texture, (relToAbs(0.1), relToAbs(0.1))))

@@ -267,27 +267,35 @@ def showSettings(window):
     backgr = pygame.transform.scale(background_texture, (relToAbs(1), relToAbs(1)))
     settingsmenu = pygame.transform.scale(settings_menu_texture, (relToAbs(1), relToAbs(1)))
 
-    window.blit(backgr, (0, 0))
-    window.blit(settingsmenu, (0, 0))
-    renderText(window, 'Backgr. Music:', (50, 190), globals.WHITE, 30)
-    renderText(window, 'Sound Volume:', (50, 220), globals.WHITE, 30)
-    renderText(window, 'Skin:', (50, 250), globals.WHITE, 30)
-    renderText(window, 'Nickname:', (50, 280), globals.WHITE, 30)
-    renderText(window, 'WWOPW ' + globals.VERSION + ' by Rande', (50, 310), globals.WHITE, 30)
-    renderText(window, str(settings['background_music']), (300, 190), globals.WHITE, 30)
-    renderText(window, '100%', (300, 220), globals.WHITE, 30)
-    renderText(window, '3lia03', (300, 250), globals.WHITE, 30)
-    renderText(window, '', (300, 280), globals.WHITE, 30)
+    buttongroup = pygame.sprite.Group()
+    saveandreturn_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="save and return", relpos=(0.05, 0.80))
+    buttongroup.add(saveandreturn_button)
 
-    pygame.display.update()
+    def update():
+        window.blit(backgr, (0, 0))
+        window.blit(settingsmenu, (0, 0))
+        renderText(window, 'Backgr. Music:', (50, 190), globals.WHITE, 30)
+        renderText(window, 'Sound Volume:', (50, 220), globals.WHITE, 30)
+        renderText(window, 'Skin:', (50, 250), globals.WHITE, 30)
+        renderText(window, 'Nickname:', (50, 280), globals.WHITE, 30)
+        renderText(window, 'WWOPW v0.8 by Rande', (50, 310), globals.GRAY, 30)
+        renderText(window, str(settings['background_music']), (300, 190), globals.WHITE, 30)
+        renderText(window, str(settings['volume']), (300, 220), globals.WHITE, 30)
+        renderText(window, str(settings['skin']), (300, 250), globals.WHITE, 30)
+        renderText(window, 'None', (300, 280), globals.WHITE, 30)
+        for i in buttongroup:
+            i.update()
+            i.draw(window=window)
+        pygame.display.update()
 
+    update()
     playSound('click')
-
     clock = pygame.time.Clock()
 
     run = True
     while run:
         clock.tick(60)
+        mousepos = pygame.mouse.get_pos()
 
         with open('data.json', 'r') as fr:
             settings = json.loads(fr.read())
@@ -301,44 +309,30 @@ def showSettings(window):
                 if event.button == globals.LEFT:
                     posX = (pygame.mouse.get_pos()[0])
                     posY = (pygame.mouse.get_pos()[1])
-                    # print(posX, " ", posY)
-                    if 367 < posY < 432 and 26 < posX < 475:
+                    if saveandreturn_button.rect.collidepoint(mousepos):
                         run = False
                     elif 190 < posY < 220 and 300 < posX < 450:
                         settings['background_music'] = not settings['background_music']
                         save_to_json(settings, "data")
-                        playSound('click')
                     elif 220 < posY < 250 and 300 < posX < 450:
                         if settings['volume'] >= 10:
                             settings['volume'] = 0
                         settings['volume'] += 1
                         save_to_json(settings, "data")
-                        playSound('click')
                     elif 250 < posY < 280 and 300 < posX < 450:
                         if settings['skin'] == "3lia03":
                             settings['skin'] = "Rande"
                         elif settings['skin'] == "Rande":
                             settings['skin'] = "3lia03"
-                        playSound('click')
+                        save_to_json(settings, "data")
                     elif 280 < posY < 310 and 300 < posX < 450:
                         print("test4")
-                        playSound('click')
+                    playSound('click')
+                    update()
+
             if event.type == pygame.KEYDOWN:
                 if event.key == globals.ESCAPE:
                     run = False
-
-        window.blit(backgr, (0, 0))
-        window.blit(settingsmenu, (0, 0))
-        renderText(window, 'Backgr. Music:', (50, 190), globals.WHITE, 30)
-        renderText(window, 'Sound Volume:', (50, 220), globals.WHITE, 30)
-        renderText(window, 'Skin:', (50, 250), globals.WHITE, 30)
-        renderText(window, 'Nickname:', (50, 280), globals.WHITE, 30)
-        renderText(window, 'WWOPW v0.8 by Rande', (50, 310), globals.GRAY, 30)
-        renderText(window, str(settings['background_music']), (300, 190), globals.WHITE, 30)
-        renderText(window, str(settings['volume']), (300, 220), globals.WHITE, 30)
-        renderText(window, str(settings['skin']), (300, 250), globals.WHITE, 30)
-        renderText(window, 'None', (300, 280), globals.WHITE, 30)
-        pygame.display.update()
 
     playSound('click')
 

@@ -92,6 +92,7 @@ def playLevel1():
                 if event.key == globals.ESCAPE:
                     utils.showPauseScreen(window)
                     resizeupdate = True
+                    playersprite.update_skin()
             # update screen on screenresize
             if event.type == pygame.VIDEORESIZE or resizeupdate:
                 resizeupdate = False
