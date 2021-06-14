@@ -1,7 +1,7 @@
 import pygame
 import utils
 import globals
-from sprites import button
+from sprites import button, label
 from utils import relToAbs
 from utils import relToAbsDual
 from utils import renderText
@@ -24,28 +24,22 @@ def showMenu():
     settings_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="settings", relpos=(0.05, 0.80))
     buttongroup.add(levelselection_button, difficulty_button, settings_button)
 
+    labelgroup = pygame.sprite.Group()
+    line1_label = label.Label(text='"Invincibility lies in defence;', anchor="center", reltextsize=0.06, relanchorpointposition=(0.5, 0.32))
+    line2_label = label.Label(text='Victory in the attack."', anchor="center", reltextsize=0.06, relanchorpointposition=(0.5, 0.38))
+    labelgroup.add(line1_label, line2_label)
+    # btw that quote is from sun tzu
+
     # draw window
     window.blit(background, (0, 0))
     window.blit(menu, (0, 0))
     for i in buttongroup:
         i.update()
         i.draw(window=window)
+    for i in labelgroup:
+        i.update()
+        i.draw(window=window)
 
-    # TODO: Label class to prevent things like this abomination below (and other kilometers of boilerplate code)
-    def blitText():
-        text1rect = getTextRect(text='"Invincibility lies in defence;', size=relToAbs(0.06))
-        text1rect.centerx = window.get_height()/2
-        text1rect.centery = relToAbs(0.32)
-        text2rect = getTextRect(text='Victory in the attack."', size=relToAbs(0.06))
-        text2rect.centerx = window.get_height() / 2
-        text2rect.centery = relToAbs(0.38)
-        renderText(window=window, text='"Invincibility lies in defence;', position=text1rect, color=(75, 75, 75), size=relToAbs(0.06))
-        renderText(window=window, text='Victory in the attack."', position=text2rect, color=(75, 75, 75), size=relToAbs(0.06))
-
-        # btw that quote is from sun tzu but there was no place left to give him credits
-        # maybe once the label class is done
-
-    blitText()
     pygame.display.update()
 
     clock = pygame.time.Clock()
@@ -87,7 +81,9 @@ def showMenu():
                         window.blit(menu, (0, 0))
                         for i in buttongroup:
                             i.draw(window=window)
-                        blitText()
+                        for i in labelgroup:
+                            i.update()
+                            i.draw(window=window)
                         pygame.display.update()
             # keypress event
             if event.type == pygame.KEYDOWN:
@@ -108,7 +104,9 @@ def showMenu():
                 for i in buttongroup:
                     i.update()
                     i.draw(window=window)
-                blitText()
+                for i in labelgroup:
+                    i.update()
+                    i.draw(window=window)
                 pygame.display.update()
                 globals.windowsize = h
 

@@ -7,7 +7,7 @@ from utils import getTextRect
 
 class Button(pygame.sprite.Sprite):
 
-    def __init__(self, relwidth, relheight, textcontent, relpos, textcolor=(75, 75, 75), reltextsize=0.1, textsize=50,
+    def __init__(self, relwidth, relheight, textcontent, relpos, textcolor=(75, 75, 75), reltextsize=0.1,
                  relborder=0.02, bordercolor=(255, 255, 255), innercolor=(194, 205, 209), anchor="center"):
         pygame.sprite.Sprite.__init__(self)
         self.surface = pygame.Surface(relToAbsDual(relwidth, relheight))
@@ -27,7 +27,7 @@ class Button(pygame.sprite.Sprite):
         self.relheight = relheight
         self.rect.x = relToAbs(relpos[0])
         self.rect.y = relToAbs(relpos[1])
-        self.textrect = getTextRect(textcontent, textsize)
+        self.textrect = getTextRect(textcontent, self.textsize)
         self.anchor = anchor
         if self.anchor == "center":
             self.textrect.center = self.rect.center
