@@ -2,7 +2,7 @@ import time
 import pygame
 import utils
 import globals
-from sprites import sword, player, outline, victim, web
+from sprites import sword, player, outline, victim, web, selection
 from utils import relToAbs, relToAbsDual
 
 damage_player_texture = pygame.image.load("textures/damage_player.png")
@@ -25,11 +25,10 @@ def playLevel1():
     background = pygame.transform.scale(background_original, (globals.windowsize, globals.windowsize))
     playersprite = player.Player()
     outlinesprite = outline.Outline()
-    #swordsprite = sword.Sword()
+    swordsprite = sword.Sword()
+    selectionsprite = selection.Selection()
     victimgroup = pygame.sprite.Group()
     webgroup = pygame.sprite.Group()
-    #swordgroup = pygame.sprite.Group()
-    #swordgroup.add(swordsprite)
 
     victim_summon_cooldown = 0
     victimcounter = 0
@@ -77,7 +76,8 @@ def playLevel1():
                 # left button
                 if event.button == globals.LEFT:
                     click = True
-                    #swordsprite.visibility = True
+                    swordsprite.visibility = True
+                    swordsprite.animation = 100
                 # right button and spawn webs
                 if event.button == globals.RIGHT:
                     if globals.webs_left > 0:
@@ -93,6 +93,9 @@ def playLevel1():
                     utils.showPauseScreen(window)
                     resizeupdate = True
                     playersprite.update_skin()
+                if event.key == pygame.K_e:
+                    selectionsprite.selection += 1
+                    selectionsprite.update()
             # update screen on screenresize
             if event.type == pygame.VIDEORESIZE or resizeupdate:
                 resizeupdate = False
@@ -110,6 +113,7 @@ def playLevel1():
                 for i in webgroup:
                     i.resize()
                 outlinesprite.resize()
+                selectionsprite.resize()
                 globals.windowsize = h
                 gui_surface = pygame.transform.scale(gui_surface_original, (relToAbsDual(1, 0.06)))
 
@@ -144,7 +148,7 @@ def playLevel1():
         # ------------------ UPDATES ------------------
         victimgroup.update(player=playersprite, click=click, webgroup=webgroup, delta_time=delta_time)
         playersprite.update(webgroup=webgroup, delta_time=delta_time)
-        #swordgroup.update(posX=playersprite.rect.centerx, posY=playersprite.rect.centery)
+        swordsprite.update(playersprite=playersprite, delta_time=delta_time)
         webgroup.update()
         damage_player.set_alpha(256 - (globals.damagecooldown * 256 / globals.maxcooldown))
         # ------------------ UPDATES ------------------
@@ -154,9 +158,9 @@ def playLevel1():
         outlinesprite.draw(main_surface)
         webgroup.draw(main_surface)
         victimgroup.draw(main_surface)
-        #if swordsprite.visibility:
-        #    swordgroup.draw(main_surface)
+        swordsprite.draw(main_surface)
         playersprite.draw(main_surface)
+        selectionsprite.draw(main_surface)
         main_surface.blit(damage_player, (0, 0))
         main_surface.blit(gui_surface, (0, 0))
 

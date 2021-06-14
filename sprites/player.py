@@ -26,6 +26,7 @@ class Player(pygame.sprite.Sprite):
         self.reach = 0.25
         self.hurtanimationcooldown = 0
         self.tookdamage = False
+        self.angle = 0
 
     def update(self, webgroup, delta_time):
 
@@ -53,13 +54,13 @@ class Player(pygame.sprite.Sprite):
         self.position = self.rect.center
         mouse_x, mouse_y = pygame.mouse.get_pos()
         rel_x, rel_y = mouse_x - self.rect.centerx, mouse_y - self.rect.centery
-        angle = (180 / pi) * -atan2(rel_y, rel_x) - 90
+        self.angle = (180 / pi) * -atan2(rel_y, rel_x) - 90
 
         if self.tookdamage:
             self.tookdamage = False
             self.hurtanimationcooldown = 5
 
-        self.image = pygame.transform.rotate(self.original_image, int(angle))
+        self.image = pygame.transform.rotate(self.original_image, int(self.angle))
         self.rect = self.image.get_rect(center=self.position)
 
         if self.hurtanimationcooldown > 0:
