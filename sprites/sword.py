@@ -38,22 +38,26 @@ class Sword(pygame.sprite.Sprite):
 
             # move the sword in the correct x and y directions
             if 0 <= self.absangle <= 90:
-                self.rect.centerx -= self.animation * (90 - self.absangle)
-                self.rect.centery -= self.animation * (self.absangle - 0)
+                self.rect.centerx -= self.animation * relToAbs((90 - self.absangle)/500)
+                self.rect.centery -= self.animation * relToAbs((self.absangle - 0)/500)
             elif 90 <= self.absangle <= 180:
-                self.rect.centerx += self.animation * (self.absangle - 90)
-                self.rect.centery -= self.animation * (180 - self.absangle)
+                self.rect.centerx += self.animation * relToAbs((self.absangle - 90)/500)
+                self.rect.centery -= self.animation * relToAbs((180 - self.absangle)/500)
             elif 180 <= self.absangle <= 270:
-                self.rect.centerx += self.animation * (270 - self.absangle)
-                self.rect.centery += self.animation * (self.absangle - 180)
+                self.rect.centerx += self.animation * relToAbs((270 - self.absangle)/500)
+                self.rect.centery += self.animation * relToAbs((self.absangle - 180)/500)
             elif 270 <= self.absangle <= 360:
-                self.rect.centerx -= self.animation * (self.absangle - 270)
-                self.rect.centery += self.animation * (360 - self.absangle)
+                self.rect.centerx -= self.animation * relToAbs((self.absangle - 270)/500)
+                self.rect.centery += self.animation * relToAbs((360 - self.absangle)/500)
 
             self.animation -= 5 * delta_time
 
         if self.animation <= 0:
             self.visibility = False
+
+    def resize(self):
+        self.default_image = pygame.transform.scale(sword_texture, relToAbsDual(0.12, 0.18))
+        self.rect = self.default_image.get_rect()
 
     def draw(self, window):
         if self.visibility:

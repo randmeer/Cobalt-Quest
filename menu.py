@@ -32,17 +32,20 @@ def showMenu():
         i.draw(window=window)
 
     # TODO: Label class to prevent things like this abomination below (and other kilometers of boilerplate code)
-    text1rect = getTextRect(text='"Invincibility lies in defence;', size=relToAbs(0.06))
-    text1rect.centerx = window.get_height()/2
-    text1rect.centery = relToAbs(0.32)
-    text2rect = getTextRect(text='Victory in the attack."', size=relToAbs(0.06))
-    text2rect.centerx = window.get_height() / 2
-    text2rect.centery = relToAbs(0.38)
-    renderText(window=window, text='"Invincibility lies in defence;', position=text1rect, color=(75, 75, 75), size=relToAbs(0.06))
-    renderText(window=window, text='Victory in the attack."', position=text2rect, color=(75, 75, 75), size=relToAbs(0.06))
-    # btw that quote is from sun tzu but there was no place left to give him credits
-    # maybe once the label class is done
+    def blitText():
+        text1rect = getTextRect(text='"Invincibility lies in defence;', size=relToAbs(0.06))
+        text1rect.centerx = window.get_height()/2
+        text1rect.centery = relToAbs(0.32)
+        text2rect = getTextRect(text='Victory in the attack."', size=relToAbs(0.06))
+        text2rect.centerx = window.get_height() / 2
+        text2rect.centery = relToAbs(0.38)
+        renderText(window=window, text='"Invincibility lies in defence;', position=text1rect, color=(75, 75, 75), size=relToAbs(0.06))
+        renderText(window=window, text='Victory in the attack."', position=text2rect, color=(75, 75, 75), size=relToAbs(0.06))
 
+        # btw that quote is from sun tzu but there was no place left to give him credits
+        # maybe once the label class is done
+
+    blitText()
     pygame.display.update()
 
     clock = pygame.time.Clock()
@@ -84,6 +87,7 @@ def showMenu():
                         window.blit(menu, (0, 0))
                         for i in buttongroup:
                             i.draw(window=window)
+                        blitText()
                         pygame.display.update()
             # keypress event
             if event.type == pygame.KEYDOWN:
@@ -104,16 +108,7 @@ def showMenu():
                 for i in buttongroup:
                     i.update()
                     i.draw(window=window)
-                text1rect = getTextRect(text='"Invincibility lies in defence;', size=relToAbs(0.06))
-                text1rect.centerx = window.get_height() / 2
-                text1rect.centery = relToAbs(0.32)
-                text2rect = getTextRect(text='Victory in the attack."', size=relToAbs(0.06))
-                text2rect.centerx = window.get_height() / 2
-                text2rect.centery = relToAbs(0.38)
-                renderText(window=window, text='"Invincibility lies in defence;', position=text1rect,
-                           color=(75, 75, 75), size=relToAbs(0.06))
-                renderText(window=window, text='Victory in the attack."', position=text2rect, color=(75, 75, 75),
-                           size=relToAbs(0.06))
+                blitText()
                 pygame.display.update()
                 globals.windowsize = h
 

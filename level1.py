@@ -114,9 +114,9 @@ def playLevel1():
                     i.resize()
                 outlinesprite.resize()
                 selectionsprite.resize()
+                swordsprite.resize()
                 globals.windowsize = h
                 gui_surface = pygame.transform.scale(gui_surface_original, (relToAbsDual(1, 0.06)))
-
         # ------------------ EVENTS -------------------
 
         # ------------------ GAME LOGIC ---------------
