@@ -1,8 +1,5 @@
 import pygame
-from utils import relToAbs
-from utils import relToAbsDual
-from utils import renderText
-from utils import getTextRect
+from utils import relToAbs, relToAbsDual, renderText, getTextRect
 
 class Label(pygame.sprite.Sprite):
 

@@ -22,18 +22,14 @@ def showTitleScreen():
     clock = pygame.time.Clock()
     run = True
     while run:
-
         clock.tick(60)
         for event in pygame.event.get():
-
             if event.type == pygame.QUIT:
                 run = False
                 globals.quitgame = True
-
             if event.type == pygame.MOUSEBUTTONDOWN:
                 globals.menu = True
                 run = False
-
             if event.type == pygame.KEYDOWN:
                 if event.key == globals.ESCAPE:
                     None
@@ -51,7 +47,6 @@ def showTitleScreen():
                 else:
                     globals.menu = True
                     run = False
-
             if event.type == pygame.VIDEORESIZE:
                 w, h = pygame.display.get_surface().get_size()
                 if w < 500 or h < 500:

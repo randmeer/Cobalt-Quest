@@ -2,10 +2,7 @@ import pygame
 import utils
 import globals
 from sprites import button, label
-from utils import relToAbs
 from utils import relToAbsDual
-from utils import renderText
-from utils import getTextRect
 
 background_original = pygame.image.load("textures/background.png")
 menu_original = pygame.image.load("textures/menu.png")
@@ -19,9 +16,9 @@ def showMenu():
     menu = pygame.transform.scale(menu_original, (globals.windowsize, globals.windowsize))
 
     buttongroup = pygame.sprite.Group()
-    levelselection_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="level selection", relpos=(0.05, 0.44))
-    difficulty_button = button.Button(relwidth=0.9, relheight=0.15, textcontent=f" difficulty: {globals.difficulty}", relpos=(0.05, 0.62))
-    settings_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="settings", relpos=(0.05, 0.80))
+    levelselection_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Level Selection", relpos=(0.05, 0.44))
+    difficulty_button = button.Button(relwidth=0.9, relheight=0.15, textcontent=f" Difficulty: {globals.difficulty}", relpos=(0.05, 0.62))
+    settings_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Settings", relpos=(0.05, 0.80))
     buttongroup.add(levelselection_button, difficulty_button, settings_button)
 
     labelgroup = pygame.sprite.Group()
@@ -70,7 +67,7 @@ def showMenu():
                         else:
                             globals.difficulty = 1
                         print(globals.difficulty)
-                        difficulty_button.text = f" difficulty: {globals.difficulty}"
+                        difficulty_button.text = f" Difficulty: {globals.difficulty}"
                         difficulty_button.update()
                         difficulty_button.draw(window=window)
                         pygame.display.update()

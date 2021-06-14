@@ -1,8 +1,5 @@
-import math
-
 import pygame
-from utils import relToAbsDual
-from utils import relToAbs
+from utils import relToAbsDual, relToAbs
 
 sword_texture = pygame.image.load("textures/sword.png")
 
@@ -15,25 +12,12 @@ class Sword(pygame.sprite.Sprite):
         self.rect.center = (-100, -100)
         self.animation = 0
         self.visibility = False
-        #self.offsetangle = 0
         self.absangle = 0
 
     def update(self, playersprite, delta_time):
         if self.visibility and self.animation > 0:
-
-            # this cursed code below modifies the angle for our purposes
-            # basically: angle is -90 when facing neg/neg and 90 when facing pos/pos
-            #self.offsetangle = abs(playersprite.angle - 45)
-            #if self.offsetangle > 180:
-            #    self.offsetangle = 180 - self.offsetangle + 180
-            #self.offsetangle -= 90
-            # alright figured how to do it without it but keeping this here for now because it was a hella lot of work
-
             self.absangle = abs(playersprite.angle - 90)
-
             self.image = pygame.transform.rotate(self.default_image, playersprite.angle)
-            #self.rect = self.image.get_rect(center=(playersprite.rect.centerx+int(self.offset * 100), playersprite.rect.centery+int(self.offset * 100)))
-            #self.rect = self.image.get_rect(center=(playersprite.rect.centerx+(math.cos(playersprite.angle)*self.offset), playersprite.rect.centery+(math.sin(playersprite.angle)*self.offset)))
             self.rect = self.image.get_rect(center=playersprite.rect.center)
 
             # move the sword in the correct x and y directions

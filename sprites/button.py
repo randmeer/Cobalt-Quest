@@ -1,9 +1,5 @@
 import pygame
-from utils import relToAbs
-from utils import relToAbsDual
-from utils import renderText
-from utils import getTextRect
-
+from utils import relToAbs, relToAbsDual, renderText, getTextRect
 
 class Button(pygame.sprite.Sprite):
 
@@ -21,12 +17,9 @@ class Button(pygame.sprite.Sprite):
         self.reltextsize = reltextsize
         self.textsize = relToAbs(reltextsize)
         self.rect = self.surface.get_rect()
-        self.relposx = relpos[0]
-        self.relposy = relpos[1]
-        self.relwidth = relwidth
-        self.relheight = relheight
-        self.rect.x = relToAbs(relpos[0])
-        self.rect.y = relToAbs(relpos[1])
+        self.relposx, self.relposy = relpos[0], relpos[1]
+        self.relwidth, self.relheight = relwidth, relheight
+        self.rect.x, self.rect.y = relToAbs(relpos[0]), relToAbs(relpos[1])
         self.textrect = getTextRect(textcontent, self.textsize)
         self.anchor = anchor
         if self.anchor == "center":
@@ -41,8 +34,7 @@ class Button(pygame.sprite.Sprite):
     def update(self):
         self.image = pygame.transform.scale(self.surface, relToAbsDual(self.relwidth, self.relheight))
         self.rect = self.image.get_rect()
-        self.rect.x = relToAbs(self.relposx)
-        self.rect.y = relToAbs(self.relposy)
+        self.rect.x, self.rect.y = relToAbs(self.relposx), relToAbs(self.relposy)
         self.textsize = relToAbs(self.reltextsize)
         self.textrect = getTextRect(self.text, self.textsize)
         if self.anchor == "center":

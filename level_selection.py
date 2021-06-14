@@ -7,7 +7,6 @@ from utils import relToAbsDual
 background_original = pygame.image.load("textures/background.png")
 lvl_selection_original = pygame.image.load("textures/level_selection.png")
 
-
 def showLevelSelection():
     print("LEVEL SELECTION START")
     utils.setGlobalDefaults()
@@ -17,7 +16,7 @@ def showLevelSelection():
     background = pygame.transform.scale(background_original, (globals.windowsize, globals.windowsize))
 
     buttongroup = pygame.sprite.Group()
-    backtomenu_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="back to menu", relpos=(0.05, 0.05))
+    backtomenu_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Back to Menu", relpos=(0.05, 0.05))
     buttongroup.add(backtomenu_button)
 
     # create the lvl buttons and use a uneccessary compicated alorithm to align them in a 3x3 grid

@@ -1,14 +1,14 @@
-import pygame, pygame.freetype, json
+import json
+import pygame
+import pygame.freetype
 import globals
-
-background_original = pygame.image.load("textures/background.png")
 
 victory_texture = pygame.image.load("textures/victory.png")
 defeat_texture = pygame.image.load("textures/defeat.png")
 overlay_texture = pygame.image.load("textures/overlay.png")
-
 background_texture = pygame.image.load("textures/background.png")
-settings_menu_texture = pygame.image.load("textures/settings_menu.png")
+settingsmenu_texture = pygame.image.load("textures/settings_menu.png")
+pausemenu_texture = pygame.image.load("textures/pause_menu.png")
 
 def absToRelDual(input_x, input_y):
     w, h = pygame.display.get_surface().get_size()
@@ -43,37 +43,27 @@ def getSetting(setting):
         return settings['skin']
 
 def background():
-    return pygame.transform.scale(background_original, (500, 500))
+    return pygame.transform.scale(background_texture, (500, 500))
 
 def setGlobalDefaults():
-    globals.quitgame = False
-    globals.exittomenu = False
-    globals.titlescreen = False
-    globals.menu = False
-    globals.level_selection = False
-    globals.rndebug = False
-    globals.level1 = False
+    globals.quitgame = globals.exittomenu = globals.titlescreen = globals.menu = globals.level_selection = globals.rndebug = globals.level1 = False
 
 def setGameDefaults():
     globals.victimbreakcooldownmax = 500 - 100 * globals.difficulty
-
-    globals.victimsmissed = 0
-    globals.victimskilled = 0
-
+    globals.victimsmissed = globals.victimskilled = 0
     # globals.victimspawns = (15 * globals.difficulty + globals.difficulty - 1)
     globals.victimspawns = 0
     globals.playerhealthpoints = (32 / globals.difficulty + globals.difficulty - 1)
     globals.maxcooldown = (60 / globals.difficulty)
-
     globals.damagecooldown = globals.maxcooldown
     globals.damageoverlaycooldown = 0
     globals.damagesum = 0
-
     globals.webs_left = 3
     globals.webcounter = 0
 
+from sprites.web import Web
+
 def generateWeb(webgroup):
-    from sprites.web import Web
     web = Web()
     webgroup.add(web)
     web.summon()
@@ -96,9 +86,7 @@ def getTextRect(text, size):
 
 def renderIngameText(window):
     renderText(window, str(int(globals.playerhealthpoints)), relToAbsDual(0.07, 0.02), globals.WHITE, relToAbs(0.048))
-    # renderText(window, str((sum(i > 0 for i in globals.victimhealth))), (127, 10), globals.WHITE, 24)
-    renderText(window, str(globals.victimspawns - globals.victimsmissed - globals.victimskilled + 1),
-               relToAbsDual(0.254, 0.02), globals.WHITE, relToAbs(0.048))
+    renderText(window, str(globals.victimspawns - globals.victimsmissed - globals.victimskilled + 1), relToAbsDual(0.254, 0.02), globals.WHITE, relToAbs(0.048))
     renderText(window, str(globals.victimskilled), relToAbsDual(0.43, 0.02), globals.WHITE, relToAbs(0.048))
     renderText(window, str(globals.victimsmissed), relToAbsDual(0.61, 0.02), globals.WHITE, relToAbs(0.048))
     renderText(window, str(globals.damagesum), relToAbsDual(0.79, 0.02), globals.WHITE, relToAbs(0.048))
@@ -119,8 +107,6 @@ def playSound(sound):
         pygame.mixer.Channel(3).play(pygame.mixer.Sound("sounds/victory.wav"))
     elif sound == 'defeat':
         pygame.mixer.Channel(3).play(pygame.mixer.Sound("sounds/defeat.wav"))
-    # volume = getSetting(setting='volume') / 10
-    # pygame.mixer.Sound.set_volume(value=volume)
 
     pygame.mixer.Channel(1).set_volume(getSetting('volume') / 10)
     pygame.mixer.Channel(2).set_volume(getSetting('volume') / 10)
@@ -130,20 +116,19 @@ def playTheme():
     pygame.mixer.init()
     pygame.mixer.music.load("sounds/theme.wav")
     pygame.mixer.music.play(-1)
-    # pygame.mixer.Channel(0).play(pygame.mixer.Sound("sounds/theme.wav"))
 
 from sprites import button
 
-def showPauseScreen(window):
+def showPauseScreen(window, mainsurf):
     setGlobalDefaults()
 
-    overlay = pygame.transform.scale(pygame.image.load("textures/overlay.png"), (relToAbs(1), relToAbs(1)))
-    pausemenu = pygame.transform.scale(pygame.image.load("textures/pause_menu.png"), (relToAbs(1), relToAbs(1)))
+    overlay = pygame.transform.scale(overlay_texture, (relToAbsDual(1, 1)))
+    pausemenu = pygame.transform.scale(pausemenu_texture, (relToAbsDual(1, 1)))
 
     buttongroup = pygame.sprite.Group()
-    resumeplaying_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="resume playing", relpos=(0.05, 0.44))
-    backtomenu_button = button.Button(relwidth=0.9, relheight=0.15, textcontent=" back to menu", relpos=(0.05, 0.62))
-    settings_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="settings", relpos=(0.05, 0.80))
+    resumeplaying_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Resume", relpos=(0.05, 0.44))
+    backtomenu_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Back to Menu", relpos=(0.05, 0.62))
+    settings_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Settings", relpos=(0.05, 0.80))
     buttongroup.add(resumeplaying_button, backtomenu_button, settings_button)
 
     window.blit(overlay, (0, 0))
@@ -185,10 +170,16 @@ def showPauseScreen(window):
                     pygame.display.set_mode((500, 500), pygame.RESIZABLE)
                 else:
                     pygame.display.set_mode((event.h, event.h), pygame.RESIZABLE)
-
+                window.blit(pygame.transform.scale(mainsurf, relToAbsDual(1, 1)), (0, 0))
+                window.blit(pygame.transform.scale(pausemenu_texture, relToAbsDual(1, 1)), (0, 0))
+                for x in buttongroup:
+                    x.update()
+                    x.draw(window=window)
+                pygame.display.update()
+                globals.windowsize = event.h
     playSound('click')
 
-def showEndScreen(window, end):
+def showEndScreen(window, mainsurf, end):
     setGlobalDefaults()
 
     if end == "victory":
@@ -196,13 +187,13 @@ def showEndScreen(window, end):
     if end == "defeat":
         playSound('defeat')
 
-    victory = pygame.transform.scale(victory_texture, (relToAbs(1), relToAbs(1)))
-    defeat = pygame.transform.scale(defeat_texture, (relToAbs(1), relToAbs(1)))
-    overlay = pygame.transform.scale(overlay_texture, (relToAbs(1), relToAbs(1)))
+    victory = pygame.transform.scale(victory_texture, (relToAbsDual(1, 1)))
+    defeat = pygame.transform.scale(defeat_texture, (relToAbsDual(1, 1)))
+    overlay = pygame.transform.scale(overlay_texture, (relToAbsDual(1, 1)))
 
     buttongroup = pygame.sprite.Group()
-    backtomenu_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="back to menu", relpos=(0.05, 0.44))
-    replay_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="replay", relpos=(0.05, 0.62))
+    backtomenu_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Back to Menu", relpos=(0.05, 0.44))
+    replay_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Replay", relpos=(0.05, 0.62))
     buttongroup.add(backtomenu_button, replay_button)
 
     overlay.set_alpha(2)
@@ -259,6 +250,14 @@ def showEndScreen(window, end):
                     pygame.display.set_mode((500, 500), pygame.RESIZABLE)
                 else:
                     pygame.display.set_mode((event.h, event.h), pygame.RESIZABLE)
+                window.blit(pygame.transform.scale(mainsurf, relToAbsDual(1, 1)), (0, 0))
+                window.blit(pygame.transform.scale(main_surface, relToAbsDual(1, 1)), (0, 0))
+                for x in buttongroup:
+                    x.update()
+                    x.draw(window=window)
+                pygame.display.update()
+                globals.windowsize = event.h
+
     playSound('click')
 
 def save_to_json(data, name):
@@ -271,13 +270,14 @@ def showSettings(window):
     with open('data.json', "r") as f:
         settings = json.loads(f.read())
 
-    backgr = pygame.transform.scale(background_texture, (relToAbs(1), relToAbs(1)))
-    settingsmenu = pygame.transform.scale(settings_menu_texture, (relToAbs(1), relToAbs(1)))
+    backgr = pygame.transform.scale(background_texture, (relToAbsDual(1, 1)))
+    settingsmenu = pygame.transform.scale(settingsmenu_texture, (relToAbsDual(1, 1)))
 
     buttongroup = pygame.sprite.Group()
     saveandreturn_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="save and return", relpos=(0.05, 0.80))
     buttongroup.add(saveandreturn_button)
 
+    # TODO: remake the settings gui with label-sprites
     def update():
         window.blit(backgr, (0, 0))
         window.blit(settingsmenu, (0, 0))

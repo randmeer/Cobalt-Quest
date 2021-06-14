@@ -1,11 +1,9 @@
+import globals
 import math
 import pygame
 import random
-import globals
 import utils
-from utils import absToRel
-from utils import relToAbs
-from utils import relToAbsDual
+from utils import absToRel, relToAbs, relToAbsDual
 
 ichkeksi_image = pygame.image.load("textures/ichkeksi.png")
 damage_image = pygame.image.load("textures/damage.png")
@@ -25,8 +23,7 @@ class Victim(pygame.sprite.Sprite):
         self.velocity = globals.difficulty
         self.health = globals.victimhealthpointsmax
         self.breakcooldown = 0
-        self.relposx = 0
-        self.relposy = 0
+        self.relposx = self.relposy = 0
         self.tookdamage = False
         self.damage_animation_cooldown = 10
 
@@ -67,9 +64,9 @@ class Victim(pygame.sprite.Sprite):
                     collideweb.kill()
                     self.breakcooldown = 0
                 self.breakcooldown += 1
-                self.velocity = 0.05 * delta_time
+                self.velocity = 0.05 * delta_time * globals.difficulty
             else:
-                self.velocity = 0.1 * delta_time
+                self.velocity = 0.1 * delta_time * globals.difficulty
 
             if self.direction == 1:
                 self.relposy += self.velocity
@@ -83,12 +80,10 @@ class Victim(pygame.sprite.Sprite):
             elif self.direction == 4:
                 self.relposx += self.velocity
 
-            self.rect.x = relToAbs(self.relposx)
-            self.rect.y = relToAbs(self.relposy)
+            self.rect.x, self.rect.y = relToAbs(self.relposx), relToAbs(self.relposy)
 
             if self.rect.centerx > relToAbs(1.1) or self.rect.centerx < relToAbs(
-                    0.1) * -1 or self.rect.centery > relToAbs(1.1) or self.rect.centery < relToAbs(
-                0.1) * -1:
+                    0.1) * -1 or self.rect.centery > relToAbs(1.1) or self.rect.centery < relToAbs(0.1) * -1:
                 self.kill()
                 self.rect = None
                 self.onscreen = False
@@ -96,10 +91,10 @@ class Victim(pygame.sprite.Sprite):
                 globals.victimsmissed += 1
 
             if self.damage_animation_cooldown > 0:
-                self.damage_animation_cooldown -= 1
-            elif self.damage_animation_cooldown == 0:
+                self.damage_animation_cooldown -= 100 * delta_time
+            elif self.damage_animation_cooldown < 0:
                 self.image = pygame.transform.scale(ichkeksi_image, (relToAbsDual(0.1, 0.1)))
-                self.damage_animation_cooldown -= 1
+                self.damage_animation_cooldown -= 100 * delta_time
 
             if click and collidemouse and collidereach <= relToAbs(player.reach):
                 self.damage_animation_cooldown = 5
@@ -109,13 +104,6 @@ class Victim(pygame.sprite.Sprite):
                 self.health -= 1
                 globals.damagesum += 1
                 utils.playSound('hit')
-
-            # TEMPORARY CODE TO KILL VICTIMS FASTER
-            # if collidemouse:
-            #    self.health -= 1
-            #    globals.damagesum += 1
-            #    utils.playSound('hit')
-            # REMOVE AFTER
 
             if collideplayer and globals.damagecooldown >= globals.maxcooldown:
                 globals.playerhealthpoints -= 1
@@ -134,7 +122,6 @@ class Victim(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
     def draw(self, window):
-        print("hello lol")
         window.blit(self.image, self.rect)
         if self.tookdamage:
             window.blit(self.damage, self.rect)

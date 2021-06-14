@@ -2,8 +2,6 @@ import pygame
 import globals
 import utils
 
-ESCAPE = 27
-
 elia_texture = pygame.image.load("textures/3lia03.png")
 ichkeksi_texture = pygame.image.load("textures/ichkeksi.png")
 damage_texture = pygame.image.load("textures/damage.png")
@@ -31,7 +29,7 @@ def showRNDebug():
                 run = False
                 exit()
             if event.type == pygame.KEYDOWN:
-                if event.key == ESCAPE:
+                if event.key == globals.ESCAPE:
                     run = False
                     globals.titlescreen = True
                     utils.playSound('click')
@@ -50,5 +48,4 @@ def showRNDebug():
         window.blit(menu_texture, (200, 10))
         window.blit(level_selection_texture, (300, 10))
         window.blit(web_texture, (0, 140))
-
         pygame.display.update()

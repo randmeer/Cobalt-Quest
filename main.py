@@ -7,23 +7,6 @@ import title_screen
 import menu
 import globals
 
-# def updateMusic():
-#    pygame.mixer.init()
-#
-#    test = utils.getSetting('background_music')
-#    while True:
-#        if test != utils.getSetting('background_music'):
-#            pygame.mixer.music.set_volume(utils.getSetting('volume') / 10)
-#        test = utils.getSetting('background_music')
-#
-#
-# musicthread = threading.Thread(target=updateMusic, daemon=True)
-#
-# if utils.getSetting('background_music') == "true":
-#    utils.playTheme()
-#    pygame.mixer.music.set_volume(utils.getSetting('volume') / 10)
-#    musicthread.start()
-
 if __name__ == '__main__':
     # if music present play the music
     if utils.getSetting('background_music'):
@@ -37,8 +20,8 @@ if __name__ == '__main__':
     window = utils.setupWindow()
     clock = pygame.time.Clock()
 
-    run = True
     # main game loop
+    run = True
     while run:
         print(" ")
         print("MAIN LOOP ROUND START")
@@ -65,8 +48,8 @@ if __name__ == '__main__':
             rndebug.showRNDebug()
         else:
             print("yeah so there is no current state u f**ked up")
-        print("CYCLED TROUGH CURRENT STATES")
 
+        print("CYCLED TROUGH CURRENT STATES")
         print("MAIN LOOP ROUND END")
         print(" ")
 

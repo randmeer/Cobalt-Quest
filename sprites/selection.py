@@ -1,14 +1,11 @@
 import pygame
-from utils import absToRel
 from utils import relToAbsDual
-from utils import relToAbs
 
 selection_texture = pygame.image.load("textures/selection.png")
 sword_texture = pygame.image.load("textures/sword.png")
 web_texture = pygame.image.load("textures/web.png")
 
 class Selection(pygame.sprite.Sprite):
-
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.original_image = pygame.transform.scale(selection_texture, relToAbsDual(0.15, 0.15))

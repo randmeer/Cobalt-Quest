@@ -1,15 +1,11 @@
-import pygame
-from math import pi
-from math import atan2
 import globals
-from utils import getSetting
-from utils import relToAbs
-from utils import relToAbsDual
+import pygame
+from math import pi, atan2
+from utils import getSetting, relToAbs, relToAbsDual
 
 elia_texture = pygame.image.load("textures/3lia03.png")
 rande_texture = pygame.image.load("textures/rande.png")
 damage_image = pygame.image.load("textures/damage.png")
-damage_image.set_alpha(125)
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -18,18 +14,16 @@ class Player(pygame.sprite.Sprite):
         self.update_skin()
         self.image = self.original_image
         self.rect = self.image.get_rect()
-        self.rect.center = (globals.WIDTH / 2, globals.HEIGHT / 2)
+        self.rect.center = (globals.windowsize / 2, globals.windowsize / 2)
         self.velocity = 0.0
         self.position = (0, 0)
-        self.relposx = 0.5
-        self.relposy = 0.5
+        self.relposx = self.relposy = 0.5
         self.reach = 0.25
         self.hurtanimationcooldown = 0
         self.tookdamage = False
         self.angle = 0
 
     def update(self, webgroup, delta_time):
-
         collideweb = pygame.sprite.spritecollideany(self, webgroup)
         w, h = pygame.display.get_surface().get_size()
 
@@ -58,19 +52,18 @@ class Player(pygame.sprite.Sprite):
 
         if self.tookdamage:
             self.tookdamage = False
-            self.hurtanimationcooldown = 5
+            self.hurtanimationcooldown = 10
+            self.original_image.blit(pygame.transform.scale(damage_image, (relToAbsDual(0.1, 0.1))), (0, 0))
 
         self.image = pygame.transform.rotate(self.original_image, int(self.angle))
         self.rect = self.image.get_rect(center=self.position)
 
         if self.hurtanimationcooldown > 0:
-            self.hurtanimationcooldown -= 1
-            self.original_image.blit(pygame.transform.scale(damage_image, (relToAbsDual(0.1, 0.1))), (0, 0))
+            self.hurtanimationcooldown -= 100 * delta_time
         else:
             self.update_skin()
 
-        self.rect.centerx = relToAbs(self.relposx)
-        self.rect.centery = relToAbs(self.relposy)
+        self.rect.centerx, self.rect.centery = relToAbs(self.relposx), relToAbs(self.relposy)
 
     def draw(self, window):
         window.blit(self.image, self.rect)
