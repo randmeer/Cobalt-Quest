@@ -10,6 +10,14 @@ background_texture = pygame.image.load("textures/background.png")
 settingsmenu_texture = pygame.image.load("textures/settings_menu.png")
 pausemenu_texture = pygame.image.load("textures/pause_menu.png")
 
+def resizeWindow(eventw, eventh):
+    if eventw < 500 or eventh < 500:
+        pygame.display.set_mode((500, 500), pygame.RESIZABLE)
+        globals.windowsize = 500
+    else:
+        pygame.display.set_mode((eventh, eventh), pygame.RESIZABLE)
+        globals.windowsize = eventh
+
 def absToRelDual(input_x, input_y):
     w, h = pygame.display.get_surface().get_size()
     output_x = input_x / w
@@ -166,17 +174,13 @@ def showPauseScreen(window, mainsurf):
                 if event.key == globals.ESCAPE:
                     run = False
             if event.type == pygame.VIDEORESIZE:
-                if event.w < 500 or event.h < 500:
-                    pygame.display.set_mode((500, 500), pygame.RESIZABLE)
-                else:
-                    pygame.display.set_mode((event.h, event.h), pygame.RESIZABLE)
+                resizeWindow(event.w, event.h)
                 window.blit(pygame.transform.scale(mainsurf, relToAbsDual(1, 1)), (0, 0))
                 window.blit(pygame.transform.scale(pausemenu_texture, relToAbsDual(1, 1)), (0, 0))
                 for x in buttongroup:
                     x.update()
                     x.draw(window=window)
                 pygame.display.update()
-                globals.windowsize = event.h
     playSound('click')
 
 def showEndScreen(window, mainsurf, end):
@@ -246,17 +250,13 @@ def showEndScreen(window, mainsurf, end):
                     run = False
                     globals.exittomenu = True
             if event.type == pygame.VIDEORESIZE:
-                if event.w < 500 or event.h < 500:
-                    pygame.display.set_mode((500, 500), pygame.RESIZABLE)
-                else:
-                    pygame.display.set_mode((event.h, event.h), pygame.RESIZABLE)
+                resizeWindow(event.w, event.h)
                 window.blit(pygame.transform.scale(mainsurf, relToAbsDual(1, 1)), (0, 0))
                 window.blit(pygame.transform.scale(main_surface, relToAbsDual(1, 1)), (0, 0))
                 for x in buttongroup:
                     x.update()
                     x.draw(window=window)
                 pygame.display.update()
-                globals.windowsize = event.h
 
     playSound('click')
 
@@ -266,10 +266,6 @@ def save_to_json(data, name):
 
 def showSettings(window):
     setGlobalDefaults()
-
-    with open('data.json', "r") as f:
-        settings = json.loads(f.read())
-
     backgr = pygame.transform.scale(background_texture, (relToAbsDual(1, 1)))
     settingsmenu = pygame.transform.scale(settingsmenu_texture, (relToAbsDual(1, 1)))
 
@@ -281,15 +277,15 @@ def showSettings(window):
     def update():
         window.blit(backgr, (0, 0))
         window.blit(settingsmenu, (0, 0))
-        renderText(window, 'Backgr. Music:', (50, 190), globals.WHITE, 30)
-        renderText(window, 'Sound Volume:', (50, 220), globals.WHITE, 30)
-        renderText(window, 'Skin:', (50, 250), globals.WHITE, 30)
-        renderText(window, 'Nickname:', (50, 280), globals.WHITE, 30)
-        renderText(window, 'WWOPW v0.8 by Rande', (50, 310), globals.GRAY, 30)
-        renderText(window, str(settings['background_music']), (300, 190), globals.WHITE, 30)
-        renderText(window, str(settings['volume']), (300, 220), globals.WHITE, 30)
-        renderText(window, str(settings['skin']), (300, 250), globals.WHITE, 30)
-        renderText(window, 'None', (300, 280), globals.WHITE, 30)
+        #renderText(window, 'Backgr. Music:', (50, 190), globals.WHITE, 30)
+        #renderText(window, 'Sound Volume:', (50, 220), globals.WHITE, 30)
+        #renderText(window, 'Skin:', (50, 250), globals.WHITE, 30)
+        #renderText(window, 'Nickname:', (50, 280), globals.WHITE, 30)
+        #renderText(window, 'WWOPW v0.8 by Rande', (50, 310), globals.GRAY, 30)
+        #renderText(window, str(settings['background_music']), (300, 190), globals.WHITE, 30)
+        #renderText(window, str(settings['volume']), (300, 220), globals.WHITE, 30)
+        #renderText(window, str(settings['skin']), (300, 250), globals.WHITE, 30)
+        #renderText(window, 'None', (300, 280), globals.WHITE, 30)
         for i in buttongroup:
             i.update()
             i.draw(window=window)
@@ -334,12 +330,18 @@ def showSettings(window):
                         save_to_json(settings, "data")
                     elif 280 < posY < 310 and 300 < posX < 450:
                         print("test4")
-                    playSound('click')
                     update()
-
             if event.type == pygame.KEYDOWN:
                 if event.key == globals.ESCAPE:
                     run = False
+            if event.type == pygame.VIDEORESIZE:
+                resizeWindow(event.w, event.h)
+                window.blit(pygame.transform.scale(background_texture, relToAbsDual(1, 1)), (0, 0))
+                window.blit(pygame.transform.scale(settingsmenu_texture, relToAbsDual(1, 1)), (0, 0))
+                for x in buttongroup:
+                    x.update()
+                    x.draw(window=window)
+                pygame.display.update()
 
     playSound('click')
 

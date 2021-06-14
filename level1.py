@@ -94,13 +94,11 @@ def playLevel1():
             if event.type == pygame.VIDEORESIZE or resizeupdate:
                 resizeupdate = False
                 w, h = pygame.display.get_surface().get_size()
-                if w < 500 or h < 500:
-                    pygame.display.set_mode((500, 500), pygame.RESIZABLE)
-                else:
-                    pygame.display.set_mode((h, h), pygame.RESIZABLE)
+                utils.resizeWindow(w, h)
                 main_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
                 damage_player = pygame.transform.scale(damage_player_texture, (relToAbsDual(1, 1)))
                 background = pygame.transform.scale(background_original, (relToAbsDual(1, 1)))
+                gui_surface = pygame.transform.scale(gui_surface_original, (relToAbsDual(1, 0.06)))
                 for i in victimgroup:
                     i.resize()
                 playersprite.update_skin()
@@ -109,8 +107,6 @@ def playLevel1():
                 outlinesprite.resize()
                 selectionsprite.resize()
                 swordsprite.resize()
-                globals.windowsize = h
-                gui_surface = pygame.transform.scale(gui_surface_original, (relToAbsDual(1, 0.06)))
         # ------------------ EVENTS -------------------
 
         # ------------------ GAME LOGIC ---------------

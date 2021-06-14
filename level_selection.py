@@ -67,11 +67,7 @@ def showLevelSelection():
                     globals.menu = True
 
             if event.type == pygame.VIDEORESIZE:
-                w, h = pygame.display.get_surface().get_size()
-                if w < 500 or h < 500:
-                    pygame.display.set_mode((500, 500), pygame.RESIZABLE)
-                else:
-                    pygame.display.set_mode((h, h), pygame.RESIZABLE)
+                utils.resizeWindow(event.w, event.h)
                 background = pygame.transform.scale(background_original, (relToAbsDual(1, 1)))
                 lvl_selection = pygame.transform.scale(lvl_selection_original, relToAbsDual(1, 1))
                 window.blit(background, (0, 0))
@@ -80,7 +76,6 @@ def showLevelSelection():
                     i.update()
                     i.draw(window=window)
                 pygame.display.update()
-                globals.windowsize = h
 
     utils.playSound('click')
     print("LEVEL SELECTION END")

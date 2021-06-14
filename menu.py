@@ -11,6 +11,7 @@ def showMenu():
     print("MENU START")
     utils.setGlobalDefaults()
     window = utils.setupWindow()
+    resizeupdate = False
 
     background = pygame.transform.scale(background_original, (globals.windowsize, globals.windowsize))
     menu = pygame.transform.scale(menu_original, (globals.windowsize, globals.windowsize))
@@ -74,26 +75,17 @@ def showMenu():
                         utils.playSound('click')
                     if settings_button.rect.collidepoint(mousepos):
                         utils.showSettings(window=window)
-                        window.blit(background, (0, 0))
-                        window.blit(menu, (0, 0))
-                        for i in buttongroup:
-                            i.draw(window=window)
-                        for i in labelgroup:
-                            i.update()
-                            i.draw(window=window)
-                        pygame.display.update()
+                        resizeupdate = True
             # keypress event
             if event.type == pygame.KEYDOWN:
                 if event.key == globals.ESCAPE:
                     run = False
                     globals.titlescreen = True
             # resize event
-            if event.type == pygame.VIDEORESIZE:
+            if event.type == pygame.VIDEORESIZE or resizeupdate:
+                resizeupdate = False
                 w, h = pygame.display.get_surface().get_size()
-                if w < 500 or h < 500:
-                    pygame.display.set_mode((500, 500), pygame.RESIZABLE)
-                else:
-                    pygame.display.set_mode((h, h), pygame.RESIZABLE)
+                utils.resizeWindow(w, h)
                 background = pygame.transform.scale(background_original, (relToAbsDual(1, 1)))
                 menu = pygame.transform.scale(menu_original, relToAbsDual(1, 1))
                 window.blit(background, (0, 0))
@@ -105,7 +97,6 @@ def showMenu():
                     i.update()
                     i.draw(window=window)
                 pygame.display.update()
-                globals.windowsize = h
 
     utils.playSound('click')
     print("MENU END")
