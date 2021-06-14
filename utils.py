@@ -197,34 +197,46 @@ def showEndScreen(window, end):
         playSound('defeat')
 
     victory = pygame.transform.scale(victory_texture, (relToAbs(1), relToAbs(1)))
-    defeat = pygame.transform.scale( defeat_texture , (relToAbs(1), relToAbs(1)))
+    defeat = pygame.transform.scale(defeat_texture, (relToAbs(1), relToAbs(1)))
     overlay = pygame.transform.scale(overlay_texture, (relToAbs(1), relToAbs(1)))
 
+    buttongroup = pygame.sprite.Group()
+    backtomenu_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="back to menu", relpos=(0.05, 0.44))
+    replay_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="replay", relpos=(0.05, 0.62))
+    buttongroup.add(backtomenu_button, replay_button)
+
     overlay.set_alpha(2)
+
+    window.blit(overlay, (0, 0))
+
+    main_surface = pygame.Surface(relToAbsDual(1, 1))
+
+    if end == "victory":
+        main_surface.blit(victory, (0, 0))
+    elif end == "defeat":
+        main_surface.blit(defeat, (0, 0))
+    for x in buttongroup:
+        x.update()
+        x.draw(window=main_surface)
+    main_surface.set_alpha(20)
+
     clock = pygame.time.Clock()
-
     i = 0
-
     run = True
     while run:
         clock.tick(60)
+        mousepos = pygame.mouse.get_pos()
         i += 1
-
-        if i < 64:
-            window.blit(overlay, (0, 0))
-            if end == "victory":
-                victory.set_alpha(i)
-                window.blit(victory, (0, 0))
-            elif end == "defeat":
-                defeat.set_alpha(i)
-                window.blit(defeat, (0, 0))
+        if i < 32:
+            window.blit(main_surface, (0, 0))
             pygame.display.update()
-
-        if i == 64:
-            victory.set_alpha(256)
-            defeat.set_alpha(256)
+        elif i == 32:
+            main_surface.set_alpha(255)
+            window.blit(main_surface, (0, 0))
+            for x in buttongroup:
+                x.update()
+                x.draw(window=window)
             pygame.display.update()
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -232,11 +244,12 @@ def showEndScreen(window, end):
                 globals.quitgame = True
             if event.type == pygame.MOUSEBUTTONDOWN and i > 64:
                 if event.button == globals.LEFT:
-                    posX = (pygame.mouse.get_pos()[0])
-                    posY = (pygame.mouse.get_pos()[1])
-                    if 207 < posY < 272 and 26 < posX < 475:
+                    if backtomenu_button.rect.collidepoint(mousepos):
                         run = False
                         globals.exittomenu = True
+                    if replay_button.rect.collidepoint(mousepos):
+                        run = False
+                        globals.level1 = True
             if event.type == pygame.KEYDOWN:
                 if event.key == globals.ESCAPE:
                     run = False
@@ -258,12 +271,6 @@ def showSettings(window):
     with open('data.json', "r") as f:
         settings = json.loads(f.read())
 
-    # Iterating through the json
-    #for i in settings:
-    #    print(i)
-
-    #print(settings['volume'])
-    #print(settings['background_music'])
     backgr = pygame.transform.scale(background_texture, (relToAbs(1), relToAbs(1)))
     settingsmenu = pygame.transform.scale(settings_menu_texture, (relToAbs(1), relToAbs(1)))
 

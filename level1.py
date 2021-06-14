@@ -140,9 +140,11 @@ def playLevel1():
         # determin victory or defeat
         if globals.victimskilled == globals.victimspawns + 1:
             utils.showEndScreen(window, "victory")
+            run = False
         elif globals.victimsmissed >= globals.victimspawns and globals.victimspawns - globals.victimsmissed - globals.\
                 victimskilled + 1 <= 0 or globals.playerhealthpoints < 1:
             utils.showEndScreen(window, "defeat")
+            run = False
         # ------------------ GAME LOGIC ---------------
 
         # ------------------ UPDATES ------------------
