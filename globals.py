@@ -51,9 +51,6 @@ victimsmissed = 0
 
 damagecooldown = 0
 maxcooldown = 0
-player_hurt = False
-damage_animation_cooldown = 0
-
 
 damageoverlayalpha = 64
 tookdamage = False

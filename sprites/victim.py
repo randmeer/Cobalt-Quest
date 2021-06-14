@@ -85,7 +85,6 @@ class Victim(pygame.sprite.Sprite):
 
             self.rect.x = relToAbs(self.relposx)
             self.rect.y = relToAbs(self.relposy)
-            #print(self.rect.x, self.rect.y)
 
             if self.rect.centerx > relToAbs(1.1) or self.rect.centerx < relToAbs(
                     0.1) * -1 or self.rect.centery > relToAbs(1.1) or self.rect.centery < relToAbs(
@@ -96,9 +95,11 @@ class Victim(pygame.sprite.Sprite):
                 self.health = -1
                 globals.victimsmissed += 1
 
-            self.damage_animation_cooldown -= 1
-            if self.damage_animation_cooldown < 1:
+            if self.damage_animation_cooldown > 0:
+                self.damage_animation_cooldown -= 1
+            else:
                 self.image = pygame.transform.scale(ichkeksi_image, (relToAbsDual(0.1, 0.1)))
+
             if click and collidemouse and collidereach <= relToAbs(player.reach):
                 self.damage_animation_cooldown = 5
                 surface = pygame.transform.scale(ichkeksi_image, (relToAbsDual(0.1, 0.1)))
@@ -118,8 +119,7 @@ class Victim(pygame.sprite.Sprite):
             if collideplayer and globals.damagecooldown >= globals.maxcooldown:
                 globals.playerhealthpoints -= 1
                 globals.damagecooldown = 0
-                globals.player_hurt = True
-                globals.damage_animation_cooldown = 10
+                player.tookdamage = True
                 utils.playSound('hurt')
 
             if self.health == 0:

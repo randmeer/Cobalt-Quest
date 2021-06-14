@@ -4,10 +4,12 @@ from math import atan2
 import globals
 from utils import getSetting
 from utils import relToAbs
+from utils import relToAbsDual
 
 elia_texture = pygame.image.load("textures/3lia03.png")
 rande_texture = pygame.image.load("textures/rande.png")
 damage_image = pygame.image.load("textures/damage.png")
+damage_image.set_alpha(125)
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -22,6 +24,8 @@ class Player(pygame.sprite.Sprite):
         self.relposx = 0.5
         self.relposy = 0.5
         self.reach = 0.25
+        self.hurtanimationcooldown = 0
+        self.tookdamage = False
 
     def update(self, webgroup, delta_time):
 
@@ -51,15 +55,18 @@ class Player(pygame.sprite.Sprite):
         rel_x, rel_y = mouse_x - self.rect.centerx, mouse_y - self.rect.centery
         angle = (180 / pi) * -atan2(rel_y, rel_x) - 90
 
-        globals.damage_animation_cooldown -= 1
-        if globals.damage_animation_cooldown < 1:
-            self.update_skin()
-        if globals.player_hurt:
-            self.original_image.blit(pygame.Surface.convert_alpha(
-                pygame.transform.scale(damage_image, (50, 50))), (0, 0))
+        if self.tookdamage:
+            self.tookdamage = False
+            self.hurtanimationcooldown = 5
 
         self.image = pygame.transform.rotate(self.original_image, int(angle))
         self.rect = self.image.get_rect(center=self.position)
+
+        if self.hurtanimationcooldown > 0:
+            self.hurtanimationcooldown -= 1
+            self.original_image.blit(pygame.transform.scale(damage_image, (relToAbsDual(0.1, 0.1))), (0, 0))
+        else:
+            self.update_skin()
 
         self.rect.centerx = relToAbs(self.relposx)
         self.rect.centery = relToAbs(self.relposy)
