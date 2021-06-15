@@ -1,5 +1,5 @@
 import pygame
-import globals
+import globs
 import utils
 
 elia_texture = pygame.image.load("textures/3lia03.png")
@@ -29,9 +29,9 @@ def showRNDebug():
                 run = False
                 exit()
             if event.type == pygame.KEYDOWN:
-                if event.key == globals.ESCAPE:
+                if event.key == globs.ESCAPE:
                     run = False
-                    globals.titlescreen = True
+                    globs.titlescreen = True
                     utils.playSound('click')
 
         window.fill((0, 0, 0))

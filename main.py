@@ -1,11 +1,12 @@
 import pygame
+
 import rndebug
 import utils
 import level_selection
 import level1
 import title_screen
 import menu
-import globals
+import globs
 
 if __name__ == '__main__':
     # if music present play the music
@@ -16,7 +17,7 @@ if __name__ == '__main__':
     print(utils.getSetting('volume'))
 
     utils.setGlobalDefaults()
-    globals.titlescreen = True
+    globs.titlescreen = True
     window = utils.setupWindow()
     clock = pygame.time.Clock()
 
@@ -33,18 +34,18 @@ if __name__ == '__main__':
                 run = False
 
         # game state manager
-        if globals.quitgame:
+        if globs.quitgame:
             run = False
             print("DETECTED ORDER TO QUIT GAME")
-        elif globals.titlescreen:
+        elif globs.titlescreen:
             title_screen.showTitleScreen()
-        elif globals.menu:
+        elif globs.menu:
             menu.showMenu()
-        elif globals.level_selection:
+        elif globs.level_selection:
             level_selection.showLevelSelection()
-        elif globals.level1:
+        elif globs.level1:
             level1.playLevel1()
-        elif globals.rndebug:
+        elif globs.rndebug:
             rndebug.showRNDebug()
         else:
             print("yeah so there is no current state u f**ked up")

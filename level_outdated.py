@@ -1,7 +1,7 @@
 import pygame
 import random
 import utils
-import globals
+import globs
 
 # NOT USED INGAME
 def playLevelOutdated(difficulty):
@@ -315,5 +315,5 @@ def playLevelOutdated(difficulty):
         if cobwebcooldown > 0:
             cobwebcooldown = cobwebcooldown - 1
 
-        if globals.exittomenu:
+        if globs.exittomenu:
             run = False

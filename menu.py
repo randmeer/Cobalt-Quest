@@ -1,6 +1,6 @@
 import pygame
 import utils
-import globals
+import globs
 from sprites import button, label
 from utils import relToAbsDual
 
@@ -13,12 +13,12 @@ def showMenu():
     window = utils.setupWindow()
     resizeupdate = False
 
-    background = pygame.transform.scale(background_original, (globals.windowsize, globals.windowsize))
-    menu = pygame.transform.scale(menu_original, (globals.windowsize, globals.windowsize))
+    background = pygame.transform.scale(background_original, (globs.windowsize, globs.windowsize))
+    menu = pygame.transform.scale(menu_original, (globs.windowsize, globs.windowsize))
 
     buttongroup = pygame.sprite.Group()
     levelselection_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Level Selection", relpos=(0.05, 0.44))
-    difficulty_button = button.Button(relwidth=0.9, relheight=0.15, textcontent=f" Difficulty: {globals.difficulty}", relpos=(0.05, 0.62))
+    difficulty_button = button.Button(relwidth=0.9, relheight=0.15, textcontent=f" Difficulty: {globs.difficulty}", relpos=(0.05, 0.62))
     settings_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Settings", relpos=(0.05, 0.80))
     buttongroup.add(levelselection_button, difficulty_button, settings_button)
 
@@ -45,7 +45,7 @@ def showMenu():
     while run:
         clock.tick(60)
 
-        if globals.quitgame:
+        if globs.quitgame:
             run = False
         mousepos = pygame.mouse.get_pos()
 
@@ -54,21 +54,23 @@ def showMenu():
             # quit event
             if event.type == pygame.QUIT:
                 run = False
-                globals.quitgame = True
+                globs.quitgame = True
             # mouse event
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # left button event
-                if event.button == globals.LEFT:
+                if event.button == globs.LEFT:
                     if levelselection_button.rect.collidepoint(mousepos):
                         run = False
-                        globals.level_selection = True
+                        globs.level_selection = True
                     if difficulty_button.rect.collidepoint(mousepos):
-                        if globals.difficulty < 3:
-                            globals.difficulty += 1
+                        if globs.difficulty < 3:
+                            globs.difficulty += 1
                         else:
-                            globals.difficulty = 1
-                        print(globals.difficulty)
-                        difficulty_button.text = f" Difficulty: {globals.difficulty}"
+                            globs.difficulty = 1
+                        print(globs.difficulty)
+                        difficulty_button.text = f" Difficulty: {globs.difficulty}"
+                        print(globs.difficulty)
+                        difficulty_button.text = f" difficulty: {globs.difficulty}"
                         difficulty_button.update()
                         difficulty_button.draw(window=window)
                         pygame.display.update()
@@ -78,9 +80,9 @@ def showMenu():
                         resizeupdate = True
             # keypress event
             if event.type == pygame.KEYDOWN:
-                if event.key == globals.ESCAPE:
+                if event.key == globs.ESCAPE:
                     run = False
-                    globals.titlescreen = True
+                    globs.titlescreen = True
             # resize event
             if event.type == pygame.VIDEORESIZE or resizeupdate:
                 resizeupdate = False
