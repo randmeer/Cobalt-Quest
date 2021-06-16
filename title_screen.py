@@ -1,6 +1,7 @@
 import pygame
 import utils
-import globals
+import globs
+import globs
 from utils import relToAbsDual
 
 background_original = pygame.image.load("textures/background.png")
@@ -11,8 +12,8 @@ def showTitleScreen():
     utils.setGlobalDefaults()
     window = utils.setupWindow()
 
-    background = pygame.transform.scale(background_original, (globals.windowsize, globals.windowsize))
-    title_screen = pygame.transform.scale(title_screen_original, (globals.windowsize, globals.windowsize))
+    background = pygame.transform.scale(background_original, (globs.windowsize, globs.windowsize))
+    title_screen = pygame.transform.scale(title_screen_original, (globs.windowsize, globs.windowsize))
     rndebugAccess = 0
 
     window.blit(background, (0, 0))
@@ -26,24 +27,25 @@ def showTitleScreen():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-                globals.quitgame = True
+                globs.quitgame = True
+
             if event.type == pygame.MOUSEBUTTONDOWN:
-                globals.menu = True
+                globs.menu = True
                 run = False
             if event.type == pygame.KEYDOWN:
-                if event.key == globals.KEY_R:
+                if event.key == globs.KEY_R:
                     pass
                 # the following elif's let the user CMD-Q (macOS) or ALT-F4 (windows)
-                elif event.key == globals.COMMAND:
+                elif event.key == globs.COMMAND:
                     pass
-                elif event.key == globals.KEY_Q:
+                elif event.key == globs.KEY_Q:
                     pass
-                elif event.key == globals.ALT:
+                elif event.key == globs.ALT:
                     pass
-                elif event.key == globals.KEY_F4:
+                elif event.key == globs.KEY_F4:
                     pass
                 else:
-                    globals.menu = True
+                    globs.menu = True
                     run = False
             if event.type == pygame.VIDEORESIZE:
                 utils.resizeWindow(event.w, event.h)
@@ -61,7 +63,7 @@ def showTitleScreen():
 
         if rndebugAccess == 150:
             print("ACCESS GRANTED")
-            globals.rndebug = True
+            globs.rndebug = True
             run = False
 
     utils.playSound('click')

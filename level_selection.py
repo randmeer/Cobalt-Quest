@@ -1,6 +1,8 @@
 import pygame
+
+import globs
 import utils
-import globals
+import globs
 from sprites import button
 from utils import relToAbsDual
 
@@ -12,8 +14,8 @@ def showLevelSelection():
     utils.setGlobalDefaults()
     window = utils.setupWindow()
 
-    lvl_selection = pygame.transform.scale(lvl_selection_original, (globals.windowsize, globals.windowsize))
-    background = pygame.transform.scale(background_original, (globals.windowsize, globals.windowsize))
+    lvl_selection = pygame.transform.scale(lvl_selection_original, (globs.windowsize, globs.windowsize))
+    background = pygame.transform.scale(background_original, (globs.windowsize, globs.windowsize))
 
     buttongroup = pygame.sprite.Group()
     backtomenu_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Back to Menu", relpos=(0.05, 0.05))
@@ -41,7 +43,9 @@ def showLevelSelection():
 
     clock = pygame.time.Clock()
     run = True
+    # main game loop
     while run:
+
         clock.tick(60)
         mousepos = pygame.mouse.get_pos()
 
@@ -50,21 +54,22 @@ def showLevelSelection():
             # quit event
             if event.type == pygame.QUIT:
                 run = False
-                globals.quitgame = True
+                globs.quitgame = True
 
+            # code below is boilerplate code. Just make a buttonclass and check on every loop if the cursor has clicked in its hitbox.
             # mouse event
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == globals.LEFT:
+                if event.button == globs.LEFT:
                     if backtomenu_button.rect.collidepoint(mousepos):
                         run = False
-                        globals.menu = True
+                        globs.menu = True
                     if levelbuttons[0].rect.collidepoint(mousepos):
                         run = False
-                        globals.level1 = True
+                        globs.level1 = True
             if event.type == pygame.KEYDOWN:
-                if event.key == globals.ESCAPE:
+                if event.key == globs.ESCAPE:
                     run = False
-                    globals.menu = True
+                    globs.menu = True
 
             if event.type == pygame.VIDEORESIZE:
                 utils.resizeWindow(event.w, event.h)

@@ -1,7 +1,9 @@
+import pygame, pygame.freetype, json
+import globs
 import json
 import pygame
 import pygame.freetype
-import globals
+import globs
 
 victory_texture = pygame.image.load("textures/victory.png")
 defeat_texture = pygame.image.load("textures/defeat.png")
@@ -13,10 +15,10 @@ pausemenu_texture = pygame.image.load("textures/pause_menu.png")
 def resizeWindow(eventw, eventh):
     if eventw < 500 or eventh < 500:
         pygame.display.set_mode((500, 500), pygame.RESIZABLE)
-        globals.windowsize = 500
+        globs.windowsize = 500
     else:
         pygame.display.set_mode((eventh, eventh), pygame.RESIZABLE)
-        globals.windowsize = eventh
+        globs.windowsize = eventh
 
 def absToRelDual(input_x, input_y):
     w, h = pygame.display.get_surface().get_size()
@@ -54,20 +56,42 @@ def background():
     return pygame.transform.scale(background_texture, (500, 500))
 
 def setGlobalDefaults():
-    globals.quitgame = globals.exittomenu = globals.titlescreen = globals.menu = globals.level_selection = globals.rndebug = globals.level1 = False
+    globs.quitgame = False
+    globs.exittomenu = False
+    globs.titlescreen = False
+    globs.menu = False
+    globs.level_selection = False
+    globs.rndebug = False
+    globs.level1 = False
+    globs.quitgame = globs.exittomenu = globs.titlescreen = globs.menu = globs.level_selection = globs.rndebug = globs.level1 = False
 
 def setGameDefaults():
-    globals.victimbreakcooldownmax = 500 - 100 * globals.difficulty
-    globals.victimsmissed = globals.victimskilled = 0
-    # globals.victimspawns = (15 * globals.difficulty + globals.difficulty - 1)
-    globals.victimspawns = 0
-    globals.playerhealthpoints = (32 / globals.difficulty + globals.difficulty - 1)
-    globals.maxcooldown = (60 / globals.difficulty)
-    globals.damagecooldown = globals.maxcooldown
-    globals.damageoverlaycooldown = 0
-    globals.damagesum = 0
-    globals.webs_left = 3
-    globals.webcounter = 0
+    globs.victimbreakcooldownmax = 500 - 100 * globs.difficulty
+
+    globs.victimsmissed = 0
+    globs.victimskilled = 0
+
+    globs.victimbreakcooldownmax = 500 - 100 * globs.difficulty
+    globs.victimsmissed = globs.victimskilled = 0
+    # globs.victimspawns = (15 * globs.difficulty + globs.difficulty - 1)
+    globs.victimspawns = 0
+    globs.playerhealthpoints = (32 / globs.difficulty + globs.difficulty - 1)
+    globs.maxcooldown = (60 / globs.difficulty)
+
+    globs.damagecooldown = globs.maxcooldown
+    globs.damageoverlaycooldown = 0
+    globs.damagesum = 0
+
+    globs.webs_left = 3
+    globs.webcounter = 0
+    globs.victimspawns = 0
+    globs.playerhealthpoints = (32 / globs.difficulty + globs.difficulty - 1)
+    globs.maxcooldown = (60 / globs.difficulty)
+    globs.damagecooldown = globs.maxcooldown
+    globs.damageoverlaycooldown = 0
+    globs.damagesum = 0
+    globs.webs_left = 3
+    globs.webcounter = 0
 
 from sprites.web import Web
 
@@ -75,13 +99,16 @@ def generateWeb(webgroup):
     web = Web()
     webgroup.add(web)
     web.summon()
-    globals.webcounter += 1
+    globs.webcounter += 1
     return web
 
 def setupWindow():
     pygame.init()
-    window = pygame.display.set_mode((globals.windowsize, globals.windowsize), pygame.RESIZABLE)
-    pygame.display.set_caption("WWOPW version " + globals.VERSION + " by Rande")
+    window = pygame.display.set_mode((500, 500), pygame.RESIZABLE)
+    pygame.display.set_caption("WWOPW version " + globs.VERSION + " by Rande")
+    pygame.display.flip()
+    window = pygame.display.set_mode((globs.windowsize, globs.windowsize), pygame.RESIZABLE)
+    pygame.display.set_caption("WWOPW version " + globs.VERSION + " by Rande")
     return window
 
 def renderText(window, text, position, color, size):
@@ -93,11 +120,18 @@ def getTextRect(text, size):
     return font.get_rect(text=text)
 
 def renderIngameText(window):
-    renderText(window, str(int(globals.playerhealthpoints)), relToAbsDual(0.07, 0.02), globals.WHITE, relToAbs(0.048))
-    renderText(window, str(globals.victimspawns - globals.victimsmissed - globals.victimskilled + 1), relToAbsDual(0.254, 0.02), globals.WHITE, relToAbs(0.048))
-    renderText(window, str(globals.victimskilled), relToAbsDual(0.43, 0.02), globals.WHITE, relToAbs(0.048))
-    renderText(window, str(globals.victimsmissed), relToAbsDual(0.61, 0.02), globals.WHITE, relToAbs(0.048))
-    renderText(window, str(globals.damagesum), relToAbsDual(0.79, 0.02), globals.WHITE, relToAbs(0.048))
+    renderText(window, str(int(globs.playerhealthpoints)), relToAbsDual(0.07, 0.02), globs.WHITE, relToAbs(0.048))
+    # renderText(window, str((sum(i > 0 for i in globs.victimhealth))), (127, 10), globs.WHITE, 24)
+    renderText(window, str(globs.victimspawns - globs.victimsmissed - globs.victimskilled + 1),
+               relToAbsDual(0.254, 0.02), globs.WHITE, relToAbs(0.048))
+    renderText(window, str(globs.victimskilled), relToAbsDual(0.43, 0.02), globs.WHITE, relToAbs(0.048))
+    renderText(window, str(globs.victimsmissed), relToAbsDual(0.61, 0.02), globs.WHITE, relToAbs(0.048))
+    renderText(window, str(globs.damagesum), relToAbsDual(0.79, 0.02), globs.WHITE, relToAbs(0.048))
+    renderText(window, str(int(globs.playerhealthpoints)), relToAbsDual(0.07, 0.02), globs.WHITE, relToAbs(0.048))
+    renderText(window, str(globs.victimspawns - globs.victimsmissed - globs.victimskilled + 1), relToAbsDual(0.254, 0.02), globs.WHITE, relToAbs(0.048))
+    renderText(window, str(globs.victimskilled), relToAbsDual(0.43, 0.02), globs.WHITE, relToAbs(0.048))
+    renderText(window, str(globs.victimsmissed), relToAbsDual(0.61, 0.02), globs.WHITE, relToAbs(0.048))
+    renderText(window, str(globs.damagesum), relToAbsDual(0.79, 0.02), globs.WHITE, relToAbs(0.048))
 
 def playSound(sound):
     pygame.mixer.init()
@@ -115,6 +149,8 @@ def playSound(sound):
         pygame.mixer.Channel(3).play(pygame.mixer.Sound("sounds/victory.wav"))
     elif sound == 'defeat':
         pygame.mixer.Channel(3).play(pygame.mixer.Sound("sounds/defeat.wav"))
+    # volume = getSetting(setting='volume') / 10
+    # pygame.mixer.Sound.set_volume(value=volume)
 
     pygame.mixer.Channel(1).set_volume(getSetting('volume') / 10)
     pygame.mixer.Channel(2).set_volume(getSetting('volume') / 10)
@@ -124,6 +160,7 @@ def playTheme():
     pygame.mixer.init()
     pygame.mixer.music.load("sounds/theme.wav")
     pygame.mixer.music.play(-1)
+    # pygame.mixer.Channel(0).play(pygame.mixer.Sound("sounds/theme.wav"))
 
 from sprites import button
 
@@ -158,20 +195,28 @@ def showPauseScreen(window, mainsurf):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-                globals.exittomenu = True
-                globals.quitgame = True
+                globs.exittomenu = True
+                globs.quitgame = True
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == globals.LEFT:
+                if event.button == globs.LEFT:
+                    posX = (pygame.mouse.get_pos()[0])
+                    posY = (pygame.mouse.get_pos()[1])
+                    relPosX = absToRel(posX)
+                    relPosY = absToRel(posY)
+                    # print(posX, " ", posY)
+                if event.button == globs.LEFT:
                     if resumeplaying_button.rect.collidepoint(mousepos):
                         run = False
                     if backtomenu_button.rect.collidepoint(mousepos):
                         run = False
-                        globals.exittomenu = True
+                        globs.exittomenu = True
+                    if 367 < posY < 432 and 26 < posX < 475:
+                        globs.exittomenu = True
                     if settings_button.rect.collidepoint(mousepos):
                         showSettings(window=window)
                         run = False
             if event.type == pygame.KEYDOWN:
-                if event.key == globals.ESCAPE:
+                if event.key == globs.ESCAPE:
                     run = False
             if event.type == pygame.VIDEORESIZE:
                 resizeWindow(event.w, event.h)
@@ -232,23 +277,28 @@ def showEndScreen(window, mainsurf, end):
                 x.update()
                 x.draw(window=window)
             pygame.display.update()
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-                globals.exittomenu = True
-                globals.quitgame = True
+                globs.exittomenu = True
+                globs.quitgame = True
             if event.type == pygame.MOUSEBUTTONDOWN and i > 64:
-                if event.button == globals.LEFT:
+                if event.button == globs.LEFT:
+                    posX = (pygame.mouse.get_pos()[0])
+                    posY = (pygame.mouse.get_pos()[1])
+                if event.button == globs.LEFT:
                     if backtomenu_button.rect.collidepoint(mousepos):
                         run = False
-                        globals.exittomenu = True
+                        globs.exittomenu = True
+                        globs.exittomenu = True
                     if replay_button.rect.collidepoint(mousepos):
                         run = False
-                        globals.level1 = True
+                        globs.level1 = True
             if event.type == pygame.KEYDOWN:
-                if event.key == globals.ESCAPE:
+                if event.key == globs.ESCAPE:
                     run = False
-                    globals.exittomenu = True
+                    globs.exittomenu = True
             if event.type == pygame.VIDEORESIZE:
                 resizeWindow(event.w, event.h)
                 window.blit(pygame.transform.scale(mainsurf, relToAbsDual(1, 1)), (0, 0))
@@ -273,19 +323,41 @@ def showSettings(window):
     saveandreturn_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="save and return", relpos=(0.05, 0.80))
     buttongroup.add(saveandreturn_button)
 
+    #print(settings['volume'])
+    #print(settings['background_music'])
+    backgr = pygame.transform.scale(background_texture, (relToAbs(1), relToAbs(1)))
+    settingsmenu = pygame.transform.scale(settingsmenu_texture, (relToAbs(1), relToAbs(1)))
+
+    window.blit(backgr, (0, 0))
+    window.blit(settingsmenu, (0, 0))
+
+    with open('data.json', 'r') as fr:
+        settings = json.loads(fr.read())
+
+    renderText(window, 'Backgr. Music:', (50, 190), globs.WHITE, 30)
+    renderText(window, 'Sound Volume:', (50, 220), globs.WHITE, 30)
+    renderText(window, 'Skin:', (50, 250), globs.WHITE, 30)
+    renderText(window, 'Nickname:', (50, 280), globs.WHITE, 30)
+    renderText(window, 'WWOPW ' + globs.VERSION + ' by Rande', (50, 310), globs.WHITE, 30)
+    renderText(window, str(settings['background_music']), (300, 190), globs.WHITE, 30)
+    renderText(window, '100%', (300, 220), globs.WHITE, 30)
+    renderText(window, '3lia03', (300, 250), globs.WHITE, 30)
+    renderText(window, '', (300, 280), globs.WHITE, 30)
+
+    pygame.display.update()
     # TODO: remake the settings gui with label-sprites
     def update():
         window.blit(backgr, (0, 0))
         window.blit(settingsmenu, (0, 0))
-        #renderText(window, 'Backgr. Music:', (50, 190), globals.WHITE, 30)
-        #renderText(window, 'Sound Volume:', (50, 220), globals.WHITE, 30)
-        #renderText(window, 'Skin:', (50, 250), globals.WHITE, 30)
-        #renderText(window, 'Nickname:', (50, 280), globals.WHITE, 30)
-        #renderText(window, 'WWOPW v0.8 by Rande', (50, 310), globals.GRAY, 30)
-        #renderText(window, str(settings['background_music']), (300, 190), globals.WHITE, 30)
-        #renderText(window, str(settings['volume']), (300, 220), globals.WHITE, 30)
-        #renderText(window, str(settings['skin']), (300, 250), globals.WHITE, 30)
-        #renderText(window, 'None', (300, 280), globals.WHITE, 30)
+        # renderText(window, 'Backgr. Music:', (50, 190), globs.WHITE, 30)
+        # renderText(window, 'Sound Volume:', (50, 220), globs.WHITE, 30)
+        # renderText(window, 'Skin:', (50, 250), globs.WHITE, 30)
+        # renderText(window, 'Nickname:', (50, 280), globs.WHITE, 30)
+        # renderText(window, 'WWOPW v0.8 by Rande', (50, 310), globs.GRAY, 30)
+        # renderText(window, str(settings['background_music']), (300, 190), globs.WHITE, 30)
+        # renderText(window, str(settings['volume']), (300, 220), globs.WHITE, 30)
+        # renderText(window, str(settings['skin']), (300, 250), globs.WHITE, 30)
+        # renderText(window, 'None', (300, 280), globs.WHITE, 30)
         for i in buttongroup:
             i.update()
             i.draw(window=window)
@@ -306,10 +378,10 @@ def showSettings(window):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-                globals.exittomenu = True
-                globals.quitgame = True
+                globs.exittomenu = True
+                globs.quitgame = True
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == globals.LEFT:
+                if event.button == globs.LEFT:
                     posX = (pygame.mouse.get_pos()[0])
                     posY = (pygame.mouse.get_pos()[1])
                     if saveandreturn_button.rect.collidepoint(mousepos):
@@ -332,16 +404,29 @@ def showSettings(window):
                         print("test4")
                     update()
             if event.type == pygame.KEYDOWN:
-                if event.key == globals.ESCAPE:
+                if event.key == globs.ESCAPE:
                     run = False
-            if event.type == pygame.VIDEORESIZE:
-                resizeWindow(event.w, event.h)
-                window.blit(pygame.transform.scale(background_texture, relToAbsDual(1, 1)), (0, 0))
-                window.blit(pygame.transform.scale(settingsmenu_texture, relToAbsDual(1, 1)), (0, 0))
-                for x in buttongroup:
-                    x.update()
-                    x.draw(window=window)
-                pygame.display.update()
+
+        window.blit(backgr, (0, 0))
+        window.blit(settingsmenu, (0, 0))
+        renderText(window, 'Backgr. Music:', (50, 190), globs.WHITE, 30)
+        renderText(window, 'Sound Volume:', (50, 220), globs.WHITE, 30)
+        renderText(window, 'Skin:', (50, 250), globs.WHITE, 30)
+        renderText(window, 'Nickname:', (50, 280), globs.WHITE, 30)
+        renderText(window, 'WWOPW v0.8 by Rande', (50, 310), globs.GRAY, 30)
+        renderText(window, str(settings['background_music']), (300, 190), globs.WHITE, 30)
+        renderText(window, str(settings['volume']), (300, 220), globs.WHITE, 30)
+        renderText(window, str(settings['skin']), (300, 250), globs.WHITE, 30)
+        renderText(window, 'None', (300, 280), globs.WHITE, 30)
+        pygame.display.update()
+        if event.type == pygame.VIDEORESIZE:
+            resizeWindow(event.w, event.h)
+            window.blit(pygame.transform.scale(background_texture, relToAbsDual(1, 1)), (0, 0))
+            window.blit(pygame.transform.scale(settingsmenu_texture, relToAbsDual(1, 1)), (0, 0))
+            for x in buttongroup:
+                x.update()
+                x.draw(window=window)
+            pygame.display.update()
 
     playSound('click')
 

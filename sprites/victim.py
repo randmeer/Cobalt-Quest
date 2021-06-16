@@ -1,7 +1,8 @@
-import globals
 import math
 import pygame
 import random
+
+import globs
 import utils
 from utils import absToRel, relToAbs, relToAbsDual
 
@@ -20,8 +21,8 @@ class Victim(pygame.sprite.Sprite):
         self.rect.center = (-100, -100)
         self.direction = random.randint(1, 4)
         self.onscreen = True
-        self.velocity = globals.difficulty
-        self.health = globals.victimhealthpointsmax
+        self.velocity = globs.difficulty
+        self.health = globs.victimhealthpointsmax
         self.breakcooldown = 0
         self.relposx = self.relposy = 0
         self.tookdamage = False
@@ -60,13 +61,13 @@ class Victim(pygame.sprite.Sprite):
             collidereach = math.hypot(self.rect.centerx - player.rect.centerx, self.rect.centery - player.rect.centery)
 
             if collideweb:
-                if self.breakcooldown > globals.victimbreakcooldownmax:
+                if self.breakcooldown > globs.victimbreakcooldownmax:
                     collideweb.kill()
                     self.breakcooldown = 0
                 self.breakcooldown += 1
-                self.velocity = 0.05 * delta_time * globals.difficulty
+                self.velocity = 0.05 * delta_time * globs.difficulty
             else:
-                self.velocity = 0.1 * delta_time * globals.difficulty
+                self.velocity = 0.1 * delta_time
 
             if self.direction == 1:
                 self.relposy += self.velocity
@@ -88,7 +89,7 @@ class Victim(pygame.sprite.Sprite):
                 self.rect = None
                 self.onscreen = False
                 self.health = -1
-                globals.victimsmissed += 1
+                globs.victimsmissed += 1
 
             if self.damage_animation_cooldown > 0:
                 self.damage_animation_cooldown -= 100 * delta_time
@@ -102,19 +103,19 @@ class Victim(pygame.sprite.Sprite):
                 surface.blit(pygame.transform.scale(damage_image, (relToAbsDual(0.1, 0.1))), (0, 0))
                 self.image = surface
                 self.health -= 1
-                globals.damagesum += 1
+                globs.damagesum += 1
                 utils.playSound('hit')
 
-            if collideplayer and globals.damagecooldown >= globals.maxcooldown:
-                globals.playerhealthpoints -= 1
-                globals.damagecooldown = 0
+            if collideplayer and globs.damagecooldown >= globs.maxcooldown:
+                globs.playerhealthpoints -= 1
+                globs.damagecooldown = 0
                 player.tookdamage = True
                 utils.playSound('hurt')
 
             if self.health == 0:
                 self.kill()
                 self.rect = None
-                globals.victimskilled += 1
+                globs.victimskilled += 1
                 self.onscreen = False
 
     def resize(self):

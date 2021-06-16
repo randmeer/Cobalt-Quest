@@ -1,4 +1,10 @@
-import globals
+import pygame
+from math import pi
+from math import atan2
+import globs
+from utils import getSetting
+from utils import relToAbs
+import globs
 import pygame
 from math import pi, atan2
 from utils import getSetting, relToAbs, relToAbsDual
@@ -14,7 +20,7 @@ class Player(pygame.sprite.Sprite):
         self.update_skin()
         self.image = self.original_image
         self.rect = self.image.get_rect()
-        self.rect.center = (globals.windowsize / 2, globals.windowsize / 2)
+        self.rect.center = (globs.windowsize / 2, globs.windowsize / 2)
         self.velocity = 0.0
         self.position = (0, 0)
         self.relposx = self.relposy = 0.5
