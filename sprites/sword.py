@@ -16,8 +16,10 @@ class Sword(pygame.sprite.Sprite):
 
     def update(self, playersprite, delta_time):
         if self.visibility and self.animation > 0:
-            self.absangle = abs(playersprite.angle - 90)
-            self.image = pygame.transform.rotate(self.default_image, playersprite.angle)
+            self.absangle = abs(playersprite.rotation - 270) - 180
+            self.image = pygame.transform.rotate(self.default_image, playersprite.rotation)
+            # self.absangle = abs(playersprite.angle - 90)
+            # self.image = pygame.transform.rotate(self.default_image, playersprite.angle)
             self.rect = self.image.get_rect(center=playersprite.rect.center)
 
             # move the sword in the correct x and y directions
