@@ -27,7 +27,7 @@ class ParticleCloud(pygame.sprite.Sprite):
                 i.draw(surface=window)
             self.rect = pygame.Rect(relToAbs(self.relcenter[0]-self.relradius), relToAbs(self.relcenter[1]-self.relradius), relToAbs(self.relradius*2), relToAbs(self.relradius*2))
             self.rect.center = relToAbsDual(self.relcenter[0], self.relcenter[1])
-            self.timer -= 1 * delta_time
+            self.timer -= 4 * delta_time
             if self.timer < 0:
                 self.run = False
 
