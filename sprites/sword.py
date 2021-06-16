@@ -6,7 +6,7 @@ sword_texture = pygame.image.load("textures/sword.png")
 class Sword(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.default_image = pygame.transform.scale(sword_texture, relToAbsDual(0.12, 0.18))
+        self.default_image = pygame.transform.scale(sword_texture, relToAbsDual(0.1, 0.1))
         self.image = self.default_image
         self.rect = self.default_image.get_rect()
         self.rect.center = (-100, -100)
@@ -40,7 +40,7 @@ class Sword(pygame.sprite.Sprite):
             self.visibility = False
 
     def resize(self):
-        self.default_image = pygame.transform.scale(sword_texture, relToAbsDual(0.12, 0.18))
+        self.default_image = pygame.transform.scale(sword_texture, relToAbsDual(0.1, 0.1))
         self.rect = self.default_image.get_rect()
 
     def draw(self, window):
