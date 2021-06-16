@@ -2,8 +2,8 @@ import time
 import pygame
 import utils
 import globs
-from sprites import sword, player, outline, victim, web, selection, new_player
-from utils import relToAbs, relToAbsDual
+from sprites import sword, player, outline, victim, web, selection, new_player, particle_cloud
+from utils import relToAbs, relToAbsDual, absToRelDual
 
 damage_player_texture = pygame.image.load("textures/damage_player.png")
 heart_img = pygame.image.load("textures/heart.png")
@@ -28,6 +28,9 @@ def playLevel1():
     webgroup = pygame.sprite.Group()
     webs = victims = []
     victim_summon_cooldown = victimcounter = 0
+
+    particlecloudsprite = particle_cloud.ParticleCloud(relcenter=(0, 0), relradius=0.1,
+                                                       relparticlesize=0.03, color=(70, 70, 70), density=10)
 
     gui_surface_original = pygame.Surface((relToAbsDual(1, 0.06)), pygame.SRCALPHA, 32)
     gui_surface_original = gui_surface_original.convert_alpha()
@@ -58,6 +61,7 @@ def playLevel1():
         # ------------------ TIME ---------------------
 
         click = False
+        mousepos = pygame.mouse.get_pos()
 
         # ------------------ EVENTS -------------------
         for event in pygame.event.get():
@@ -69,9 +73,14 @@ def playLevel1():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # left button
                 if event.button == globs.LEFT:
-                    click = True
-                    swordsprite.visibility = True
-                    swordsprite.animation = 1
+                    if selectionsprite.items[selectionsprite.selection][0] == "sword":
+                        click = True
+                        swordsprite.visibility = True
+                        swordsprite.animation = 1
+                        particlecloudsprite.timer = 1
+                        particlecloudsprite.relcenter = absToRelDual(mousepos[0], mousepos[1])
+                        particlecloudsprite.run = True
+                        particlecloudsprite.reposition(particlecloudsprite.relcenter)
                 # right button and spawn webs
                 if event.button == globs.RIGHT:
                     if globs.webs_left > 0:
@@ -148,6 +157,7 @@ def playLevel1():
         outlinesprite.draw(main_surface)
         webgroup.draw(main_surface)
         victimgroup.draw(main_surface)
+        particlecloudsprite.update(window=main_surface, delta_time=delta_time)
         swordsprite.draw(main_surface)
         playersprite.draw(main_surface)
         selectionsprite.draw(main_surface)
