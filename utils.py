@@ -334,17 +334,8 @@ def showSettings(window):
     with open('data.json', 'r') as fr:
         settings = json.loads(fr.read())
 
-    renderText(window, 'Backgr. Music:', (50, 190), globs.WHITE, 30)
-    renderText(window, 'Sound Volume:', (50, 220), globs.WHITE, 30)
-    renderText(window, 'Skin:', (50, 250), globs.WHITE, 30)
-    renderText(window, 'Nickname:', (50, 280), globs.WHITE, 30)
-    renderText(window, 'WWOPW ' + globs.VERSION + ' by Rande', (50, 310), globs.WHITE, 30)
-    renderText(window, str(settings['background_music']), (300, 190), globs.WHITE, 30)
-    renderText(window, '100%', (300, 220), globs.WHITE, 30)
-    renderText(window, '3lia03', (300, 250), globs.WHITE, 30)
-    renderText(window, '', (300, 280), globs.WHITE, 30)
-
     pygame.display.update()
+
     # TODO: remake the settings gui with label-sprites
     def update():
         window.blit(backgr, (0, 0))
@@ -406,28 +397,14 @@ def showSettings(window):
             if event.type == pygame.KEYDOWN:
                 if event.key == globs.ESCAPE:
                     run = False
-
-        window.blit(backgr, (0, 0))
-        window.blit(settingsmenu, (0, 0))
-        renderText(window, 'Backgr. Music:', (50, 190), globs.WHITE, 30)
-        renderText(window, 'Sound Volume:', (50, 220), globs.WHITE, 30)
-        renderText(window, 'Skin:', (50, 250), globs.WHITE, 30)
-        renderText(window, 'Nickname:', (50, 280), globs.WHITE, 30)
-        renderText(window, 'WWOPW v0.8 by Rande', (50, 310), globs.GRAY, 30)
-        renderText(window, str(settings['background_music']), (300, 190), globs.WHITE, 30)
-        renderText(window, str(settings['volume']), (300, 220), globs.WHITE, 30)
-        renderText(window, str(settings['skin']), (300, 250), globs.WHITE, 30)
-        renderText(window, 'None', (300, 280), globs.WHITE, 30)
-        pygame.display.update()
-        if event.type == pygame.VIDEORESIZE:
-            resizeWindow(event.w, event.h)
-            window.blit(pygame.transform.scale(background_texture, relToAbsDual(1, 1)), (0, 0))
-            window.blit(pygame.transform.scale(settingsmenu_texture, relToAbsDual(1, 1)), (0, 0))
-            for x in buttongroup:
-                x.update()
-                x.draw(window=window)
-            pygame.display.update()
-
+            if event.type == pygame.VIDEORESIZE:
+                resizeWindow(event.w, event.h)
+                window.blit(pygame.transform.scale(background_texture, relToAbsDual(1, 1)), (0, 0))
+                window.blit(pygame.transform.scale(settingsmenu_texture, relToAbsDual(1, 1)), (0, 0))
+                for x in buttongroup:
+                    x.update()
+                    x.draw(window=window)
+                pygame.display.update()
     playSound('click')
 
 def checkCollision(sprite1, sprite2):

@@ -14,12 +14,13 @@ class Particle(pygame.sprite.Sprite):
         self.color = (color[0] + random.randint(-4, 4), color[1] + random.randint(-4, 4), color[2] + random.randint(-4, 4))
         self.rotangle = random.randint(0, 90)
         self.radians = random.uniform(0, math.pi)
-        self.velocity = 1
+        self.dx, self.dy = 0, 0
         self.update()
 
     def update(self):
         self.image = pygame.Surface(relToAbsDual(self.relsize, self.relsize))
         self.image.fill(self.color)
+        self.image.convert_alpha()
         self.image = pygame.transform.rotate(self.image, self.rotangle)
         self.rect = self.image.get_rect()
         self.rect.center = relToAbsDual(self.relpos[0], self.relpos[1])
@@ -27,6 +28,10 @@ class Particle(pygame.sprite.Sprite):
             self.rotangle = 0
         else:
             self.rotangle += 1
+        self.dx = math.cos(self.radians)
+        self.dy = math.sin(self.radians)
+
+
         #print(self.relpos[0])
         #print(self.rect.center)
 
