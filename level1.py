@@ -26,11 +26,8 @@ def playLevel1():
     selectionsprite = selection.Selection()
     victimgroup = pygame.sprite.Group()
     webgroup = pygame.sprite.Group()
-    webs = victims = []
+    webs, victims, particleclouds = [], [], []
     victim_summon_cooldown = victimcounter = 0
-
-    particlecloudsprite = particle_cloud.ParticleCloud(relcenter=(-1, -1), relradius=0.06,
-                                                       relparticlesize=0.02, color=(230, 0, 0), density=10, relvelocity=1.5, distribution=0.5)
 
     gui_surface_original = pygame.Surface((relToAbsDual(1, 0.06)), pygame.SRCALPHA, 32)
     gui_surface_original = gui_surface_original.convert_alpha()
@@ -77,8 +74,7 @@ def playLevel1():
                         click = True
                         swordsprite.visibility = True
                         swordsprite.animation = 1
-                        particlecloudsprite.reset()
-                        particlecloudsprite.reposition(absToRelDual(mousepos[0], mousepos[1]))
+                        particleclouds.append(particle_cloud.ParticleCloud(relcenter=absToRelDual(mousepos[0], mousepos[1]), relradius=0.06, relparticlesize=0.02, color=(230, 0, 0), density=10, relvelocity=1.5, distribution=0.5))
                 # right button and spawn webs
                 if event.button == globs.RIGHT:
                     if globs.webs_left > 0:
@@ -155,7 +151,8 @@ def playLevel1():
         outlinesprite.draw(main_surface)
         webgroup.draw(main_surface)
         victimgroup.draw(main_surface)
-        particlecloudsprite.update(window=main_surface, delta_time=delta_time)
+        for i in particleclouds:
+            i.update(window=main_surface, delta_time=delta_time)
         swordsprite.draw(main_surface)
         playersprite.draw(main_surface)
         selectionsprite.draw(main_surface)
@@ -175,7 +172,6 @@ def playLevel1():
             run = False
             globs.menu = True
         # ------------------ EVENTUAL EXIT ------------
-
     # ------------------ GAME LOOP -------------------------------------------------------------------------------------
 
     print("LEVEL1 END")
