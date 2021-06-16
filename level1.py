@@ -2,7 +2,7 @@ import time
 import pygame
 import utils
 import globs
-from sprites import sword, player, outline, victim, web, selection
+from sprites import sword, player, outline, victim, web, selection, new_player
 from utils import relToAbs, relToAbsDual
 
 damage_player_texture = pygame.image.load("textures/damage_player.png")
@@ -20,7 +20,7 @@ def playLevel1():
     utils.setGameDefaults()
     window = utils.setupWindow()
     background = pygame.transform.scale(background_original, (globs.windowsize, globs.windowsize))
-    playersprite = player.Player()
+    playersprite = new_player.Player()
     outlinesprite = outline.Outline()
     swordsprite = sword.Sword()
     selectionsprite = selection.Selection()
@@ -137,7 +137,7 @@ def playLevel1():
 
         # ------------------ UPDATES ------------------
         victimgroup.update(player=playersprite, click=click, webgroup=webgroup, delta_time=delta_time)
-        playersprite.update(webgroup=webgroup, delta_time=delta_time)
+        playersprite.update(webgroup=webgroup, main_surface=main_surface)
         swordsprite.update(playersprite=playersprite, delta_time=delta_time)
         webgroup.update()
         damage_player.set_alpha(256 - (globs.damagecooldown * 256 / globs.maxcooldown))

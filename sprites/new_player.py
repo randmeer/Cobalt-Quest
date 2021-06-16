@@ -34,7 +34,7 @@ class Player(entity):
         mouse_x, mouse_y = pygame.mouse.get_pos()
         rel_x, rel_y = mouse_x - self.rect.centerx, mouse_y - self.rect.centery
         init_rot = (180 / pi) * -atan2(rel_x, rel_y) - 180
-        self.rotation = -(init_rot)
+        self.rotation = -init_rot
         self.move(webgroup=webgroup, main_surf=main_surface)
         self.render_image()
 
