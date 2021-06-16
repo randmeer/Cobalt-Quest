@@ -29,8 +29,8 @@ def playLevel1():
     webs = victims = []
     victim_summon_cooldown = victimcounter = 0
 
-    particlecloudsprite = particle_cloud.ParticleCloud(relcenter=(0, 0), relradius=0.1,
-                                                       relparticlesize=0.03, color=(70, 70, 70), density=10)
+    particlecloudsprite = particle_cloud.ParticleCloud(relcenter=(-1, -1), relradius=0.06,
+                                                       relparticlesize=0.02, color=(230, 0, 0), density=10, relvelocity=1.5, distribution=0.5)
 
     gui_surface_original = pygame.Surface((relToAbsDual(1, 0.06)), pygame.SRCALPHA, 32)
     gui_surface_original = gui_surface_original.convert_alpha()
@@ -77,10 +77,8 @@ def playLevel1():
                         click = True
                         swordsprite.visibility = True
                         swordsprite.animation = 1
-                        particlecloudsprite.timer = 1
-                        particlecloudsprite.relcenter = absToRelDual(mousepos[0], mousepos[1])
-                        particlecloudsprite.run = True
-                        particlecloudsprite.reposition(particlecloudsprite.relcenter)
+                        particlecloudsprite.reset()
+                        particlecloudsprite.reposition(absToRelDual(mousepos[0], mousepos[1]))
                 # right button and spawn webs
                 if event.button == globs.RIGHT:
                     if globs.webs_left > 0:

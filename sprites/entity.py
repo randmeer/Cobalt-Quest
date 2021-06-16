@@ -68,8 +68,8 @@ class entity(pygame.sprite.Sprite):
 
         self.rect.center = self.position
 
-        print(self.velocity)
-        print(self.position)
+        #print(self.velocity)
+        #print(self.position)
 
         self.rect.centerx, self.rect.centery = relToAbs(self.relposx), relToAbs(self.relposy)
 
