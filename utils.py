@@ -13,16 +13,19 @@ settingsmenu_texture = pygame.image.load("textures/settings_menu.png")
 pausemenu_texture = pygame.image.load("textures/pause_menu.png")
 
 def resizeWindow(eventw, eventh):
-    if eventh < 500:
-        pygame.display.set_mode((eventw, 500), pygame.RESIZABLE)
-        globs.width = globs.height = 500
-    if eventw < 500:
-        pygame.display.set_mode((500, 500), pygame.RESIZABLE)
     if eventw < 500 and eventh < 500:
         pygame.display.set_mode((500, 500), pygame.RESIZABLE)
+        globs.width = globs.height = 500
     else:
-        pygame.display.set_mode((eventw, eventh), pygame.RESIZABLE)
-        globs.width, globs.height = eventw, eventh
+        if eventh < 500:
+            pygame.display.set_mode((eventw, 500), pygame.RESIZABLE)
+            globs.width, globs.height = eventw, 500
+        if eventw < eventh:
+            pygame.display.set_mode((eventh, eventh), pygame.RESIZABLE)
+            globs.width, globs.height = 500, eventh
+        else:
+            pygame.display.set_mode((eventw, eventh), pygame.RESIZABLE)
+            globs.width, globs.height = eventw, eventh
 
 def absToRelDual(input_x, input_y):
     w, h = pygame.display.get_surface().get_size()
@@ -124,7 +127,6 @@ def getTextRect(text, size):
 
 def renderIngameText(window):
     renderText(window, str(int(globs.playerhealthpoints)), relToAbsDual(0.07, 0.02), globs.WHITE, relToAbs(0.048))
-    # renderText(window, str((sum(i > 0 for i in globs.victimhealth))), (127, 10), globs.WHITE, 24)
     renderText(window, str(globs.victimspawns - globs.victimsmissed - globs.victimskilled + 1),
                relToAbsDual(0.254, 0.02), globs.WHITE, relToAbs(0.048))
     renderText(window, str(globs.victimskilled), relToAbsDual(0.43, 0.02), globs.WHITE, relToAbs(0.048))
@@ -152,9 +154,6 @@ def playSound(sound):
         pygame.mixer.Channel(3).play(pygame.mixer.Sound("sounds/victory.wav"))
     elif sound == 'defeat':
         pygame.mixer.Channel(3).play(pygame.mixer.Sound("sounds/defeat.wav"))
-    # volume = getSetting(setting='volume') / 10
-    # pygame.mixer.Sound.set_volume(value=volume)
-
     pygame.mixer.Channel(1).set_volume(getSetting('volume') / 10)
     pygame.mixer.Channel(2).set_volume(getSetting('volume') / 10)
     pygame.mixer.Channel(3).set_volume(getSetting('volume') / 10)
@@ -163,38 +162,30 @@ def playTheme():
     pygame.mixer.init()
     pygame.mixer.music.load("sounds/theme.wav")
     pygame.mixer.music.play(-1)
-    # pygame.mixer.Channel(0).play(pygame.mixer.Sound("sounds/theme.wav"))
 
 from sprites import button
 
 def showPauseScreen(window, mainsurf):
     setGlobalDefaults()
-
     overlay = pygame.transform.scale(overlay_texture, (relToAbsDual(1, 1)))
     pausemenu = pygame.transform.scale(pausemenu_texture, (relToAbsDual(1, 1)))
-
     buttongroup = pygame.sprite.Group()
     resumeplaying_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Resume", relpos=(0.05, 0.44))
     backtomenu_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Back to Menu", relpos=(0.05, 0.62))
     settings_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Settings", relpos=(0.05, 0.80))
     buttongroup.add(resumeplaying_button, backtomenu_button, settings_button)
-
     window.blit(overlay, (0, 0))
     window.blit(pausemenu, (0, 0))
     for i in buttongroup:
         i.update()
         i.draw(window=window)
     pygame.display.update()
-
     playSound('click')
-
     clock = pygame.time.Clock()
-
     run = True
     while run:
         clock.tick(60)
         mousepos = pygame.mouse.get_pos()
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -204,9 +195,6 @@ def showPauseScreen(window, mainsurf):
                 if event.button == globs.LEFT:
                     posX = (pygame.mouse.get_pos()[0])
                     posY = (pygame.mouse.get_pos()[1])
-                    relPosX = absToRel(posX)
-                    relPosY = absToRel(posY)
-                    # print(posX, " ", posY)
                 if event.button == globs.LEFT:
                     if resumeplaying_button.rect.collidepoint(mousepos):
                         run = False
@@ -233,27 +221,20 @@ def showPauseScreen(window, mainsurf):
 
 def showEndScreen(window, mainsurf, end):
     setGlobalDefaults()
-
     if end == "victory":
         playSound('victory')
     if end == "defeat":
         playSound('defeat')
-
     victory = pygame.transform.scale(victory_texture, (relToAbsDual(1, 1)))
     defeat = pygame.transform.scale(defeat_texture, (relToAbsDual(1, 1)))
     overlay = pygame.transform.scale(overlay_texture, (relToAbsDual(1, 1)))
-
     buttongroup = pygame.sprite.Group()
     backtomenu_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Back to Menu", relpos=(0.05, 0.44))
     replay_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Replay", relpos=(0.05, 0.62))
     buttongroup.add(backtomenu_button, replay_button)
-
     overlay.set_alpha(2)
-
     window.blit(overlay, (0, 0))
-
     main_surface = pygame.Surface(relToAbsDual(1, 1))
-
     if end == "victory":
         main_surface.blit(victory, (0, 0))
     elif end == "defeat":
@@ -262,7 +243,6 @@ def showEndScreen(window, mainsurf, end):
         x.update()
         x.draw(window=main_surface)
     main_surface.set_alpha(20)
-
     clock = pygame.time.Clock()
     i = 0
     run = True
@@ -280,16 +260,12 @@ def showEndScreen(window, mainsurf, end):
                 x.update()
                 x.draw(window=window)
             pygame.display.update()
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 globs.exittomenu = True
                 globs.quitgame = True
             if event.type == pygame.MOUSEBUTTONDOWN and i > 64:
-                if event.button == globs.LEFT:
-                    posX = (pygame.mouse.get_pos()[0])
-                    posY = (pygame.mouse.get_pos()[1])
                 if event.button == globs.LEFT:
                     if backtomenu_button.rect.collidepoint(mousepos):
                         run = False
@@ -310,7 +286,6 @@ def showEndScreen(window, mainsurf, end):
                     x.update()
                     x.draw(window=window)
                 pygame.display.update()
-
     playSound('click')
 
 def save_to_json(data, name):
@@ -321,22 +296,13 @@ def showSettings(window):
     setGlobalDefaults()
     backgr = pygame.transform.scale(background_texture, (relToAbsDual(1, 1)))
     settingsmenu = pygame.transform.scale(settingsmenu_texture, (relToAbsDual(1, 1)))
-
     buttongroup = pygame.sprite.Group()
     saveandreturn_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="save and return", relpos=(0.05, 0.80))
     buttongroup.add(saveandreturn_button)
-
-    #print(settings['volume'])
-    #print(settings['background_music'])
     backgr = pygame.transform.scale(background_texture, (relToAbs(1), relToAbs(1)))
     settingsmenu = pygame.transform.scale(settingsmenu_texture, (relToAbs(1), relToAbs(1)))
-
     window.blit(backgr, (0, 0))
     window.blit(settingsmenu, (0, 0))
-
-    with open('data.json', 'r') as fr:
-        settings = json.loads(fr.read())
-
     pygame.display.update()
 
     # TODO: remake the settings gui with label-sprites

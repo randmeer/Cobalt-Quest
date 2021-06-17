@@ -30,6 +30,7 @@ def showMenu():
 
     # draw window
     window.blit(background, (0, 0))
+    window.blit(background, relToAbsDual(1, 0))
     window.blit(menu, (0, 0))
     for i in buttongroup:
         i.update()
@@ -91,6 +92,7 @@ def showMenu():
                 background = pygame.transform.scale(background_original, (relToAbsDual(1, 1)))
                 menu = pygame.transform.scale(menu_original, relToAbsDual(1, 1))
                 window.blit(background, (0, 0))
+                window.blit(background, relToAbsDual(1, 0))
                 window.blit(menu, (0, 0))
                 for i in buttongroup:
                     i.update()

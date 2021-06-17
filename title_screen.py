@@ -13,7 +13,7 @@ def showTitleScreen():
     window = utils.setupWindow()
 
     background = pygame.transform.scale(background_original, (globs.height, globs.height))
-    title_screen = pygame.transform.scale(title_screen_original, (globs.height, globs.height))
+    title_screen = pygame.transform.scale(title_screen_original, (globs.width, globs.height))
     rndebugAccess = 0
 
     window.blit(background, (0, 0))

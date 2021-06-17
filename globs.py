@@ -1,6 +1,8 @@
 VERSION = "0.8.3"
 height = 500
-width = 500
+width = 888
+# 888 is actually the width of a 16:9 window if it's 500 pixel high
+
 # settings that reset on startup
 # (plz dont change these the game will crash)
 quitgame = exittomenu = titlescreen = menu = level_selection = rndebug = level1 = None
