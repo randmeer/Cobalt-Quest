@@ -70,7 +70,7 @@ def playLevel1():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # left button
                 if event.button == globs.LEFT:
-                    if selectionsprite.items[selectionsprite.selection][0] == "sword":
+                    if selectionsprite.items[selectionsprite.weapon][0] == "dagger":
                         click = True
                         swordsprite.visibility = True
                         swordsprite.animation = 1
@@ -91,7 +91,10 @@ def playLevel1():
                     resizeupdate = True
                     playersprite.update_skin()
                 if event.key == pygame.K_e:
-                    selectionsprite.selection += 1
+                    selectionsprite.weapon += 1
+                    selectionsprite.update()
+                if event.key == pygame.K_q:
+                    selectionsprite.block += 1
                     selectionsprite.update()
             # update screen on screenresize
             if event.type == pygame.VIDEORESIZE or resizeupdate:
@@ -160,8 +163,8 @@ def playLevel1():
         main_surface.blit(gui_surface, (0, 0))
 
         utils.renderIngameText(main_surface)
-        utils.renderText(window=main_surface, text=str(round(clock.get_fps())) + " FPS",
-                         position=relToAbsDual(0.04, 0.92),
+        utils.renderText(window=main_surface, text=str(round(clock.get_fps())) + "",
+                         position=relToAbsDual(0.92, 0.02),
                          color=globs.WHITE, size=relToAbs(0.048))
         window.blit(main_surface, (0, 0))
         pygame.display.update()

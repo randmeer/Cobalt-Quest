@@ -1,11 +1,9 @@
 import math
 import random
-
 import pygame
 from utils import absToRel, relToAbsDual, relToAbs
 
 outline_texture = pygame.image.load("textures/outline.png")
-
 
 class Particle(pygame.sprite.Sprite):
     def __init__(self, relposition, relsize, color, relmaxdistance, relvelocity, distribution):

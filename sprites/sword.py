@@ -1,7 +1,7 @@
 import pygame
 from utils import relToAbsDual, relToAbs
 
-sword_texture = pygame.image.load("textures/sword.png")
+sword_texture = pygame.image.load("textures/dagger.png")
 
 class Sword(pygame.sprite.Sprite):
     def __init__(self):
