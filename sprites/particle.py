@@ -6,11 +6,12 @@ from utils import absToRel, relToAbsDual, relToAbs
 outline_texture = pygame.image.load("textures/outline.png")
 
 class Particle(pygame.sprite.Sprite):
-    def __init__(self, relposition, relsize, color, relmaxdistance, relvelocity, distribution):
+    def __init__(self, relposition, relsize, color, relmaxdistance, relvelocity, distribution, colorvariation):
         pygame.sprite.Sprite.__init__(self)
         self.relpos = relposition
         self.relsize = relsize
         self.originalcolor = color
+        self.colorvariation = colorvariation
         self.relmaxdist = relmaxdistance
         self.distribution = distribution
         self.originalrelvelocity = relvelocity
@@ -21,8 +22,8 @@ class Particle(pygame.sprite.Sprite):
         self.relborderdist = 0
 
     def generate_randoms(self):
-        self.color = [self.originalcolor[0] + random.randint(-50, 50), self.originalcolor[1] + random.randint(-50, 50),
-                      self.originalcolor[2] + random.randint(-50, 50)]
+        self.color = [self.originalcolor[0] + random.randint(-self.colorvariation, self.colorvariation), self.originalcolor[1] + random.randint(-self.colorvariation, self.colorvariation),
+                      self.originalcolor[2] + random.randint(-self.colorvariation, self.colorvariation)]
         for i in range(3):
             if self.color[i] < 0:
                 self.color[i] = 0
@@ -57,3 +58,5 @@ class Particle(pygame.sprite.Sprite):
     def draw(self, surface):
         if self.dead: return
         surface.blit(self.image, self.rect)
+        print("drew particle")
+        print(self.rect.center)

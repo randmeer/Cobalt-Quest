@@ -81,10 +81,10 @@ def playLevel1():
                         shurikens.append(shuriken.Shuriken(relpos=absToRelDual(playersprite.rect.centerx, playersprite.rect.centery), radians=angle))
                         selectionsprite.items[selectionsprite.weapon][1] -= 1
                 if event.button == globs.WHEELUP:
-                    selectionsprite.weapon += 1
+                    selectionsprite.weapon -= 1
                     selectionsprite.update()
                 if event.button == globs.WHEELDOWN:
-                    selectionsprite.weapon -= 1
+                    selectionsprite.weapon += 1
                     selectionsprite.update()
                 # right button and spawn webs
                 if event.button == globs.RIGHT:
@@ -116,6 +116,12 @@ def playLevel1():
                 elif event.key == pygame.K_5:
                     selectionsprite.weapon = 4
                 selectionsprite.update()
+
+                # SHURIKENS SHOULD EXPLODE WHEN HITTING ENTITYS OR BLOCKS, SPACE KEY IS JUST TEMPORARELY
+                if event.key == pygame.K_SPACE:
+                    for i in shurikens:
+                        i.explode()
+
             # update screen on screenresize
             if event.type == pygame.VIDEORESIZE or resizeupdate:
                 resizeupdate = False
@@ -178,8 +184,7 @@ def playLevel1():
         for i in particleclouds:
             i.update(window=main_surface, delta_time=delta_time)
         for i in shurikens:
-            i.update(delta_time=delta_time)
-            i.draw(window=main_surface)
+            i.update(delta_time=delta_time, window=main_surface)
         swordsprite.draw(main_surface)
         playersprite.draw(main_surface)
         selectionsprite.draw(main_surface)
