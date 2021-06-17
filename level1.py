@@ -1,8 +1,9 @@
+import math
 import time
 import pygame
 import utils
 import globs
-from sprites import sword, player, outline, victim, web, selection, new_player, particle_cloud
+from sprites import sword, player, outline, victim, web, selection, new_player, particle_cloud, shuriken
 from utils import relToAbs, relToAbsDual, absToRelDual
 
 damage_player_texture = pygame.image.load("textures/damage_player.png")
@@ -26,7 +27,7 @@ def playLevel1():
     selectionsprite = selection.Selection()
     victimgroup = pygame.sprite.Group()
     webgroup = pygame.sprite.Group()
-    webs, victims, particleclouds = [], [], []
+    webs, victims, particleclouds, shurikens = [], [], [], []
     victim_summon_cooldown = victimcounter = 0
 
     gui_surface_original = pygame.Surface((relToAbsDual(1, 0.06)), pygame.SRCALPHA, 32)
@@ -75,6 +76,10 @@ def playLevel1():
                         swordsprite.visibility = True
                         swordsprite.animation = 1
                         particleclouds.append(particle_cloud.ParticleCloud(relcenter=absToRelDual(mousepos[0], mousepos[1]), relradius=0.06, relparticlesize=0.02, color=(230, 0, 0), density=10, relvelocity=1.5, distribution=0.5))
+                    if selectionsprite.items[selectionsprite.weapon][0] == "shuriken" and selectionsprite.items[selectionsprite.weapon][1] > 0:
+                        angle = math.atan2(mousepos[1]-playersprite.rect.centery, mousepos[0]-playersprite.rect.centerx)
+                        shurikens.append(shuriken.Shuriken(relpos=absToRelDual(playersprite.rect.centerx, playersprite.rect.centery), radians=angle))
+                        selectionsprite.items[selectionsprite.weapon][1] -= 1
                 if event.button == globs.WHEELUP:
                     selectionsprite.weapon += 1
                     selectionsprite.update()
@@ -172,6 +177,9 @@ def playLevel1():
         victimgroup.draw(main_surface)
         for i in particleclouds:
             i.update(window=main_surface, delta_time=delta_time)
+        for i in shurikens:
+            i.update(delta_time=delta_time)
+            i.draw(window=main_surface)
         swordsprite.draw(main_surface)
         playersprite.draw(main_surface)
         selectionsprite.draw(main_surface)

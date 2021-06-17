@@ -29,7 +29,7 @@ class Particle(pygame.sprite.Sprite):
             if self.color[i] > 255:
                 self.color[i] = 255
         self.rotangle = random.randint(0, 90)
-        self.radians = random.uniform(0, 6)
+        self.radians = random.uniform(0, 2*math.pi)
         self.velocity = random.uniform(1-(self.distribution), 1+(self.distribution)) * self.originalrelvelocity
         self.reldx = absToRel(math.cos(self.radians))
         self.reldy = absToRel(math.sin(self.radians))

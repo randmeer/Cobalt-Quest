@@ -1,5 +1,4 @@
 import pygame
-
 import globs
 import utils
 import globs
@@ -57,7 +56,6 @@ def showLevelSelection():
                 run = False
                 globs.quitgame = True
 
-            # code below is boilerplate code. Just make a buttonclass and check on every loop if the cursor has clicked in its hitbox.
             # mouse event
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == globs.LEFT:

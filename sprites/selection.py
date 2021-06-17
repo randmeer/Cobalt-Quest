@@ -4,8 +4,9 @@ from utils import relToAbsDual
 dagger_texture = pygame.image.load("textures/dagger.png")
 shuriken_texture = pygame.image.load("textures/shuriken.png")
 bow_texture = pygame.image.load("textures/bow.png")
+item_texture = pygame.image.load("textures/cross.png")
 
-# ToDo: This whole class needs to be reworked someday
+# ToDo: This whole class needs to be reworked & moved to the gui area
 
 class Selection(pygame.sprite.Sprite):
     def __init__(self):
@@ -17,16 +18,16 @@ class Selection(pygame.sprite.Sprite):
         self.rects_small = [pygame.Rect(0, 0, 0, 0), pygame.Rect(0, 0, 0, 0),
                             pygame.Rect(0, 0, 0, 0), pygame.Rect(0, 0, 0, 0)]
 
-        self.items = [["dagger", -1], ["katana", -1], ["shuriken", 50], ["bow", 10], ["unknown", -1]]
+        self.items = [["dagger", -1], ["katana", -1], ["shuriken", 25], ["bow", 10], ["unknown", -1]]
         self.weapon, self.block = 0, 0
         self.resize()
 
     def resize(self):
         self.itemtextures = [pygame.transform.scale(dagger_texture, relToAbsDual(0.1, 0.1)),
+                             pygame.transform.scale(item_texture, relToAbsDual(0.1, 0.1)),
                              pygame.transform.scale(shuriken_texture, relToAbsDual(0.1, 0.1)),
                              pygame.transform.scale(bow_texture, relToAbsDual(0.1, 0.1)),
-                             pygame.transform.scale(shuriken_texture, relToAbsDual(0.1, 0.1)),
-                             pygame.transform.scale(shuriken_texture, relToAbsDual(0.1, 0.1))]
+                             pygame.transform.scale(item_texture, relToAbsDual(0.1, 0.1))]
         self.selectangle = pygame.Surface(relToAbsDual(0.1, 0.1))
         self.selectangle.fill((255, 255, 255))
         self.selectangle.set_alpha(125)
