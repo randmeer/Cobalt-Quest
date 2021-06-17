@@ -14,8 +14,8 @@ def showLevelSelection():
     utils.setGlobalDefaults()
     window = utils.setupWindow()
 
-    lvl_selection = pygame.transform.scale(lvl_selection_original, (globs.windowsize, globs.windowsize))
-    background = pygame.transform.scale(background_original, (globs.windowsize, globs.windowsize))
+    lvl_selection = pygame.transform.scale(lvl_selection_original, (globs.height, globs.height))
+    background = pygame.transform.scale(background_original, (globs.height, globs.height))
 
     buttongroup = pygame.sprite.Group()
     backtomenu_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Back to Menu", relpos=(0.05, 0.05))

@@ -39,7 +39,7 @@ class entity(pygame.sprite.Sprite):
         self.damage_taken = 0
         self.last_move_time = time.time()
         self.rect = self.image.get_rect()
-        self.rect.center = (globs.windowsize / 2, globs.windowsize / 2)
+        self.rect.center = (globs.height / 2, globs.height / 2)
 
     def move(self, webgroup, main_surf):
         w, h = main_surf.get_size()

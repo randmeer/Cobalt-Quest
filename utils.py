@@ -13,22 +13,26 @@ settingsmenu_texture = pygame.image.load("textures/settings_menu.png")
 pausemenu_texture = pygame.image.load("textures/pause_menu.png")
 
 def resizeWindow(eventw, eventh):
-    if eventw < 500 or eventh < 500:
+    if eventh < 500:
+        pygame.display.set_mode((eventw, 500), pygame.RESIZABLE)
+        globs.width = globs.height = 500
+    if eventw < 500:
         pygame.display.set_mode((500, 500), pygame.RESIZABLE)
-        globs.windowsize = 500
+    if eventw < 500 and eventh < 500:
+        pygame.display.set_mode((500, 500), pygame.RESIZABLE)
     else:
-        pygame.display.set_mode((eventh, eventh), pygame.RESIZABLE)
-        globs.windowsize = eventh
+        pygame.display.set_mode((eventw, eventh), pygame.RESIZABLE)
+        globs.width, globs.height = eventw, eventh
 
 def absToRelDual(input_x, input_y):
     w, h = pygame.display.get_surface().get_size()
-    output_x = input_x / w
+    output_x = input_x / h
     output_y = input_y / h
     return output_x, output_y
 
 def relToAbsDual(input_x, input_y):
     w, h = pygame.display.get_surface().get_size()
-    output_x = w * input_x
+    output_x = h * input_x
     output_y = h * input_y
     return int(output_x), int(output_y)
 
@@ -104,10 +108,9 @@ def generateWeb(webgroup):
 
 def setupWindow():
     pygame.init()
-    window = pygame.display.set_mode((500, 500), pygame.RESIZABLE)
     pygame.display.set_caption("WWOPW version " + globs.VERSION + " by Rande")
+    window = pygame.display.set_mode((globs.width, globs.height), pygame.RESIZABLE)
     pygame.display.flip()
-    window = pygame.display.set_mode((globs.windowsize, globs.windowsize), pygame.RESIZABLE)
     pygame.display.set_caption("WWOPW version " + globs.VERSION + " by Rande")
     return window
 

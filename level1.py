@@ -19,7 +19,7 @@ def playLevel1():
     utils.setGlobalDefaults()
     utils.setGameDefaults()
     window = utils.setupWindow()
-    background = pygame.transform.scale(background_original, (globs.windowsize, globs.windowsize))
+    background = pygame.transform.scale(background_original, (globs.height, globs.height))
     playersprite = new_player.Player()
     outlinesprite = outline.Outline()
     swordsprite = sword.Sword()
@@ -165,6 +165,7 @@ def playLevel1():
         # ------------------ UPDATES ------------------
 
         # ------------------ DRAWING ------------------
+        window.fill((70, 70, 70))
         main_surface.blit(background, (0, 0))
         outlinesprite.draw(main_surface)
         webgroup.draw(main_surface)

@@ -1,6 +1,6 @@
 VERSION = "0.8.3"
-windowsize = 500
-
+height = 500
+width = 500
 # settings that reset on startup
 # (plz dont change these the game will crash)
 quitgame = exittomenu = titlescreen = menu = level_selection = rndebug = level1 = None

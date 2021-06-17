@@ -13,8 +13,8 @@ def showMenu():
     window = utils.setupWindow()
     resizeupdate = False
 
-    background = pygame.transform.scale(background_original, (globs.windowsize, globs.windowsize))
-    menu = pygame.transform.scale(menu_original, (globs.windowsize, globs.windowsize))
+    background = pygame.transform.scale(background_original, (globs.height, globs.height))
+    menu = pygame.transform.scale(menu_original, (globs.height, globs.height))
 
     buttongroup = pygame.sprite.Group()
     levelselection_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Level Selection", relpos=(0.05, 0.44))
