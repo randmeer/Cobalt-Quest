@@ -75,6 +75,12 @@ def playLevel1():
                         swordsprite.visibility = True
                         swordsprite.animation = 1
                         particleclouds.append(particle_cloud.ParticleCloud(relcenter=absToRelDual(mousepos[0], mousepos[1]), relradius=0.06, relparticlesize=0.02, color=(230, 0, 0), density=10, relvelocity=1.5, distribution=0.5))
+                if event.button == globs.WHEELUP:
+                    selectionsprite.weapon += 1
+                    selectionsprite.update()
+                if event.button == globs.WHEELDOWN:
+                    selectionsprite.weapon -= 1
+                    selectionsprite.update()
                 # right button and spawn webs
                 if event.button == globs.RIGHT:
                     if globs.webs_left > 0:
@@ -86,16 +92,25 @@ def playLevel1():
             # keyevents
             if event.type == pygame.KEYDOWN:
                 # pausekey
-                if event.key == globs.ESCAPE:
+                if event.key == pygame.K_ESCAPE:
                     utils.showPauseScreen(window=window, mainsurf=main_surface)
                     resizeupdate = True
                     playersprite.update_skin()
                 if event.key == pygame.K_e:
                     selectionsprite.weapon += 1
-                    selectionsprite.update()
                 if event.key == pygame.K_q:
                     selectionsprite.block += 1
-                    selectionsprite.update()
+                if event.key == pygame.K_1:
+                    selectionsprite.weapon = 0
+                elif event.key == pygame.K_2:
+                    selectionsprite.weapon = 1
+                elif event.key == pygame.K_3:
+                    selectionsprite.weapon = 2
+                elif event.key == pygame.K_4:
+                    selectionsprite.weapon = 3
+                elif event.key == pygame.K_5:
+                    selectionsprite.weapon = 4
+                selectionsprite.update()
             # update screen on screenresize
             if event.type == pygame.VIDEORESIZE or resizeupdate:
                 resizeupdate = False

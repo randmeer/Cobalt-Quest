@@ -35,6 +35,8 @@ def showTitleScreen():
             if event.type == pygame.KEYDOWN:
                 if event.key == globs.KEY_R:
                     pass
+                elif event.key == pygame.K_ESCAPE:
+                    pass
                 # the following elif's let the user CMD-Q (macOS) or ALT-F4 (windows)
                 elif event.key == globs.COMMAND:
                     pass

@@ -8,7 +8,7 @@ difficulty = 1
 
 # variables for the numbers pygame assigns to the keys. If you change these,
 # the keybinds change (so, dont)
-LEFT, MIDDLE, RIGHT = 1, 2, 3
+LEFT, MIDDLE, RIGHT, WHEELUP, WHEELDOWN = 1, 2, 3, 4, 5
 ESCAPE = 27
 KEY_R = 114
 KEY_Q = 113
