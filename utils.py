@@ -100,15 +100,6 @@ def setGameDefaults():
     globs.webs_left = 3
     globs.webcounter = 0
 
-from sprites.web import Web
-
-def generateWeb(webgroup):
-    web = Web()
-    webgroup.add(web)
-    web.summon()
-    globs.webcounter += 1
-    return web
-
 def setupWindow():
     pygame.init()
     pygame.display.set_caption("WWOPW version " + globs.VERSION + " by Rande")

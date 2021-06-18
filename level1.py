@@ -3,7 +3,7 @@ import time
 import pygame
 import utils
 import globs
-from sprites import sword, player, outline, victim, web, selection, new_player, particle_cloud, shuriken
+from sprites import sword, player, outline, victim, web, selection, new_player, particle_cloud, shuriken, block
 from utils import relToAbs, relToAbsDual, absToRelDual
 
 damage_player_texture = pygame.image.load("textures/damage_player.png")
@@ -27,7 +27,7 @@ def playLevel1():
     selectionsprite = selection.Selection()
     victimgroup = pygame.sprite.Group()
     webgroup = pygame.sprite.Group()
-    webs, victims, particleclouds, shurikens = [], [], [], []
+    blocks, victims, particleclouds, shurikens = [], [], [], []
     victim_summon_cooldown = victimcounter = 0
 
     gui_surface_original = pygame.Surface((relToAbsDual(1, 0.06)), pygame.SRCALPHA, 32)
@@ -88,12 +88,8 @@ def playLevel1():
                     selectionsprite.update()
                 # right button and spawn webs
                 if event.button == globs.RIGHT:
-                    if globs.webs_left > 0:
-                        webs.append(utils.generateWeb(webgroup))
-                        globs.webs_left -= 1
-                    for i in webgroup:
-                        i.image = pygame.transform.scale(web.web_texture, (relToAbsDual(0.1, 0.1)))
-                        i.rect = i.image.get_rect()
+                    # ToDo: bind the block type to the selection
+                    blocks.append(block.Block(blocktype="web"))
             # keyevents
             if event.type == pygame.KEYDOWN:
                 # pausekey
@@ -133,9 +129,9 @@ def playLevel1():
                 gui_surface = pygame.transform.scale(gui_surface_original, (relToAbsDual(1, 0.06)))
                 for i in victimgroup:
                     i.resize()
-                playersprite.update_skin()
-                for i in webgroup:
+                for i in blocks:
                     i.resize()
+                playersprite.update_skin()
                 outlinesprite.resize()
                 selectionsprite.resize()
                 swordsprite.resize()
@@ -171,7 +167,7 @@ def playLevel1():
         victimgroup.update(player=playersprite, click=click, webgroup=webgroup, delta_time=delta_time)
         playersprite.update(webgroup=webgroup, main_surface=main_surface)
         swordsprite.update(playersprite=playersprite, delta_time=delta_time)
-        webgroup.update()
+        #webgroup.update()
         damage_player.set_alpha(256 - (globs.damagecooldown * 256 / globs.maxcooldown))
         # ------------------ UPDATES ------------------
 
@@ -179,12 +175,14 @@ def playLevel1():
         window.fill((70, 70, 70))
         main_surface.blit(background, (0, 0))
         outlinesprite.draw(main_surface)
-        webgroup.draw(main_surface)
+        for i in blocks:
+            i.update(window=main_surface)
         victimgroup.draw(main_surface)
         for i in particleclouds:
             i.update(window=main_surface, delta_time=delta_time)
         for i in shurikens:
             i.update(delta_time=delta_time, window=main_surface)
+
         swordsprite.draw(main_surface)
         playersprite.draw(main_surface)
         selectionsprite.draw(main_surface)

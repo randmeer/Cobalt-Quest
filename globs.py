@@ -34,7 +34,4 @@ damageoverlayalpha = 64
 tookdamage = False
 damagesum = 0
 
-webs_left = 3
-webcounter = 0
-
 skin = ''

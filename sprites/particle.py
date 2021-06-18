@@ -58,5 +58,3 @@ class Particle(pygame.sprite.Sprite):
     def draw(self, surface):
         if self.dead: return
         surface.blit(self.image, self.rect)
-        print("drew particle")
-        print(self.rect.center)
