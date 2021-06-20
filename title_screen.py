@@ -17,6 +17,7 @@ def showTitleScreen():
     rndebugAccess = 0
 
     window.blit(background, (0, 0))
+    window.blit(background, relToAbsDual(1, 0))
     window.blit(title_screen, (0, 0))
     pygame.display.update()
 
@@ -54,7 +55,8 @@ def showTitleScreen():
                 background = pygame.transform.scale(background_original, (relToAbsDual(1, 1)))
                 title_screen = pygame.transform.scale(title_screen_original, relToAbsDual(1.78, 1))
                 window.blit(background, (0, 0))
-                window.blit(title_screen, (0, 0))
+                window.blit(background, relToAbsDual(1, 0))
+                window.blit(title_screen, (1, 0))
                 pygame.display.update()
 
         keys = pygame.key.get_pressed()

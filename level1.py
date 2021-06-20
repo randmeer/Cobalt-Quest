@@ -172,7 +172,7 @@ def playLevel1():
         # ------------------ UPDATES ------------------
 
         # ------------------ DRAWING ------------------
-        window.fill((70, 70, 70))
+        window.fill((75, 75, 75))
         main_surface.blit(background, (0, 0))
         outlinesprite.draw(main_surface)
         for i in blocks:

@@ -22,20 +22,11 @@ def showMenu():
     settings_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Settings", relpos=(0.05, 0.80))
     buttongroup.add(levelselection_button, difficulty_button, settings_button)
 
-    labelgroup = pygame.sprite.Group()
-    line1_label = label.Label(text='"Invincibility lies in defence;', anchor="center", reltextsize=0.06, relanchorpointposition=(0.5, 0.32))
-    line2_label = label.Label(text='Victory in the attack."', anchor="center", reltextsize=0.06, relanchorpointposition=(0.5, 0.38))
-    labelgroup.add(line1_label, line2_label)
-    # btw that quote is from sun tzu
-
     # draw window
     window.blit(background, (0, 0))
     window.blit(background, relToAbsDual(1, 0))
     window.blit(menu, (0, 0))
     for i in buttongroup:
-        i.update()
-        i.draw(window=window)
-    for i in labelgroup:
         i.update()
         i.draw(window=window)
 
@@ -95,9 +86,6 @@ def showMenu():
                 window.blit(background, relToAbsDual(1, 0))
                 window.blit(menu, (0, 0))
                 for i in buttongroup:
-                    i.update()
-                    i.draw(window=window)
-                for i in labelgroup:
                     i.update()
                     i.draw(window=window)
                 pygame.display.update()

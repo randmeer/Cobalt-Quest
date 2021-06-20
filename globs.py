@@ -1,4 +1,4 @@
-VERSION = "0.8.3"
+VERSION = "0.8.4"
 height = 500
 width = 888
 # 888 is actually the width of a 16:9 window if it's 500 pixel high

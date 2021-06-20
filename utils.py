@@ -102,10 +102,9 @@ def setGameDefaults():
 
 def setupWindow():
     pygame.init()
-    pygame.display.set_caption("WWOPW version " + globs.VERSION + " by Rande")
+    pygame.display.set_caption("Cobalt Quest version " + globs.VERSION + " by Rande")
     window = pygame.display.set_mode((globs.width, globs.height), pygame.RESIZABLE)
     pygame.display.flip()
-    pygame.display.set_caption("WWOPW version " + globs.VERSION + " by Rande")
     return window
 
 def renderText(window, text, position, color, size):
