@@ -14,7 +14,7 @@ background_texture = pygame.image.load("textures/background.png")
 title_screen_texture = pygame.image.load("textures/title_screen.png")
 level_selection_texture = pygame.image.load("textures/level_selection.png")
 menu_texture = pygame.image.load("textures/menu.png")
-web_texture = pygame.image.load("textures/Web.png")
+web_texture = pygame.image.load("textures/web.png")
 
 # debugscreen
 def showRNDebug():
