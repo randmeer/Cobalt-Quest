@@ -13,6 +13,7 @@ tick_img = pygame.image.load("textures/tick.png")
 cross_img = pygame.image.load("textures/cross.png")
 broken_heart_img = pygame.image.load("textures/broken_heart.png")
 background_original = pygame.image.load("textures/background.png")
+gui_background_original = pygame.image.load("textures/gui_background.png")
 
 def playLevel1():
     print("LEVEL1 START")
@@ -21,6 +22,7 @@ def playLevel1():
     utils.setGameDefaults()
     window = utils.setupWindow()
     background = pygame.transform.scale(background_original, (globs.height, globs.height))
+    gui_background = pygame.transform.scale(gui_background_original, (globs.height, globs.height))
     playersprite = new_player.Player()
     outlinesprite = outline.Outline()
     swordsprite = sword.Sword()
@@ -30,15 +32,16 @@ def playLevel1():
     blocks, victims, particleclouds, shurikens = [], [], [], []
     victim_summon_cooldown = victimcounter = 0
 
-    gui_surface_original = pygame.Surface((relToAbsDual(1, 0.06)), pygame.SRCALPHA, 32)
-    gui_surface_original = gui_surface_original.convert_alpha()
-    gui_surface_original.blit(pygame.transform.scale(heart_img, relToAbsDual(0.036, 0.036)), relToAbsDual(0.02, 0.02))
-    gui_surface_original.blit(pygame.transform.scale(ichkeksi_img, relToAbsDual(0.04, 0.04)), relToAbsDual(0.2, 0.02))
-    gui_surface_original.blit(pygame.transform.scale(tick_img, relToAbsDual(0.036, 0.036)), relToAbsDual(0.38, 0.02))
-    gui_surface_original.blit(pygame.transform.scale(cross_img, relToAbsDual(0.036, 0.036)), relToAbsDual(0.56, 0.02))
-    gui_surface_original.blit(pygame.transform.scale(broken_heart_img, relToAbsDual(0.036, 0.036)), relToAbsDual(0.74, 0.02))
-    gui_surface = gui_surface_original
+    #gui_surface_original = pygame.Surface((relToAbsDual(1, 0.06)), pygame.SRCALPHA, 32)
+    #gui_surface_original = gui_surface_original.convert_alpha()
+    #gui_surface_original.blit(pygame.transform.scale(heart_img, relToAbsDual(0.036, 0.036)), relToAbsDual(0.02, 0.02))
+    #gui_surface_original.blit(pygame.transform.scale(ichkeksi_img, relToAbsDual(0.04, 0.04)), relToAbsDual(0.2, 0.02))
+    #gui_surface_original.blit(pygame.transform.scale(tick_img, relToAbsDual(0.036, 0.036)), relToAbsDual(0.38, 0.02))
+    #gui_surface_original.blit(pygame.transform.scale(cross_img, relToAbsDual(0.036, 0.036)), relToAbsDual(0.56, 0.02))
+    #gui_surface_original.blit(pygame.transform.scale(broken_heart_img, relToAbsDual(0.036, 0.036)), relToAbsDual(0.74, 0.02))
+    #gui_surface = gui_surface_original
     main_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
+    gui_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
     damage_player = pygame.transform.scale(damage_player_texture, (relToAbsDual(1, 1)))
 
     prev_time = time.time()
@@ -82,10 +85,8 @@ def playLevel1():
                         selectionsprite.items[selectionsprite.weapon][1] -= 1
                 if event.button == globs.WHEELUP:
                     selectionsprite.weapon -= 1
-                    selectionsprite.update()
                 if event.button == globs.WHEELDOWN:
                     selectionsprite.weapon += 1
-                    selectionsprite.update()
                 # right button and spawn webs
                 if event.button == globs.RIGHT:
                     # ToDo: bind the block type to the selection
@@ -124,9 +125,11 @@ def playLevel1():
                 w, h = pygame.display.get_surface().get_size()
                 utils.resizeWindow(w, h)
                 main_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
+                gui_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
                 damage_player = pygame.transform.scale(damage_player_texture, (relToAbsDual(1, 1)))
                 background = pygame.transform.scale(background_original, (relToAbsDual(1, 1)))
-                gui_surface = pygame.transform.scale(gui_surface_original, (relToAbsDual(1, 0.06)))
+                gui_background = pygame.transform.scale(gui_background_original, (relToAbsDual(1, 1)))
+                #gui_surface = pygame.transform.scale(gui_surface_original, (relToAbsDual(1, 0.06)))
                 for i in victimgroup:
                     i.resize()
                 for i in blocks:
@@ -168,12 +171,13 @@ def playLevel1():
         playersprite.update(webgroup=webgroup, main_surface=main_surface)
         swordsprite.update(playersprite=playersprite, delta_time=delta_time)
         #webgroup.update()
+        selectionsprite.update()
         damage_player.set_alpha(256 - (globs.damagecooldown * 256 / globs.maxcooldown))
         # ------------------ UPDATES ------------------
 
         # ------------------ DRAWING ------------------
-        window.fill((75, 75, 75))
         main_surface.blit(background, (0, 0))
+        gui_surface.blit(gui_background, relToAbsDual(0, 0))
         outlinesprite.draw(main_surface)
         for i in blocks:
             i.update(window=main_surface)
@@ -185,15 +189,15 @@ def playLevel1():
 
         swordsprite.draw(main_surface)
         playersprite.draw(main_surface)
-        selectionsprite.draw(main_surface)
+        selectionsprite.draw(gui_surface)
         main_surface.blit(damage_player, (0, 0))
-        main_surface.blit(gui_surface, (0, 0))
-
-        utils.renderIngameText(main_surface)
-        utils.renderText(window=main_surface, text=str(round(clock.get_fps())) + "",
-                         position=relToAbsDual(0.92, 0.02),
-                         color=globs.WHITE, size=relToAbs(0.048))
+        #main_surface.blit(gui_surface, (0, 0))
+        #utils.renderIngameText(main_surface)
+        #utils.renderText(window=main_surface, text=str(round(clock.get_fps())) + "",
+        #                 position=relToAbsDual(0.92, 0.02),
+        #                 color=globs.WHITE, size=relToAbs(0.048))
         window.blit(main_surface, (0, 0))
+        window.blit(gui_surface, relToAbsDual(1, 0))
         pygame.display.update()
         # ------------------ DRAWING ------------------
 
