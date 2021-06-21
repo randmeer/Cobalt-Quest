@@ -104,7 +104,7 @@ def setGameDefaults():
 def setupWindow():
     pygame.init()
     pygame.display.set_caption("Cobalt Quest version " + globs.VERSION + " by Rande")
-    window = pygame.display.set_mode((globs.width, globs.height), pygame.RESIZABLE)
+    window = pygame.display.set_mode((int(globs.height*16/9), globs.height), pygame.RESIZABLE)
     pygame.display.set_icon(icon_texture)
     pygame.display.flip()
     return window

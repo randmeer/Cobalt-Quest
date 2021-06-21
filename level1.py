@@ -3,7 +3,7 @@ import time
 import pygame
 import utils
 import globs
-from sprites import sword, player, outline, victim, web, selection, new_player, particle_cloud, shuriken, block
+from sprites import sword, player, outline, victim, web, gui, new_player, particle_cloud, shuriken, block
 from utils import relToAbs, relToAbsDual, absToRelDual
 
 damage_player_texture = pygame.image.load("textures/damage_player.png")
@@ -26,7 +26,7 @@ def playLevel1():
     playersprite = new_player.Player()
     outlinesprite = outline.Outline()
     swordsprite = sword.Sword()
-    selectionsprite = selection.Selection()
+    guisprite = gui.GUI()
     victimgroup = pygame.sprite.Group()
     webgroup = pygame.sprite.Group()
     blocks, victims, particleclouds, shurikens = [], [], [], []
@@ -74,19 +74,19 @@ def playLevel1():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # left button
                 if event.button == globs.LEFT:
-                    if selectionsprite.items[selectionsprite.weapon][0] == "dagger":
+                    if guisprite.items[guisprite.weapon][0] == "dagger":
                         click = True
                         swordsprite.visibility = True
                         swordsprite.animation = 1
                         particleclouds.append(particle_cloud.ParticleCloud(relcenter=absToRelDual(mousepos[0], mousepos[1]), relradius=0.06, relparticlesize=0.02, color=(230, 0, 0), density=10, relvelocity=1.5, distribution=0.5))
-                    if selectionsprite.items[selectionsprite.weapon][0] == "shuriken" and selectionsprite.items[selectionsprite.weapon][1] > 0:
+                    if guisprite.items[guisprite.weapon][0] == "shuriken" and guisprite.items[guisprite.weapon][1] > 0:
                         angle = math.atan2(mousepos[1]-playersprite.rect.centery, mousepos[0]-playersprite.rect.centerx)
                         shurikens.append(shuriken.Shuriken(relpos=absToRelDual(playersprite.rect.centerx, playersprite.rect.centery), radians=angle))
-                        selectionsprite.items[selectionsprite.weapon][1] -= 1
+                        guisprite.items[guisprite.weapon][1] -= 1
                 if event.button == globs.WHEELUP:
-                    selectionsprite.weapon -= 1
+                    guisprite.weapon -= 1
                 if event.button == globs.WHEELDOWN:
-                    selectionsprite.weapon += 1
+                    guisprite.weapon += 1
                 # right button and spawn webs
                 if event.button == globs.RIGHT:
                     # ToDo: bind the block type to the selection
@@ -99,20 +99,20 @@ def playLevel1():
                     resizeupdate = True
                     playersprite.update_skin()
                 if event.key == pygame.K_e:
-                    selectionsprite.weapon += 1
+                    guisprite.weapon += 1
                 if event.key == pygame.K_q:
-                    selectionsprite.block += 1
+                    guisprite.block += 1
                 if event.key == pygame.K_1:
-                    selectionsprite.weapon = 0
+                    guisprite.weapon = 0
                 elif event.key == pygame.K_2:
-                    selectionsprite.weapon = 1
+                    guisprite.weapon = 1
                 elif event.key == pygame.K_3:
-                    selectionsprite.weapon = 2
+                    guisprite.weapon = 2
                 elif event.key == pygame.K_4:
-                    selectionsprite.weapon = 3
+                    guisprite.weapon = 3
                 elif event.key == pygame.K_5:
-                    selectionsprite.weapon = 4
-                selectionsprite.update()
+                    guisprite.weapon = 4
+                guisprite.update()
 
                 # SHURIKENS SHOULD EXPLODE WHEN HITTING ENTITYS OR BLOCKS, SPACE KEY IS JUST TEMPORARELY
                 if event.key == pygame.K_SPACE:
@@ -136,7 +136,7 @@ def playLevel1():
                     i.resize()
                 playersprite.update_skin()
                 outlinesprite.resize()
-                selectionsprite.resize()
+                guisprite.resize()
                 swordsprite.resize()
         # ------------------ EVENTS -------------------
 
@@ -171,7 +171,7 @@ def playLevel1():
         playersprite.update(webgroup=webgroup, main_surface=main_surface)
         swordsprite.update(playersprite=playersprite, delta_time=delta_time)
         #webgroup.update()
-        selectionsprite.update()
+        guisprite.update()
         damage_player.set_alpha(256 - (globs.damagecooldown * 256 / globs.maxcooldown))
         # ------------------ UPDATES ------------------
 
@@ -189,7 +189,7 @@ def playLevel1():
 
         swordsprite.draw(main_surface)
         playersprite.draw(main_surface)
-        selectionsprite.draw(gui_surface)
+        guisprite.draw(gui_surface)
         main_surface.blit(damage_player, (0, 0))
         #main_surface.blit(gui_surface, (0, 0))
         #utils.renderIngameText(main_surface)
