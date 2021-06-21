@@ -11,6 +11,7 @@ overlay_texture = pygame.image.load("textures/overlay.png")
 background_texture = pygame.image.load("textures/background.png")
 settingsmenu_texture = pygame.image.load("textures/settings_menu.png")
 pausemenu_texture = pygame.image.load("textures/pause_menu.png")
+icon_texture = pygame.image.load("textures/icon.png")
 
 def resizeWindow(eventw, eventh):
     if eventw < 500 and eventh < 500:
@@ -104,6 +105,7 @@ def setupWindow():
     pygame.init()
     pygame.display.set_caption("Cobalt Quest version " + globs.VERSION + " by Rande")
     window = pygame.display.set_mode((globs.width, globs.height), pygame.RESIZABLE)
+    pygame.display.set_icon(icon_texture)
     pygame.display.flip()
     return window
 
