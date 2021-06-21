@@ -26,11 +26,6 @@ def showMenu():
     window.blit(background, (0, 0))
     window.blit(background, relToAbsDual(1, 0))
     window.blit(menu, (0, 0))
-    for i in buttongroup:
-        i.update()
-        i.draw(window=window)
-
-    pygame.display.update()
 
     clock = pygame.time.Clock()
     run = True
@@ -85,10 +80,9 @@ def showMenu():
                 window.blit(background, (0, 0))
                 window.blit(background, relToAbsDual(1, 0))
                 window.blit(menu, (0, 0))
-                for i in buttongroup:
-                    i.update()
-                    i.draw(window=window)
-                pygame.display.update()
-
+        for i in buttongroup:
+            i.update()
+            i.draw(window=window)
+        pygame.display.update()
     utils.playSound('click')
     print("MENU END")

@@ -128,6 +128,13 @@ def renderIngameText(window):
     renderText(window, str(globs.victimsmissed), relToAbsDual(0.61, 0.02), globs.WHITE, relToAbs(0.048))
     renderText(window, str(globs.damagesum), relToAbsDual(0.79, 0.02), globs.WHITE, relToAbs(0.048))
 
+def gradientRect(width, height, left_colour, right_color):
+    color_rect = pygame.Surface((2, 2))
+    pygame.draw.line(color_rect, left_colour,  (0, 0), (0, 1))
+    pygame.draw.line(color_rect, right_color, (1, 0), (1, 1))
+    color_rect = pygame.transform.smoothscale(color_rect, (width, height))
+    return color_rect
+
 def playSound(sound):
     pygame.mixer.init()
     if sound == 'click':
@@ -166,10 +173,6 @@ def showPauseScreen(window, mainsurf):
     buttongroup.add(resumeplaying_button, backtomenu_button, settings_button)
     window.blit(overlay, (0, 0))
     window.blit(pausemenu, (0, 0))
-    for i in buttongroup:
-        i.update()
-        i.draw(window=window)
-    pygame.display.update()
     playSound('click')
     clock = pygame.time.Clock()
     run = True
@@ -203,10 +206,10 @@ def showPauseScreen(window, mainsurf):
                 resizeWindow(event.w, event.h)
                 window.blit(pygame.transform.scale(mainsurf, relToAbsDual(1, 1)), (0, 0))
                 window.blit(pygame.transform.scale(pausemenu_texture, relToAbsDual(1, 1)), (0, 0))
-                for x in buttongroup:
-                    x.update()
-                    x.draw(window=window)
-                pygame.display.update()
+        for i in buttongroup:
+            i.update()
+            i.draw(window=window)
+        pygame.display.update()
     playSound('click')
 
 def showEndScreen(window, mainsurf, end):
@@ -229,9 +232,6 @@ def showEndScreen(window, mainsurf, end):
         main_surface.blit(victory, (0, 0))
     elif end == "defeat":
         main_surface.blit(defeat, (0, 0))
-    for x in buttongroup:
-        x.update()
-        x.draw(window=main_surface)
     main_surface.set_alpha(20)
     clock = pygame.time.Clock()
     i = 0
@@ -272,10 +272,10 @@ def showEndScreen(window, mainsurf, end):
                 resizeWindow(event.w, event.h)
                 window.blit(pygame.transform.scale(mainsurf, relToAbsDual(1, 1)), (0, 0))
                 window.blit(pygame.transform.scale(main_surface, relToAbsDual(1, 1)), (0, 0))
-                for x in buttongroup:
-                    x.update()
-                    x.draw(window=window)
-                pygame.display.update()
+        for x in buttongroup:
+            x.update()
+            x.draw(window=window)
+        pygame.display.update()
     playSound('click')
 
 def save_to_json(data, name):
@@ -313,7 +313,6 @@ def showSettings(window):
             i.draw(window=window)
         pygame.display.update()
 
-    update()
     playSound('click')
     clock = pygame.time.Clock()
 
@@ -332,27 +331,24 @@ def showSettings(window):
                 globs.quitgame = True
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == globs.LEFT:
-                    posX = (pygame.mouse.get_pos()[0])
-                    posY = (pygame.mouse.get_pos()[1])
                     if saveandreturn_button.rect.collidepoint(mousepos):
                         run = False
-                    elif 190 < posY < 220 and 300 < posX < 450:
-                        settings['background_music'] = not settings['background_music']
-                        save_to_json(settings, "data")
-                    elif 220 < posY < 250 and 300 < posX < 450:
-                        if settings['volume'] >= 10:
-                            settings['volume'] = 0
-                        settings['volume'] += 1
-                        save_to_json(settings, "data")
-                    elif 250 < posY < 280 and 300 < posX < 450:
-                        if settings['skin'] == "3lia03":
-                            settings['skin'] = "Rande"
-                        elif settings['skin'] == "Rande":
-                            settings['skin'] = "3lia03"
-                        save_to_json(settings, "data")
-                    elif 280 < posY < 310 and 300 < posX < 450:
-                        print("test4")
-                    update()
+                    #elif 190 < posY < 220 and 300 < posX < 450:
+                    #    settings['background_music'] = not settings['background_music']
+                    #    save_to_json(settings, "data")
+                    #elif 220 < posY < 250 and 300 < posX < 450:
+                    #    if settings['volume'] >= 10:
+                    #        settings['volume'] = 0
+                    #    settings['volume'] += 1
+                    #    save_to_json(settings, "data")
+                    #elif 250 < posY < 280 and 300 < posX < 450:
+                    #    if settings['skin'] == "3lia03":
+                    #        settings['skin'] = "Rande"
+                    #    elif settings['skin'] == "Rande":
+                    #        settings['skin'] = "3lia03"
+                    #    save_to_json(settings, "data")
+                    #elif 280 < posY < 310 and 300 < posX < 450:
+                    #    print("test4")
             if event.type == pygame.KEYDOWN:
                 if event.key == globs.ESCAPE:
                     run = False
@@ -360,10 +356,10 @@ def showSettings(window):
                 resizeWindow(event.w, event.h)
                 window.blit(pygame.transform.scale(background_texture, relToAbsDual(1, 1)), (0, 0))
                 window.blit(pygame.transform.scale(settingsmenu_texture, relToAbsDual(1, 1)), (0, 0))
-                for x in buttongroup:
-                    x.update()
-                    x.draw(window=window)
-                pygame.display.update()
+        for x in buttongroup:
+            x.update()
+            x.draw(window=window)
+        pygame.display.update()
     playSound('click')
 
 def checkCollision(sprite1, sprite2):
