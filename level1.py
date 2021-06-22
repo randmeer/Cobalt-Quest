@@ -65,15 +65,16 @@ def playLevel1():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 # left button
                 if event.button == globs.LEFT:
-                    if guisprite.items[guisprite.weapon][0] == "dagger":
+                    if guisprite.weapons[guisprite.weapon][0] == "dagger":
                         click = True
                         swordsprite.visibility = True
                         swordsprite.animation = 1
-                        particleclouds.append(particle_cloud.ParticleCloud(relcenter=absToRelDual(mousepos[0], mousepos[1]), relradius=0.06, relparticlesize=0.02, color=(230, 0, 0), density=10, relvelocity=1.5, distribution=0.5))
-                    if guisprite.items[guisprite.weapon][0] == "shuriken" and guisprite.items[guisprite.weapon][1] > 0:
-                        angle = math.atan2(mousepos[1]-playersprite.rect.centery, mousepos[0]-playersprite.rect.centerx)
+                        particleclouds.append(
+                            particle_cloud.ParticleCloud(relcenter=absToRelDual(mousepos[0], mousepos[1]), relradius=0.06, relparticlesize=0.02, color=(230, 0, 0), density=10, relvelocity=1.5, distribution=0.5))
+                    if guisprite.weapons[guisprite.weapon][0] == "shuriken" and guisprite.weapons[guisprite.weapon][1] > 0:
+                        angle = math.atan2(mousepos[1] - playersprite.rect.centery, mousepos[0] - playersprite.rect.centerx)
                         shurikens.append(shuriken.Shuriken(relpos=absToRelDual(playersprite.rect.centerx, playersprite.rect.centery), radians=angle))
-                        guisprite.items[guisprite.weapon][1] -= 1
+                        guisprite.weapons[guisprite.weapon][1] -= 1
                 if event.button == globs.WHEELUP:
                     guisprite.weapon -= 1
                 if event.button == globs.WHEELDOWN:
