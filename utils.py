@@ -127,20 +127,6 @@ def getTextRect(text, size):
     font = pygame.freetype.Font("fonts/standart.otf", size)
     return font.get_rect(text=text)
 
-def renderIngameText(window):
-    renderText(window, str(int(globs.playerhealthpoints)), relToAbsDual(0.07, 0.02), globs.WHITE, relToAbs(0.048))
-    renderText(window, str(globs.victimspawns - globs.victimsmissed - globs.victimskilled + 1),
-               relToAbsDual(0.254, 0.02), globs.WHITE, relToAbs(0.048))
-    renderText(window, str(globs.victimskilled), relToAbsDual(0.43, 0.02), globs.WHITE, relToAbs(0.048))
-    renderText(window, str(globs.victimsmissed), relToAbsDual(0.61, 0.02), globs.WHITE, relToAbs(0.048))
-    renderText(window, str(globs.damagesum), relToAbsDual(0.79, 0.02), globs.WHITE, relToAbs(0.048))
-    renderText(window, str(int(globs.playerhealthpoints)), relToAbsDual(0.07, 0.02), globs.WHITE, relToAbs(0.048))
-    renderText(window, str(globs.victimspawns - globs.victimsmissed - globs.victimskilled + 1),
-               relToAbsDual(0.254, 0.02), globs.WHITE, relToAbs(0.048))
-    renderText(window, str(globs.victimskilled), relToAbsDual(0.43, 0.02), globs.WHITE, relToAbs(0.048))
-    renderText(window, str(globs.victimsmissed), relToAbsDual(0.61, 0.02), globs.WHITE, relToAbs(0.048))
-    renderText(window, str(globs.damagesum), relToAbsDual(0.79, 0.02), globs.WHITE, relToAbs(0.048))
-
 def gradientRect(width, height, left_colour, right_color):
     color_rect = pygame.Surface((2, 2))
     pygame.draw.line(color_rect, left_colour, (0, 0), (0, 1))

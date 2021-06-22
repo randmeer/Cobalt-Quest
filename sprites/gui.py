@@ -67,7 +67,7 @@ class GUI(pygame.sprite.Sprite):
         if self.weapon >= len(self.rects):
             self.weapon = 0
         elif self.weapon < 0:
-            self.weapon = len(self.rect)-1
+            self.weapon = len(self.rects)-1
         if self.block >= len(self.rects_small):
             self.block = 0
         elif self.block < 0:
