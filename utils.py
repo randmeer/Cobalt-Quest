@@ -14,19 +14,28 @@ pausemenu_texture = pygame.image.load("textures/pause_menu.png")
 icon_texture = pygame.image.load("textures/icon.png")
 
 def resizeWindow(eventw, eventh):
-    if eventw < 500 and eventh < 500:
-        pygame.display.set_mode((500, 500), pygame.RESIZABLE)
-        globs.width = globs.height = 500
-    else:
+    if eventw == globs.width and eventh != globs.height:
         if eventh < 500:
-            pygame.display.set_mode((eventw, 500), pygame.RESIZABLE)
-            globs.width, globs.height = eventw, 500
-        if eventw < eventh:
-            pygame.display.set_mode((eventh, eventh), pygame.RESIZABLE)
-            globs.width, globs.height = 500, eventh
+            globs.height = 500
+            globs.width = int(500 * 16 / 9)
         else:
-            pygame.display.set_mode((eventw, eventh), pygame.RESIZABLE)
-            globs.width, globs.height = eventw, eventh
+            globs.height = eventh
+            globs.width = int(eventh * 16 / 9)
+    elif eventw != globs.width and eventh == globs.height:
+        if eventw < int(500 * 16 / 9):
+            globs.height = 500
+            globs.width = int(500 * 16 / 9)
+        else:
+            globs.width = eventw
+            globs.height = int(eventw * 9 / 16)
+    elif eventw != globs.width and eventh != globs.height:
+        if eventh < 500:
+            globs.height = 500
+            globs.width = int(500 * 16 / 9)
+        else:
+            globs.height = eventh
+            globs.width = int(eventh * 16 / 9)
+    pygame.display.set_mode((globs.width, globs.height), pygame.RESIZABLE)
 
 def absToRelDual(input_x, input_y):
     w, h = pygame.display.get_surface().get_size()

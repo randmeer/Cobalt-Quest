@@ -112,6 +112,8 @@ def playLevel1():
                     guisprite.weapon = 3
                 elif event.key == pygame.K_5:
                     guisprite.weapon = 4
+                elif event.key == pygame.K_6:
+                    guisprite.weapon = 5
                 guisprite.update()
 
                 # SHURIKENS SHOULD EXPLODE WHEN HITTING ENTITYS OR BLOCKS, SPACE KEY IS JUST TEMPORARELY

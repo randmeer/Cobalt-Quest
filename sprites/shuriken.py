@@ -39,8 +39,8 @@ class Shuriken(pygame.sprite.Sprite):
             self.rotangle = 0
         self.rect = self.image.get_rect()
         self.rect.center = relToAbsDual(self.relpos[0] + self.reldxtotal, self.relpos[1] + self.reldytotal)
-        self.reldxtotal += self.reldx * self.velocity * (50 * delta_time)
-        self.reldytotal += self.reldy * self.velocity * (50 * delta_time)
+        self.reldxtotal += self.reldx * self.velocity * 50 * delta_time
+        self.reldytotal += self.reldy * self.velocity * 50 * delta_time
 
         self.draw(window=window)
 

@@ -1,7 +1,8 @@
 import pygame
 from sprites import label
-from utils import relToAbsDual
+from utils import relToAbsDual, relToAbs
 
+selection_texture = pygame.image.load("textures/selection.png")
 dagger_texture = pygame.image.load("textures/dagger.png")
 shuriken_texture = pygame.image.load("textures/shuriken.png")
 bow_texture = pygame.image.load("textures/bow.png")
@@ -32,21 +33,22 @@ class GUI(pygame.sprite.Sprite):
         self.titlangle.fill((0, 0, 0))
         self.titlangle.set_alpha(75)
 
-        self.floorlabel = label.Label(text="3rd Floor:", anchor="topleft", reltextsize=0.05, relanchorpointposition=(0.035, 0.035), textcolor=(255, 255, 255))
-        self.titlelabel = label.Label(text="Menga's Hideout", anchor="topleft", reltextsize=0.05, relanchorpointposition=(0.035, 0.085), textcolor=(255, 255, 255))
-        self.itemtextures = [pygame.transform.scale(dagger_texture, relToAbsDual(0.1, 0.1)),
-                             pygame.transform.scale(item_texture, relToAbsDual(0.1, 0.1)),
-                             pygame.transform.scale(shuriken_texture, relToAbsDual(0.1, 0.1)),
-                             pygame.transform.scale(bow_texture, relToAbsDual(0.1, 0.1)),
-                             pygame.transform.scale(item_texture, relToAbsDual(0.1, 0.1)),
-                             pygame.transform.scale(item_texture, relToAbsDual(0.1, 0.1))]
-        self.selectangle = pygame.Surface(relToAbsDual(0.1, 0.1))
-        self.selectangle.fill((255, 255, 255))
-        self.selectangle.set_alpha(125)
-        self.selectangle_small = pygame.transform.scale(self.selectangle, relToAbsDual(0.05, 0.05))
+        self.floorlabel = label.Label(text="3rd Floor:", anchor="topleft", reltextsize=0.05,
+                                      relanchorpointposition=(0.035, 0.035), textcolor=(255, 255, 255))
+        self.titlelabel = label.Label(text="Menga's Hideout", anchor="topleft", reltextsize=0.05,
+                                      relanchorpointposition=(0.035, 0.085), textcolor=(255, 255, 255))
+        self.itemtextures = [pygame.transform.scale(dagger_texture, relToAbsDual(0.08, 0.08)),
+                             pygame.transform.scale(item_texture, relToAbsDual(0.08, 0.08)),
+                             pygame.transform.scale(shuriken_texture, relToAbsDual(0.08, 0.08)),
+                             pygame.transform.scale(bow_texture, relToAbsDual(0.08, 0.08)),
+                             pygame.transform.scale(item_texture, relToAbsDual(0.08, 0.08)),
+                             pygame.transform.scale(item_texture, relToAbsDual(0.08, 0.08))]
+        self.selectangle = pygame.transform.scale(selection_texture, relToAbsDual(0.12, 0.12))
+        self.selectangle_small = pygame.transform.scale(selection_texture, relToAbsDual(0.06, 0.06))
         self.overlangle = pygame.Surface(relToAbsDual(0.1, 0.1))
         self.overlangle.fill((0, 0, 0))
         self.overlangle.set_alpha(75)
+        self.overlangle_small = pygame.transform.scale(self.overlangle, relToAbsDual(0.05, 0.05))
 
         for i in range(6):
             self.rects[i].size = relToAbsDual(0.1, 0.1)
@@ -60,9 +62,9 @@ class GUI(pygame.sprite.Sprite):
         for i in range(len(self.items)):
             if self.items[i][1] != -1:
                 self.itemlabels.append(label.Label(text=str(self.items[i][1]), anchor="bottomleft", reltextsize=0.04,
-                                                   relanchorpointposition=(self.centers[i][0]-0.045, self.centers[i][1] +
-                                                                           0.045), textcolor=(255, 255, 255)))
-
+                                                   relanchorpointposition=(self.centers[i][0] - 0.045,
+                                                                           self.centers[i][1] + 0.045),
+                                                   textcolor=(255, 255, 255)))
         if self.weapon >= 6:
             self.weapon = 0
         elif self.weapon < 0:
@@ -73,11 +75,13 @@ class GUI(pygame.sprite.Sprite):
             self.block = 3
 
     def draw(self, window):
-        window.blit(self.selectangle, self.rects[self.weapon])
-        window.blit(self.selectangle_small, self.rects_small[self.block])
         for i in range(len(self.rects)):
             window.blit(self.overlangle, self.rects[i])
-            window.blit(self.itemtextures[i], self.rects[i])
+            window.blit(self.itemtextures[i], (self.rects[i].x+relToAbs(0.01), self.rects[i].y+relToAbs(0.01)))
+        for i in range(len(self.rects_small)):
+            window.blit(self.overlangle_small, self.rects_small[i])
+        window.blit(self.selectangle, (self.rects[self.weapon].x - relToAbs(0.01), self.rects[self.weapon].y - relToAbs(0.01)))
+        window.blit(self.selectangle_small, (self.rects_small[self.block].x - relToAbs(0.005), self.rects_small[self.block].y - relToAbs(0.005)))
         for i in self.itemlabels:
             i.update()
             i.draw(window=window)

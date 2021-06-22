@@ -48,9 +48,8 @@ class Particle(pygame.sprite.Sprite):
             self.rotangle = 0
         else:
             self.rotangle += 1
-        self.reldxtotal += self.reldx * self.velocity * (50 * delta_time)
-        self.reldytotal += self.reldy * self.velocity * (50 * delta_time)
-
+        self.reldxtotal += self.reldx * self.velocity * 50 * delta_time
+        self.reldytotal += self.reldy * self.velocity * 50 * delta_time
         self.relborderdist = self.relmaxdist - math.hypot(absToRel(self.rect.centerx) - self.relpos[0], absToRel(self.rect.centery) - self.relpos[1])
         if self.relborderdist < 0:
             self.dead = True
