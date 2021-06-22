@@ -1,7 +1,7 @@
 import pygame
+
+import globs
 import utils
-import globs
-import globs
 from utils import relToAbsDual
 
 background_original = pygame.image.load("textures/background.png")

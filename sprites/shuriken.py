@@ -1,11 +1,11 @@
-import pygame
 import math
-import random
-from utils import relToAbsDual, absToRel, absToRelDual
+
+import pygame
+
 from sprites import particle_cloud
+from utils import relToAbsDual, absToRel, absToRelDual
 
 shuriken_texture = pygame.image.load("textures/shuriken.png")
-
 
 class Shuriken(pygame.sprite.Sprite):
     def __init__(self, relpos, radians, velocity=6):

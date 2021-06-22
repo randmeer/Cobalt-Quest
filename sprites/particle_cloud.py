@@ -1,11 +1,13 @@
 import pygame
+
 from sprites import particle
 from utils import relToAbsDual, relToAbs
 
 outline_texture = pygame.image.load("textures/outline.png")
 
 class ParticleCloud(pygame.sprite.Sprite):
-    def __init__(self, relcenter, relradius, relparticlesize, color, density, relvelocity, distribution=0.3, colorvariation=50):
+    def __init__(self, relcenter, relradius, relparticlesize, color, density, relvelocity, distribution=0.3,
+                 colorvariation=50):
         pygame.sprite.Sprite.__init__(self)
         self.relcenter = relcenter
         self.relradius = relradius
@@ -18,7 +20,8 @@ class ParticleCloud(pygame.sprite.Sprite):
         self.particles = []
         for i in range(self.density):
             particlesprite = particle.Particle(relposition=self.relcenter, relsize=self.relparticlesize,
-                                               color=self.color, relmaxdistance=self.relradius, relvelocity=self.relv, distribution=self.distribution, colorvariation=self.colorvariation)
+                                               color=self.color, relmaxdistance=self.relradius, relvelocity=self.relv,
+                                               distribution=self.distribution, colorvariation=self.colorvariation)
             self.particles.append(particlesprite)
 
     def update(self, window, delta_time):

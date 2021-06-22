@@ -1,4 +1,5 @@
 import pygame
+
 from utils import relToAbs, relToAbsDual, renderText, getTextRect
 
 class Label(pygame.sprite.Sprite):
@@ -41,4 +42,3 @@ class Label(pygame.sprite.Sprite):
 
     def draw(self, window):
         window.blit(self.image, self.textrect)
-

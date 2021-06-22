@@ -1,12 +1,12 @@
 import pygame
 
-import rndebug
-import utils
-import level_selection
-import level1
-import title_screen
-import menu
 import globs
+import level1
+import level_selection
+import menu
+import rndebug
+import title_screen
+import utils
 
 if __name__ == '__main__':
     # if music present play the music

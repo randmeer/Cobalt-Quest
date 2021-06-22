@@ -1,4 +1,5 @@
 import pygame
+
 from sprites import label
 from utils import relToAbsDual, relToAbs
 
@@ -77,11 +78,13 @@ class GUI(pygame.sprite.Sprite):
     def draw(self, window):
         for i in range(len(self.rects)):
             window.blit(self.overlangle, self.rects[i])
-            window.blit(self.itemtextures[i], (self.rects[i].x+relToAbs(0.01), self.rects[i].y+relToAbs(0.01)))
+            window.blit(self.itemtextures[i], (self.rects[i].x + relToAbs(0.01), self.rects[i].y + relToAbs(0.01)))
         for i in range(len(self.rects_small)):
             window.blit(self.overlangle_small, self.rects_small[i])
-        window.blit(self.selectangle, (self.rects[self.weapon].x - relToAbs(0.01), self.rects[self.weapon].y - relToAbs(0.01)))
-        window.blit(self.selectangle_small, (self.rects_small[self.block].x - relToAbs(0.005), self.rects_small[self.block].y - relToAbs(0.005)))
+        window.blit(self.selectangle,
+                    (self.rects[self.weapon].x - relToAbs(0.01), self.rects[self.weapon].y - relToAbs(0.01)))
+        window.blit(self.selectangle_small, (
+        self.rects_small[self.block].x - relToAbs(0.005), self.rects_small[self.block].y - relToAbs(0.005)))
         for i in self.itemlabels:
             i.update()
             i.draw(window=window)

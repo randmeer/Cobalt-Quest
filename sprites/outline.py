@@ -1,4 +1,5 @@
 import pygame
+
 from utils import absToRel, relToAbsDual, relToAbs
 
 outline_texture = pygame.image.load("textures/outline.png")

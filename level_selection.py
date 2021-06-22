@@ -1,7 +1,7 @@
 import pygame
+
 import globs
 import utils
-import globs
 from sprites import button
 from utils import relToAbsDual
 
@@ -24,10 +24,11 @@ def showLevelSelection():
     levelbuttons = []
     lvlrelposy = 0.23
     for i in range(9):
-        lvlrelposx = 0.05 + 0.31 * (i - ((int(i / 3))*3))
+        lvlrelposx = 0.05 + 0.31 * (i - ((int(i / 3)) * 3))
         if i == 3 or i == 6:
             lvlrelposy += 0.25
-        levelbutton = button.Button(relwidth=0.28, relheight=0.22, textcontent=f"lvl {i}", relpos=(lvlrelposx, lvlrelposy))
+        levelbutton = button.Button(relwidth=0.28, relheight=0.22, textcontent=f"lvl {i}",
+                                    relpos=(lvlrelposx, lvlrelposy))
         levelbuttons.append(levelbutton)
     for i in levelbuttons:
         buttongroup.add(i)

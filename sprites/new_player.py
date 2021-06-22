@@ -1,9 +1,9 @@
-import globs
-import pygame
 from math import pi, atan2
 
+import pygame
+
 from sprites.entity import entity
-from utils import getSetting, relToAbs, relToAbsDual
+from utils import getSetting, relToAbs
 
 elia_texture = pygame.image.load("textures/3lia03.png")
 rande_texture = pygame.image.load("textures/rande.png")
@@ -14,6 +14,7 @@ empty_texture = pygame.image.load("textures/empty.png")
 class Player(entity):
 
     def __init__(self):
+
         entity.__init__(self, original_image=empty_texture)
         self.skin = getSetting('skin')
         self.update_skin()

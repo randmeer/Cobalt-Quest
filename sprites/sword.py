@@ -1,4 +1,5 @@
 import pygame
+
 from utils import relToAbsDual, relToAbs
 
 sword_texture = pygame.image.load("textures/dagger.png")
@@ -24,17 +25,17 @@ class Sword(pygame.sprite.Sprite):
 
             # move the sword in the correct x and y directions
             if 0 <= self.absangle <= 90:
-                self.rect.centerx -= self.animation * relToAbs((90 - self.absangle)/500)
-                self.rect.centery -= self.animation * relToAbs((self.absangle - 0)/500)
+                self.rect.centerx -= self.animation * relToAbs((90 - self.absangle) / 500)
+                self.rect.centery -= self.animation * relToAbs((self.absangle - 0) / 500)
             elif 90 <= self.absangle <= 180:
-                self.rect.centerx += self.animation * relToAbs((self.absangle - 90)/500)
-                self.rect.centery -= self.animation * relToAbs((180 - self.absangle)/500)
+                self.rect.centerx += self.animation * relToAbs((self.absangle - 90) / 500)
+                self.rect.centery -= self.animation * relToAbs((180 - self.absangle) / 500)
             elif 180 <= self.absangle <= 270:
-                self.rect.centerx += self.animation * relToAbs((270 - self.absangle)/500)
-                self.rect.centery += self.animation * relToAbs((self.absangle - 180)/500)
+                self.rect.centerx += self.animation * relToAbs((270 - self.absangle) / 500)
+                self.rect.centery += self.animation * relToAbs((self.absangle - 180) / 500)
             elif 270 <= self.absangle <= 360:
-                self.rect.centerx -= self.animation * relToAbs((self.absangle - 270)/500)
-                self.rect.centery += self.animation * relToAbs((360 - self.absangle)/500)
+                self.rect.centerx -= self.animation * relToAbs((self.absangle - 270) / 500)
+                self.rect.centery += self.animation * relToAbs((360 - self.absangle) / 500)
 
             self.animation -= 5 * delta_time
 

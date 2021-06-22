@@ -1,10 +1,12 @@
 import pygame
+
 from utils import relToAbs, relToAbsDual, renderText, getTextRect, gradientRect
 
 class Button(pygame.sprite.Sprite):
 
     def __init__(self, relwidth, relheight, textcontent, relpos, textcolor=(75, 75, 75), reltextsize=0.1,
-                 relborder=0.02, bordercolor=(255, 255, 255), innercolor=(194, 205, 209), anchor="center", hovergradient=((255, 141, 141), (141, 187, 255)), hovercolor=(214, 225, 229)):
+                 relborder=0.02, bordercolor=(255, 255, 255), innercolor=(194, 205, 209), anchor="center",
+                 hovergradient=((255, 141, 141), (141, 187, 255)), hovercolor=(214, 225, 229)):
         pygame.sprite.Sprite.__init__(self)
         self.surface = pygame.Surface(relToAbsDual(relwidth, relheight))
         self.surface.fill(bordercolor)
@@ -13,7 +15,9 @@ class Button(pygame.sprite.Sprite):
         self.surface.blit(self.innerarea, (relToAbsDual(relborder / 2, relborder / 2)))
         self.image = self.surface
         self.hoversurface = pygame.Surface(relToAbsDual(relwidth, relheight))
-        self.hoversurface.blit(gradientRect(self.hoversurface.get_width(), self.hoversurface.get_height(), hovergradient[0], hovergradient[1]), (0, 0))
+        self.hoversurface.blit(
+            gradientRect(self.hoversurface.get_width(), self.hoversurface.get_height(), hovergradient[0],
+                         hovergradient[1]), (0, 0))
         self.innerarea.fill(hovercolor)
         self.hoversurface.blit(self.innerarea, (relToAbsDual(relborder / 2, relborder / 2)))
         self.text = textcontent

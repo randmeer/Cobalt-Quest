@@ -1,8 +1,9 @@
-import pygame, pygame.freetype, json
-import globs
 import json
+
 import pygame
 import pygame.freetype
+import pygame.freetype
+
 import globs
 
 victory_texture = pygame.image.load("textures/victory.png")
@@ -113,7 +114,7 @@ def setGameDefaults():
 def setupWindow():
     pygame.init()
     pygame.display.set_caption("Cobalt Quest version " + globs.VERSION + " by Rande")
-    window = pygame.display.set_mode((int(globs.height*16/9), globs.height), pygame.RESIZABLE)
+    window = pygame.display.set_mode((int(globs.height * 16 / 9), globs.height), pygame.RESIZABLE)
     pygame.display.set_icon(icon_texture)
     pygame.display.flip()
     return window
@@ -134,14 +135,15 @@ def renderIngameText(window):
     renderText(window, str(globs.victimsmissed), relToAbsDual(0.61, 0.02), globs.WHITE, relToAbs(0.048))
     renderText(window, str(globs.damagesum), relToAbsDual(0.79, 0.02), globs.WHITE, relToAbs(0.048))
     renderText(window, str(int(globs.playerhealthpoints)), relToAbsDual(0.07, 0.02), globs.WHITE, relToAbs(0.048))
-    renderText(window, str(globs.victimspawns - globs.victimsmissed - globs.victimskilled + 1), relToAbsDual(0.254, 0.02), globs.WHITE, relToAbs(0.048))
+    renderText(window, str(globs.victimspawns - globs.victimsmissed - globs.victimskilled + 1),
+               relToAbsDual(0.254, 0.02), globs.WHITE, relToAbs(0.048))
     renderText(window, str(globs.victimskilled), relToAbsDual(0.43, 0.02), globs.WHITE, relToAbs(0.048))
     renderText(window, str(globs.victimsmissed), relToAbsDual(0.61, 0.02), globs.WHITE, relToAbs(0.048))
     renderText(window, str(globs.damagesum), relToAbsDual(0.79, 0.02), globs.WHITE, relToAbs(0.048))
 
 def gradientRect(width, height, left_colour, right_color):
     color_rect = pygame.Surface((2, 2))
-    pygame.draw.line(color_rect, left_colour,  (0, 0), (0, 1))
+    pygame.draw.line(color_rect, left_colour, (0, 0), (0, 1))
     pygame.draw.line(color_rect, right_color, (1, 0), (1, 1))
     color_rect = pygame.transform.smoothscale(color_rect, (width, height))
     return color_rect
@@ -298,7 +300,8 @@ def showSettings(window):
     backgr = pygame.transform.scale(background_texture, (relToAbsDual(1, 1)))
     settingsmenu = pygame.transform.scale(settingsmenu_texture, (relToAbsDual(1, 1)))
     buttongroup = pygame.sprite.Group()
-    saveandreturn_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="save and return", relpos=(0.05, 0.80))
+    saveandreturn_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="save and return",
+                                         relpos=(0.05, 0.80))
     buttongroup.add(saveandreturn_button)
     backgr = pygame.transform.scale(background_texture, (relToAbs(1), relToAbs(1)))
     settingsmenu = pygame.transform.scale(settingsmenu_texture, (relToAbs(1), relToAbs(1)))
@@ -344,21 +347,21 @@ def showSettings(window):
                 if event.button == globs.LEFT:
                     if saveandreturn_button.rect.collidepoint(mousepos):
                         run = False
-                    #elif 190 < posY < 220 and 300 < posX < 450:
+                    # elif 190 < posY < 220 and 300 < posX < 450:
                     #    settings['background_music'] = not settings['background_music']
                     #    save_to_json(settings, "data")
-                    #elif 220 < posY < 250 and 300 < posX < 450:
+                    # elif 220 < posY < 250 and 300 < posX < 450:
                     #    if settings['volume'] >= 10:
                     #        settings['volume'] = 0
                     #    settings['volume'] += 1
                     #    save_to_json(settings, "data")
-                    #elif 250 < posY < 280 and 300 < posX < 450:
+                    # elif 250 < posY < 280 and 300 < posX < 450:
                     #    if settings['skin'] == "3lia03":
                     #        settings['skin'] = "Rande"
                     #    elif settings['skin'] == "Rande":
                     #        settings['skin'] = "3lia03"
                     #    save_to_json(settings, "data")
-                    #elif 280 < posY < 310 and 300 < posX < 450:
+                    # elif 280 < posY < 310 and 300 < posX < 450:
                     #    print("test4")
             if event.type == pygame.KEYDOWN:
                 if event.key == globs.ESCAPE:

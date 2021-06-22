@@ -10,9 +10,10 @@ damage_image = pygame.image.load("textures/damage.png")
 
 class entity(pygame.sprite.Sprite):
 
-    def __init__(self, in_web_speed_multiplier=0.75, max_health=20, health=20, damage_overlay_on=True, immune_to_web=False,
+    def __init__(self, in_web_speed_multiplier=0.75, max_health=20, health=20, damage_overlay_on=True,
+                 immune_to_web=False,
                  damage_cooldown=20, damage=1, reach=20, relposy=0, relposx=0, position=(250, 250),
-                 velocity=None, original_image=empty_texture, rotation=0, auto_rotation=True):
+                 velocity=None, original_image=empty_texture, rotation=0, auto_rotation=True, ghost=False):
         pygame.sprite.Sprite.__init__(self)
 
         if velocity is None:
@@ -33,6 +34,7 @@ class entity(pygame.sprite.Sprite):
         self.rotation = rotation
         self.auto_rotation = auto_rotation
         self.speed = max(velocity)
+        self.ghost = ghost
 
         self.image = self.original_image
         self.hurt_animation_cooldown = 0
@@ -54,23 +56,20 @@ class entity(pygame.sprite.Sprite):
         self.position = [self.position[0] + (self.velocity[0] * speed_multiplier),
                          self.position[1] + (self.velocity[1] * speed_multiplier)]
 
-        if self.rect.top > h and self.velocity[1] > 0:
-            self.position[1] = h - self.rect.height / 2 - 1
+        if self.ghost:
+            if self.rect.top > h and self.velocity[1] > 0:
+                self.position[1] = h - self.rect.height / 2 - 1
 
-        if self.rect.bottom < 0 and self.velocity[1] < 0:
-            self.position[1] = 0 + self.rect.width / 2 + 1
+            if self.rect.bottom < 0 and self.velocity[1] < 0:
+                self.position[1] = 0 + self.rect.width / 2 + 1
 
-        if self.rect.right > w and self.velocity[0] > 0:
-            self.position[0] = w - self.rect.width / 2 - 1
+            if self.rect.right > w and self.velocity[0] > 0:
+                self.position[0] = w - self.rect.width / 2 - 1
 
-        if self.rect.left < 0 and self.velocity[0] < 0:
-            self.position[0] = 0 + self.rect.width / 2 + 1
+            if self.rect.left < 0 and self.velocity[0] < 0:
+                self.position[0] = 0 + self.rect.width / 2 + 1
 
         self.rect.center = self.position
-
-        #print(self.velocity)
-        #print(self.position)
-
         self.rect.centerx, self.rect.centery = relToAbs(self.relposx), relToAbs(self.relposy)
 
     def render_image(self):
@@ -84,5 +83,3 @@ class entity(pygame.sprite.Sprite):
 
     def draw(self, window):
         window.blit(self.image, self.rect)
-
-

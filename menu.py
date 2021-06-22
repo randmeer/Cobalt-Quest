@@ -1,7 +1,8 @@
 import pygame
-import utils
+
 import globs
-from sprites import button, label
+import utils
+from sprites import button
 from utils import relToAbsDual
 
 background_original = pygame.image.load("textures/background.png")
@@ -17,8 +18,10 @@ def showMenu():
     menu = pygame.transform.scale(menu_original, (globs.height, globs.height))
 
     buttongroup = pygame.sprite.Group()
-    levelselection_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Level Selection", relpos=(0.05, 0.44))
-    difficulty_button = button.Button(relwidth=0.9, relheight=0.15, textcontent=f" Difficulty: {globs.difficulty}", relpos=(0.05, 0.62))
+    levelselection_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Level Selection",
+                                          relpos=(0.05, 0.44))
+    difficulty_button = button.Button(relwidth=0.9, relheight=0.15, textcontent=f" Difficulty: {globs.difficulty}",
+                                      relpos=(0.05, 0.62))
     settings_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Settings", relpos=(0.05, 0.80))
     buttongroup.add(levelselection_button, difficulty_button, settings_button)
 

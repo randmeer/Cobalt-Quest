@@ -1,10 +1,12 @@
 import math
 import time
+
 import pygame
-import utils
+
 import globs
-from sprites import sword, player, outline, victim, web, gui, new_player, particle_cloud, shuriken, block
-from utils import relToAbs, relToAbsDual, absToRelDual
+import utils
+from sprites import sword, outline, victim, gui, new_player, particle_cloud, shuriken
+from utils import relToAbsDual, absToRelDual
 
 damage_player_texture = pygame.image.load("textures/damage_player.png")
 heart_img = pygame.image.load("textures/heart.png")
@@ -32,14 +34,14 @@ def playLevel1():
     blocks, victims, particleclouds, shurikens = [], [], [], []
     victim_summon_cooldown = victimcounter = 0
 
-    #gui_surface_original = pygame.Surface((relToAbsDual(1, 0.06)), pygame.SRCALPHA, 32)
-    #gui_surface_original = gui_surface_original.convert_alpha()
-    #gui_surface_original.blit(pygame.transform.scale(heart_img, relToAbsDual(0.036, 0.036)), relToAbsDual(0.02, 0.02))
-    #gui_surface_original.blit(pygame.transform.scale(ichkeksi_img, relToAbsDual(0.04, 0.04)), relToAbsDual(0.2, 0.02))
-    #gui_surface_original.blit(pygame.transform.scale(tick_img, relToAbsDual(0.036, 0.036)), relToAbsDual(0.38, 0.02))
-    #gui_surface_original.blit(pygame.transform.scale(cross_img, relToAbsDual(0.036, 0.036)), relToAbsDual(0.56, 0.02))
-    #gui_surface_original.blit(pygame.transform.scale(broken_heart_img, relToAbsDual(0.036, 0.036)), relToAbsDual(0.74, 0.02))
-    #gui_surface = gui_surface_original
+    # gui_surface_original = pygame.Surface((relToAbsDual(1, 0.06)), pygame.SRCALPHA, 32)
+    # gui_surface_original = gui_surface_original.convert_alpha()
+    # gui_surface_original.blit(pygame.transform.scale(heart_img, relToAbsDual(0.036, 0.036)), relToAbsDual(0.02, 0.02))
+    # gui_surface_original.blit(pygame.transform.scale(ichkeksi_img, relToAbsDual(0.04, 0.04)), relToAbsDual(0.2, 0.02))
+    # gui_surface_original.blit(pygame.transform.scale(tick_img, relToAbsDual(0.036, 0.036)), relToAbsDual(0.38, 0.02))
+    # gui_surface_original.blit(pygame.transform.scale(cross_img, relToAbsDual(0.036, 0.036)), relToAbsDual(0.56, 0.02))
+    # gui_surface_original.blit(pygame.transform.scale(broken_heart_img, relToAbsDual(0.036, 0.036)), relToAbsDual(0.74, 0.02))
+    # gui_surface = gui_surface_original
     main_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
     gui_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
     damage_player = pygame.transform.scale(damage_player_texture, (relToAbsDual(1, 1)))
@@ -78,10 +80,16 @@ def playLevel1():
                         click = True
                         swordsprite.visibility = True
                         swordsprite.animation = 1
-                        particleclouds.append(particle_cloud.ParticleCloud(relcenter=absToRelDual(mousepos[0], mousepos[1]), relradius=0.06, relparticlesize=0.02, color=(230, 0, 0), density=10, relvelocity=1.5, distribution=0.5))
+                        particleclouds.append(
+                            particle_cloud.ParticleCloud(relcenter=absToRelDual(mousepos[0], mousepos[1]),
+                                                         relradius=0.06, relparticlesize=0.02, color=(230, 0, 0),
+                                                         density=10, relvelocity=1.5, distribution=0.5))
                     if guisprite.items[guisprite.weapon][0] == "shuriken" and guisprite.items[guisprite.weapon][1] > 0:
-                        angle = math.atan2(mousepos[1]-playersprite.rect.centery, mousepos[0]-playersprite.rect.centerx)
-                        shurikens.append(shuriken.Shuriken(relpos=absToRelDual(playersprite.rect.centerx, playersprite.rect.centery), radians=angle))
+                        angle = math.atan2(mousepos[1] - playersprite.rect.centery,
+                                           mousepos[0] - playersprite.rect.centerx)
+                        shurikens.append(
+                            shuriken.Shuriken(relpos=absToRelDual(playersprite.rect.centerx, playersprite.rect.centery),
+                                              radians=angle))
                         guisprite.items[guisprite.weapon][1] -= 1
                 if event.button == globs.WHEELUP:
                     guisprite.weapon -= 1
@@ -131,7 +139,7 @@ def playLevel1():
                 damage_player = pygame.transform.scale(damage_player_texture, (relToAbsDual(1, 1)))
                 background = pygame.transform.scale(background_original, (relToAbsDual(1, 1)))
                 gui_background = pygame.transform.scale(gui_background_original, (relToAbsDual(1, 1)))
-                #gui_surface = pygame.transform.scale(gui_surface_original, (relToAbsDual(1, 0.06)))
+                # gui_surface = pygame.transform.scale(gui_surface_original, (relToAbsDual(1, 0.06)))
                 for i in victimgroup:
                     i.resize()
                 for i in blocks:
@@ -149,9 +157,8 @@ def playLevel1():
         else:
             if victimcounter <= globs.victimspawns:
                 victim_summon_cooldown = 100 / (globs.difficulty * (globs.difficulty / 2))
-                victims.append(victim.Victim())
+                victims.append(victim.Victim.summon())
                 victimgroup.add(victims[victimcounter])
-                victims[victimcounter].summon()
                 victimcounter += 1
 
         # manage damagecooldown
@@ -162,7 +169,7 @@ def playLevel1():
         if globs.victimskilled == globs.victimspawns + 1:
             utils.showEndScreen(window=window, end="victory", mainsurf=main_surface)
             run = False
-        elif globs.victimsmissed >= globs.victimspawns and globs.victimspawns - globs.victimsmissed - globs.\
+        elif globs.victimsmissed >= globs.victimspawns and globs.victimspawns - globs.victimsmissed - globs. \
                 victimskilled + 1 <= 0 or globs.playerhealthpoints < 1:
             utils.showEndScreen(window=window, end="defeat", mainsurf=main_surface)
             run = False
@@ -172,7 +179,7 @@ def playLevel1():
         victimgroup.update(player=playersprite, click=click, webgroup=webgroup, delta_time=delta_time)
         playersprite.update(webgroup=webgroup, main_surface=main_surface)
         swordsprite.update(playersprite=playersprite, delta_time=delta_time)
-        #webgroup.update()
+        # webgroup.update()
         guisprite.update()
         damage_player.set_alpha(256 - (globs.damagecooldown * 256 / globs.maxcooldown))
         # ------------------ UPDATES ------------------
@@ -193,9 +200,9 @@ def playLevel1():
         playersprite.draw(main_surface)
         guisprite.draw(gui_surface)
         main_surface.blit(damage_player, (0, 0))
-        #main_surface.blit(gui_surface, (0, 0))
-        #utils.renderIngameText(main_surface)
-        #utils.renderText(window=main_surface, text=str(round(clock.get_fps())) + "",
+        # main_surface.blit(gui_surface, (0, 0))
+        # utils.renderIngameText(main_surface)
+        # utils.renderText(window=main_surface, text=str(round(clock.get_fps())) + "",
         #                 position=relToAbsDual(0.92, 0.02),
         #                 color=globs.WHITE, size=relToAbs(0.048))
         window.blit(main_surface, (0, 0))

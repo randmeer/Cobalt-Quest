@@ -1,6 +1,7 @@
 import math
-import pygame
 import random
+
+import pygame
 
 import globs
 import utils
@@ -9,6 +10,7 @@ from utils import absToRel, relToAbs, relToAbsDual
 ichkeksi_image = pygame.image.load("textures/ichkeksi.png")
 damage_image = pygame.image.load("textures/damage.png")
 
+# noinspection DuplicatedCode
 class Victim(pygame.sprite.Sprite):
 
     def __init__(self):
@@ -28,7 +30,9 @@ class Victim(pygame.sprite.Sprite):
         self.tookdamage = False
         self.damage_animation_cooldown = 10
 
-    def summon(self):
+    @staticmethod
+    def summon():
+        self = Victim()
         if self.onscreen:
             position = random.randint(relToAbs(0.1), relToAbs(0.9))
 
@@ -51,6 +55,7 @@ class Victim(pygame.sprite.Sprite):
                 self.rect.center = (relToAbs(0.1) * -1, position)
                 self.relposx = absToRel(relToAbs(0.1) * -1 - relToAbs(0.05))
                 self.relposy = absToRel(position - relToAbs(0.05))
+        return self
 
     def update(self, player, click, webgroup, delta_time):
         if self.onscreen:

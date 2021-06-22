@@ -1,12 +1,8 @@
-import pygame
-from math import pi
-from math import atan2
-import globs
-from utils import getSetting
-from utils import relToAbs
-import globs
-import pygame
 from math import pi, atan2
+
+import pygame
+
+import globs
 from utils import getSetting, relToAbs, relToAbsDual
 
 elia_texture = pygame.image.load("textures/3lia03.png")

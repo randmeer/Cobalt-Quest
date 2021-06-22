@@ -1,4 +1,5 @@
 import pygame
+
 from utils import relToAbs, relToAbsDual, absToRel
 
 web_texture = pygame.image.load("textures/web.png")
