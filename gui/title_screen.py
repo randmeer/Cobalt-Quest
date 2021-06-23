@@ -1,19 +1,18 @@
 import pygame
 
-import globs
 import utils
+from utils import globs
 from utils import relToAbsDual
+from utils.images import background_texture, title_screen_texture
 
-background_original = pygame.image.load("textures/background.png")
-title_screen_original = pygame.image.load("textures/title_screen.png")
 
 def showTitleScreen():
     print("TITLE SCREEN START")
     utils.setGlobalDefaults()
     window = utils.setupWindow()
 
-    background = pygame.transform.scale(background_original, relToAbsDual(1, 1))
-    title_screen = pygame.transform.scale(title_screen_original, relToAbsDual(1.78, 1))
+    background = pygame.transform.scale(background_texture, relToAbsDual(1, 1))
+    title_screen = pygame.transform.scale(title_screen_texture, relToAbsDual(1.78, 1))
     rndebugAccess = 0
 
     window.blit(background, (0, 0))
@@ -52,8 +51,8 @@ def showTitleScreen():
                     run = False
             if event.type == pygame.VIDEORESIZE:
                 utils.resizeWindow(event.w, event.h)
-                background = pygame.transform.scale(background_original, (relToAbsDual(1, 1)))
-                title_screen = pygame.transform.scale(title_screen_original, relToAbsDual(1.78, 1))
+                background = pygame.transform.scale(background_texture, (relToAbsDual(1, 1)))
+                title_screen = pygame.transform.scale(title_screen_texture, relToAbsDual(1.78, 1))
                 window.blit(background, (0, 0))
                 window.blit(background, relToAbsDual(1, 0))
                 window.blit(title_screen, (1, 0))

@@ -1,21 +1,18 @@
 import pygame
 
-import globs
-import utils
+from utils import globs, __init__, images
 from sprites import button
-from utils import relToAbsDual
-
-background_original = pygame.image.load("textures/background.png")
-menu_original = pygame.image.load("textures/menu.png")
+from utils.images import background_texture, menu_texture
+from utils.__init__ import relToAbsDual
 
 def showMenu():
     print("MENU START")
-    utils.setGlobalDefaults()
-    window = utils.setupWindow()
+    __init__.setGlobalDefaults()
+    window = __init__.setupWindow()
     resizeupdate = False
 
-    background = pygame.transform.scale(background_original, (globs.height, globs.height))
-    menu = pygame.transform.scale(menu_original, (globs.height, globs.height))
+    background = pygame.transform.scale(images.background_texture, (globs.height, globs.height))
+    menu = pygame.transform.scale(images.menu_texture, (globs.height, globs.height))
 
     buttongroup = pygame.sprite.Group()
     levelselection_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Level Selection",
@@ -64,9 +61,9 @@ def showMenu():
                         difficulty_button.update()
                         difficulty_button.draw(window=window)
                         pygame.display.update()
-                        utils.playSound('click')
+                        __init__.playSound('click')
                     if settings_button.rect.collidepoint(mousepos):
-                        utils.showSettings(window=window)
+                        __init__.showSettings(window=window)
                         resizeupdate = True
             # keypress event
             if event.type == pygame.KEYDOWN:
@@ -77,9 +74,9 @@ def showMenu():
             if event.type == pygame.VIDEORESIZE or resizeupdate:
                 resizeupdate = False
                 w, h = pygame.display.get_surface().get_size()
-                utils.resizeWindow(w, h)
-                background = pygame.transform.scale(background_original, (relToAbsDual(1, 1)))
-                menu = pygame.transform.scale(menu_original, relToAbsDual(1, 1))
+                __init__.resizeWindow(w, h)
+                background = pygame.transform.scale(background_texture, (relToAbsDual(1, 1)))
+                menu = pygame.transform.scale(menu_texture, relToAbsDual(1, 1))
                 window.blit(background, (0, 0))
                 window.blit(background, relToAbsDual(1, 0))
                 window.blit(menu, (0, 0))
@@ -87,5 +84,5 @@ def showMenu():
             i.update()
             i.draw(window=window)
         pygame.display.update()
-    utils.playSound('click')
+    __init__.playSound('click')
     print("MENU END")

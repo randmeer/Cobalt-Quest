@@ -1,6 +1,6 @@
 import pygame
 
-from utils import relToAbs, relToAbsDual, renderText, getTextRect, gradientRect
+from utils.__init__ import relToAbs, relToAbsDual, renderText, getTextRect, gradientRect
 
 class Button(pygame.sprite.Sprite):
 

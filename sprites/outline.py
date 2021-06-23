@@ -1,8 +1,8 @@
 import pygame
 
-from utils import absToRel, relToAbsDual, relToAbs
+from utils.images import outline_texture
+from utils.__init__ import absToRel, relToAbsDual, relToAbs
 
-outline_texture = pygame.image.load("textures/outline.png")
 
 def rel_pos(ind):
     return round(number=(round((absToRel(pygame.mouse.get_pos()[ind]) - 0.05) / 0.1) * 0.1), ndigits=1)

@@ -1,9 +1,8 @@
 import pygame
 
 from sprites import particle
-from utils import relToAbsDual, relToAbs
+from utils.__init__ import relToAbsDual, relToAbs
 
-outline_texture = pygame.image.load("textures/outline.png")
 
 class ParticleCloud(pygame.sprite.Sprite):
     def __init__(self, relcenter, relradius, relparticlesize, color, density, relvelocity, distribution=0.3,

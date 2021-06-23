@@ -1,29 +1,22 @@
 import math
 import time
 import pygame
-import utils
-import globs
-from sprites import sword, player, outline, victim, web, gui, new_player, particle_cloud, shuriken, block
-from utils import relToAbs, relToAbsDual, absToRelDual
 
-damage_player_texture = pygame.image.load("textures/damage_player.png")
-heart_img = pygame.image.load("textures/heart.png")
-ichkeksi_img = pygame.image.load("textures/ichkeksi.png")
-tick_img = pygame.image.load("textures/tick.png")
-cross_img = pygame.image.load("textures/cross.png")
-broken_heart_img = pygame.image.load("textures/broken_heart.png")
-background_original = pygame.image.load("textures/background.png")
-gui_background_original = pygame.image.load("textures/gui_background.png")
+from sprites.block import Block
+from utils import globs, __init__
+from sprites import sword, outline, victim, gui, particle_cloud, shuriken
+from sprites.entity import player
+from utils.__init__ import relToAbsDual, absToRelDual
 
 def playLevel1():
     print("LEVEL1 START")
     # ------------------ SETUP ------------------
-    utils.setGlobalDefaults()
-    utils.setGameDefaults()
-    window = utils.setupWindow()
+    __init__.setGlobalDefaults()
+    __init__.setGameDefaults()
+    window = __init__.setupWindow()
     background = pygame.transform.scale(background_original, (globs.height, globs.height))
     gui_background = pygame.transform.scale(gui_background_original, (globs.height, globs.height))
-    playersprite = new_player.Player()
+    playersprite = player.Player()
     outlinesprite = outline.Outline()
     swordsprite = sword.Sword()
     guisprite = gui.GUI()
@@ -82,12 +75,12 @@ def playLevel1():
                 # right button and spawn webs
                 if event.button == globs.RIGHT:
                     # ToDo: bind the block type to the selection
-                    blocks.append(block.Block(blocktype="web"))
+                    blocks.append(Block(blocktype="web"))
             # keyevents
             if event.type == pygame.KEYDOWN:
                 # pausekey
                 if event.key == pygame.K_ESCAPE:
-                    utils.showPauseScreen(window=window, mainsurf=main_surface)
+                    __init__.showPauseScreen(window=window, mainsurf=main_surface)
                     resizeupdate = True
                     playersprite.update_skin()
                 if event.key == pygame.K_e:
@@ -117,7 +110,7 @@ def playLevel1():
             if event.type == pygame.VIDEORESIZE or resizeupdate:
                 resizeupdate = False
                 w, h = pygame.display.get_surface().get_size()
-                utils.resizeWindow(w, h)
+                __init__.resizeWindow(w, h)
                 main_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
                 gui_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
                 damage_player = pygame.transform.scale(damage_player_texture, (relToAbsDual(1, 1)))
@@ -152,11 +145,11 @@ def playLevel1():
 
         # determin victory or defeat
         if globs.victimskilled == globs.victimspawns + 1:
-            utils.showEndScreen(window=window, end="victory", mainsurf=main_surface)
+            __init__.showEndScreen(window=window, end="victory", mainsurf=main_surface)
             run = False
         elif globs.victimsmissed >= globs.victimspawns and globs.victimspawns - globs.victimsmissed - globs.\
                 victimskilled + 1 <= 0 or globs.playerhealthpoints < 1:
-            utils.showEndScreen(window=window, end="defeat", mainsurf=main_surface)
+            __init__.showEndScreen(window=window, end="defeat", mainsurf=main_surface)
             run = False
         # ------------------ GAME LOGIC ---------------
 
@@ -164,7 +157,7 @@ def playLevel1():
         victimgroup.update(player=playersprite, click=click, webgroup=webgroup, delta_time=delta_time)
         playersprite.update(webgroup=webgroup, main_surface=main_surface)
         swordsprite.update(playersprite=playersprite, delta_time=delta_time)
-        #webgroup.update()
+        # webgroup.update()
         guisprite.update()
         damage_player.set_alpha(256 - (globs.damagecooldown * 256 / globs.maxcooldown))
         # ------------------ UPDATES ------------------
@@ -185,7 +178,9 @@ def playLevel1():
         playersprite.draw(main_surface)
         guisprite.draw(gui_surface)
         main_surface.blit(damage_player, (0, 0))
-        #utils.renderText(window=main_surface, text=str(round(clock.get_fps())) + "",
+        # main_surface.blit(gui_surface, (0, 0))
+        # utils.renderIngameText(main_surface)
+        # utils.renderText(window=main_surface, text=str(round(clock.get_fps())) + "",
         #                 position=relToAbsDual(0.92, 0.02),
         #                 color=globs.WHITE, size=relToAbs(0.048))
         window.blit(main_surface, (0, 0))

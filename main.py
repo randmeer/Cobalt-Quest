@@ -1,12 +1,10 @@
 import pygame
 
-import globs
-import level1
-import level_selection
-import menu
-import rndebug
-import title_screen
 import utils
+from gui import title_screen, menu, level_selection
+from gui.level import LevelTemplate
+from utils import images, globs, rndebug
+
 
 if __name__ == '__main__':
     # if music present play the music
@@ -44,7 +42,8 @@ if __name__ == '__main__':
         elif globs.level_selection:
             level_selection.showLevelSelection()
         elif globs.level1:
-            level1.playLevel1()
+            level = LevelTemplate()
+            level.start_loop()
         elif globs.rndebug:
             rndebug.showRNDebug()
         else:

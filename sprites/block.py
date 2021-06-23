@@ -1,14 +1,10 @@
 import pygame
 
-from utils import relToAbs, relToAbsDual, absToRel
+from utils.images import web_texture, mud_texture, brick_texture, cobblestone_texture, sandstone_texture, wall_texture
+from utils.__init__ import relToAbs, relToAbsDual, absToRel
 
-textures = [pygame.image.load("textures/web.png"),
-            pygame.image.load("textures/wall.png"),
-            pygame.image.load("textures/brick.png"),
-            pygame.image.load("textures/cobblestone.png"),
-            pygame.image.load("textures/sandstone.png"),
-            pygame.image.load("textures/mud.png")]
 blocks = ["web", "wall", "brick", "cobble", "sandstone", "mud"]
+textures = [web_texture, wall_texture, brick_texture, cobblestone_texture, sandstone_texture, mud_texture]
 
 class Block(pygame.sprite.Sprite):
     def __init__(self, blocktype):

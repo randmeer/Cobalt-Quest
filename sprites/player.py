@@ -2,12 +2,9 @@ from math import pi, atan2
 
 import pygame
 
-import globs
-from utils import getSetting, relToAbs, relToAbsDual
+from utils import globs
+from utils.__init__ import getSetting, relToAbs, relToAbsDual
 
-elia_texture = pygame.image.load("textures/3lia03.png")
-rande_texture = pygame.image.load("textures/rande.png")
-damage_image = pygame.image.load("textures/damage.png")
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -16,7 +13,7 @@ class Player(pygame.sprite.Sprite):
         self.update_skin()
         self.image = self.original_image
         self.rect = self.image.get_rect()
-        self.rect.center = (globs.windowsize / 2, globs.windowsize / 2)
+        self.rect.center = (globs.height / 2, globs.height / 2)
         self.velocity = 0.0
         self.position = (0, 0)
         self.relposx = self.relposy = 0.5

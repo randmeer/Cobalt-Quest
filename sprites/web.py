@@ -1,8 +1,8 @@
 import pygame
 
-from utils import relToAbs, relToAbsDual, absToRel
+from utils.images import web_texture
+from utils.__init__ import relToAbs, relToAbsDual, absToRel
 
-web_texture = pygame.image.load("textures/web.png")
 
 class Web(pygame.sprite.Sprite):
 

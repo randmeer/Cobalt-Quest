@@ -3,12 +3,9 @@ import random
 
 import pygame
 
-import globs
-import utils
-from utils import absToRel, relToAbs, relToAbsDual
-
-ichkeksi_image = pygame.image.load("textures/ichkeksi.png")
-damage_image = pygame.image.load("textures/damage.png")
+from utils import globs, __init__
+from utils.images import damage_texture, ichkeksi_texture
+from utils.__init__ import absToRel, relToAbs, relToAbsDual
 
 # noinspection DuplicatedCode
 class Victim(pygame.sprite.Sprite):
@@ -16,9 +13,9 @@ class Victim(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.testsurface = pygame.Surface((50, 50))
-        self.original_image = ichkeksi_image
-        self.damage = damage_image
-        self.image = pygame.transform.scale(ichkeksi_image, (relToAbsDual(0.1, 0.1)))
+        self.original_image = ichkeksi_texture
+        self.damage = damage_texture
+        self.image = pygame.transform.scale(ichkeksi_texture, (relToAbsDual(0.1, 0.1)))
         self.rect = self.image.get_rect()
         self.rect.center = (-100, -100)
         self.direction = random.randint(1, 4)
@@ -99,23 +96,23 @@ class Victim(pygame.sprite.Sprite):
             if self.damage_animation_cooldown > 0:
                 self.damage_animation_cooldown -= 100 * delta_time
             elif self.damage_animation_cooldown < 0:
-                self.image = pygame.transform.scale(ichkeksi_image, (relToAbsDual(0.1, 0.1)))
+                self.image = pygame.transform.scale(ichkeksi_texture, (relToAbsDual(0.1, 0.1)))
                 self.damage_animation_cooldown -= 100 * delta_time
 
             if click and collidemouse and collidereach <= relToAbs(player.reach):
                 self.damage_animation_cooldown = 5
-                surface = pygame.transform.scale(ichkeksi_image, (relToAbsDual(0.1, 0.1)))
-                surface.blit(pygame.transform.scale(damage_image, (relToAbsDual(0.1, 0.1))), (0, 0))
+                surface = pygame.transform.scale(ichkeksi_texture, (relToAbsDual(0.1, 0.1)))
+                surface.blit(pygame.transform.scale(damage_texture, (relToAbsDual(0.1, 0.1))), (0, 0))
                 self.image = surface
                 self.health -= 1
                 globs.damagesum += 1
-                utils.playSound('hit')
+                __init__.playSound('hit')
 
             if collideplayer and globs.damagecooldown >= globs.maxcooldown:
                 globs.playerhealthpoints -= 1
                 globs.damagecooldown = 0
                 player.tookdamage = True
-                utils.playSound('hurt')
+                __init__.playSound('hurt')
 
             if self.health == 0:
                 self.kill()

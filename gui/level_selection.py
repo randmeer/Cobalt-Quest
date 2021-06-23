@@ -1,20 +1,17 @@
 import pygame
 
-import globs
-import utils
+from utils import globs, __init__, images
 from sprites import button
-from utils import relToAbsDual
-
-background_original = pygame.image.load("textures/background.png")
-lvl_selection_original = pygame.image.load("textures/level_selection.png")
+from utils.images import background_texture, level_selection_texture
+from utils.__init__ import relToAbsDual
 
 def showLevelSelection():
     print("LEVEL SELECTION START")
-    utils.setGlobalDefaults()
-    window = utils.setupWindow()
+    __init__.setGlobalDefaults()
+    window = __init__.setupWindow()
 
-    lvl_selection = pygame.transform.scale(lvl_selection_original, (globs.height, globs.height))
-    background = pygame.transform.scale(background_original, (globs.height, globs.height))
+    lvl_selection = pygame.transform.scale(images.level_selection_texture, (globs.height, globs.height))
+    background = pygame.transform.scale(images.background_texture, (globs.height, globs.height))
 
     buttongroup = pygame.sprite.Group()
     backtomenu_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Back to Menu", relpos=(0.05, 0.05))
@@ -68,9 +65,9 @@ def showLevelSelection():
                     globs.menu = True
 
             if event.type == pygame.VIDEORESIZE:
-                utils.resizeWindow(event.w, event.h)
-                background = pygame.transform.scale(background_original, (relToAbsDual(1, 1)))
-                lvl_selection = pygame.transform.scale(lvl_selection_original, relToAbsDual(1, 1))
+                __init__.resizeWindow(event.w, event.h)
+                background = pygame.transform.scale(level_selection_texture, (relToAbsDual(1, 1)))
+                lvl_selection = pygame.transform.scale(background_texture, relToAbsDual(1, 1))
                 window.blit(background, (0, 0))
                 window.blit(background, relToAbsDual(1, 0))
                 window.blit(lvl_selection, (0, 0))
@@ -79,5 +76,5 @@ def showLevelSelection():
             i.draw(window=window)
         pygame.display.update()
 
-    utils.playSound('click')
+    __init__.playSound('click')
     print("LEVEL SELECTION END")

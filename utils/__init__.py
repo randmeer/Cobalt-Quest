@@ -4,15 +4,16 @@ import pygame
 import pygame.freetype
 import pygame.freetype
 
-import globs
+from utils import globs
+from utils.images import icon_texture
 
-victory_texture = pygame.image.load("textures/victory.png")
-defeat_texture = pygame.image.load("textures/defeat.png")
-overlay_texture = pygame.image.load("textures/overlay.png")
-background_texture = pygame.image.load("textures/background.png")
-settingsmenu_texture = pygame.image.load("textures/settings_menu.png")
-pausemenu_texture = pygame.image.load("textures/pause_menu.png")
-icon_texture = pygame.image.load("textures/icon.png")
+# victory_texture = pygame.image.load("textures/victory.png")
+# defeat_texture = pygame.image.load("textures/defeat.png")
+# overlay_texture = pygame.image.load("textures/overlay.png")
+# background_texture = pygame.image.load("textures/background.png")
+# settingsmenu_texture = pygame.image.load("textures/settings_menu.png")
+# pausemenu_texture = pygame.image.load("textures/pause_menu.png")
+# icon_texture = pygame.image.load("textures/icon.png")
 
 def resizeWindow(eventw, eventh):
     if eventw == globs.width and eventh != globs.height:
@@ -61,7 +62,7 @@ def absToRel(input_value):
     return output
 
 def getSetting(setting):
-    with open('data.json', 'r') as fr:
+    with open('./data/data.json', 'r') as fr:
         settings = json.loads(fr.read())
     if setting == 'background_music':
         return settings['background_music']
@@ -120,11 +121,11 @@ def setupWindow():
     return window
 
 def renderText(window, text, position, color, size):
-    font = pygame.freetype.Font("fonts/standart.otf", size)
+    font = pygame.freetype.Font("./Resources/fonts/standart.otf", size)
     font.render_to(surf=window, dest=position, text=text, fgcolor=color)
 
 def getTextRect(text, size):
-    font = pygame.freetype.Font("fonts/standart.otf", size)
+    font = pygame.freetype.Font("./Resources/fonts/standart.otf", size)
     return font.get_rect(text=text)
 
 def gradientRect(width, height, left_colour, right_color):
@@ -137,19 +138,19 @@ def gradientRect(width, height, left_colour, right_color):
 def playSound(sound):
     pygame.mixer.init()
     if sound == 'click':
-        pygame.mixer.Channel(1).play(pygame.mixer.Sound("sounds/click.wav"))
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound("./Resources/sounds/click.wav"))
     elif sound == 'hit':
-        pygame.mixer.Channel(1).play(pygame.mixer.Sound("sounds/hit.wav"))
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound("./Resources/sounds/hit.wav"))
     elif sound == 'hurt':
-        pygame.mixer.Channel(2).play(pygame.mixer.Sound("sounds/hurt.wav"))
+        pygame.mixer.Channel(2).play(pygame.mixer.Sound("./Resources/sounds/hurt.wav"))
     elif sound == 'blockplace':
-        pygame.mixer.Channel(1).play(pygame.mixer.Sound("sounds/block_place.wav"))
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound("./Resources/sounds/block_place.wav"))
     elif sound == 'swing':
-        pygame.mixer.Channel(2).play(pygame.mixer.Sound("sounds/swing.wav"))
+        pygame.mixer.Channel(2).play(pygame.mixer.Sound("./Resources/sounds/swing.wav"))
     elif sound == 'victory':
-        pygame.mixer.Channel(3).play(pygame.mixer.Sound("sounds/victory.wav"))
+        pygame.mixer.Channel(3).play(pygame.mixer.Sound("./Resources/sounds/victory.wav"))
     elif sound == 'defeat':
-        pygame.mixer.Channel(3).play(pygame.mixer.Sound("sounds/defeat.wav"))
+        pygame.mixer.Channel(3).play(pygame.mixer.Sound("./Resources/sounds/defeat.wav"))
     pygame.mixer.Channel(1).set_volume(getSetting('volume') / 10)
     pygame.mixer.Channel(2).set_volume(getSetting('volume') / 10)
     pygame.mixer.Channel(3).set_volume(getSetting('volume') / 10)
@@ -321,7 +322,7 @@ def showSettings(window):
         clock.tick(60)
         mousepos = pygame.mouse.get_pos()
 
-        with open('data.json', 'r') as fr:
+        with open('./data/data.json', 'r') as fr:
             settings = json.loads(fr.read())
 
         for event in pygame.event.get():

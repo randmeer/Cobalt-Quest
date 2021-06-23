@@ -1,18 +1,11 @@
 import pygame
-import globs
-from sprites import label
-from utils import relToAbsDual, relToAbs, renderText
 
-selection_texture = pygame.image.load("textures/selection.png")
-dagger_texture = pygame.image.load("textures/dagger.png")
-shuriken_texture = pygame.image.load("textures/shuriken.png")
-bow_texture = pygame.image.load("textures/bow.png")
-item_texture = pygame.image.load("textures/cross.png")
-heart_texture = pygame.image.load("textures/heart.png")
-ichkeksi_texture = pygame.image.load("textures/ichkeksi.png")
-tick_texture = pygame.image.load("textures/tick.png")
-cross_texture = pygame.image.load("textures/cross.png")
-broken_heart_texture = pygame.image.load("textures/broken_heart.png")
+from utils.images import selection_texture, cross_texture, bow_texture, shuriken_texture, dagger_texture, \
+    broken_heart_texture, tick_texture, ichkeksi_texture, heart_texture
+from sprites import label
+from utils import relToAbsDual, relToAbs, renderText, globs
+
+# GUI class is unfinished, working on it. ~Rande
 
 class GUI(pygame.sprite.Sprite):
     def __init__(self):
@@ -40,11 +33,11 @@ class GUI(pygame.sprite.Sprite):
         self.floorlabel = label.Label(text="3rd Floor:", anchor="topleft", reltextsize=0.05, relanchorpointposition=(0.035, 0.035), textcolor=(255, 255, 255))
         self.titlelabel = label.Label(text="Menga's Hideout", anchor="topleft", reltextsize=0.05, relanchorpointposition=(0.035, 0.085), textcolor=(255, 255, 255))
         self.itemtextures = [pygame.transform.scale(dagger_texture, relToAbsDual(0.08, 0.08)),
-                             pygame.transform.scale(item_texture, relToAbsDual(0.08, 0.08)),
+                             pygame.transform.scale(cross_texture, relToAbsDual(0.08, 0.08)),
                              pygame.transform.scale(shuriken_texture, relToAbsDual(0.08, 0.08)),
                              pygame.transform.scale(bow_texture, relToAbsDual(0.08, 0.08)),
-                             pygame.transform.scale(item_texture, relToAbsDual(0.08, 0.08)),
-                             pygame.transform.scale(item_texture, relToAbsDual(0.08, 0.08))]
+                             pygame.transform.scale(cross_texture, relToAbsDual(0.08, 0.08)),
+                             pygame.transform.scale(cross_texture, relToAbsDual(0.08, 0.08))]
         self.selectangle = pygame.transform.scale(selection_texture, relToAbsDual(0.12, 0.12))
         self.selectangle_small = pygame.transform.scale(selection_texture, relToAbsDual(0.06, 0.06))
         self.overlangle = pygame.Surface(relToAbsDual(0.1, 0.1))
