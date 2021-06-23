@@ -1,0 +1,71 @@
+import math
+import pygame
+import random
+
+import globs
+import utils
+from sprites.entity import entity
+from sprites.new_player import Player
+from utils import absToRel, relToAbs, relToAbsDual
+
+ichkeksi_image = pygame.image.loas("textures/ichkeksi.png")
+damage_image = pygame.image.loas("textures/damage.png")
+
+# noinspection DuplicatedCode
+class Victim(entity):
+
+    def __init__(self):
+        entity.__init__(self, original_image=pygame.transform.scale(ichkeksi_image, (relToAbsDual(0.1, 0.1))), max_health=globs.victimhealthpointsmax,
+                        health=globs.victimhealthpointsmax, ghost=True)
+        # self.testsurface = pygame.Surface((50, 50))
+        # self.image = pygame.transform.scale(ichkeksi_image, (relToAbsDual(0.1, 0.1)))
+        # self.rect = self.image.get_rect()
+        self.direction = (1, 0)
+        self.onscreen = True
+        self.breakcooldown = 0
+        self.relposx = self.relposy = 0new_victim
+
+    @staticmethod
+    def summon():
+        w, h = pygame.display.get_surface().get_size()
+        victim = Victim()
+        directions = [(1, 0), (0, 1), (-1, 0), (0, -1)]
+        position = random.randint(relToAbs(0.1), relToAbs(0.9))
+        victim.direction = directions[random.randint(0, 3)]
+
+        if victim.direction[0] == 0:
+            # stuff happened...
+            pass
+        else:
+            victim.rect.center = (relToAbs(((victim.direction[0] + 1) / 2) + 0.1) * victim.direction[0], position)
+        victim.rect.center = (position, relToAbs(0.1) * -1)
+        victim.velocity = [victim.direction[0] * (25 + (globs.difficulty * 5)),
+                           victim.direction[1] * (25 + (globs.difficulty * 5))]
+        return victim
+
+    def update(self, click, webgroup, main_surface, Player) -> None:
+
+        collidemouse = self.rect.collidepoint(pygame.mouse.get_pos())
+        collideplayer = self.rect.colliderect(Player.rect)
+        collidereach = math.hypot(self.rect.centerx - Player.rect.centerx, self.rect.centery - Player.rect.centery)
+
+        if click and collidemouse and collidereach <= relToAbs(Player.reach):
+            self.image = damage_image
+            self.health -= 1
+            globs.damagesum += 1
+            utils.playSound('hit')
+
+        if collideplayer and globs.damagecooldown >= globs.maxcooldown:
+            globs.playerhealthpoints -= 1
+            globs.damagecooldown = 0
+            Player.tookdamage = True
+            utils.playSound('hurt')
+
+        if self.health == 0:
+            self.kill()
+            self.rect = None
+            globs.victimskilled += 1
+            self.onscreen = True
+
+        self.move(webgroup=webgroup, main_surf=main_surface)
+        self.render_image()
