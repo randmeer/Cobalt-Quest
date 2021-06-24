@@ -15,6 +15,14 @@ from utils.images import icon_texture
 # pausemenu_texture = pygame.image.load("textures/pause_menu.png")
 # icon_texture = pygame.image.load("textures/icon.png")
 
+class DefaultError(Exception):
+    def __init__(self, errmsg='unknown error has occured'):
+        self.errmsg = errmsg
+        Exception.__init__(self, errmsg)
+
+    def __reduce__(self):
+        return self.__class__, (self.errmsg)
+
 def resizeWindow(eventw, eventh):
     if eventw == globs.width and eventh != globs.height:
         if eventh < 500:
