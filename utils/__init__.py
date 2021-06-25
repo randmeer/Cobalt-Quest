@@ -5,7 +5,6 @@ import pygame.freetype
 import pygame.freetype
 
 from utils import globs
-from utils.images import icon_texture
 
 # victory_texture = pygame.image.load("textures/victory.png")
 # defeat_texture = pygame.image.load("textures/defeat.png")
@@ -21,7 +20,9 @@ class DefaultError(Exception):
         Exception.__init__(self, errmsg)
 
     def __reduce__(self):
-        return self.__class__, (self.errmsg)
+        return self.__class__, self.errmsg
+
+from utils.images import icon_texture
 
 def resizeWindow(eventw, eventh):
     if eventw == globs.width and eventh != globs.height:

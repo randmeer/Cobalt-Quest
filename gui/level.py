@@ -3,7 +3,7 @@ import time
 import pygame
 
 from utils import globs
-from utils.images import gui_background_texture, background_texture
+from utils.images import gui_background_texture, background_texture, Texture
 from sprites import gui
 from utils.__init__ import relToAbsDual, setGlobalDefaults, setGameDefaults, setupWindow, resizeWindow, showPauseScreen
 
@@ -31,6 +31,7 @@ class LevelTemplate:
         self.run = True
         self.auto_render = True
         self.events = []
+        self.testtexture = Texture("Resources/textures/sparkling_shuriken.png")
 
     def single_loop(self):
         """
@@ -107,4 +108,5 @@ class LevelTemplate:
         #                 color=globs.WHITE, size=relToAbs(0.048))
         self.window.blit(self.game_surface, (0, 0))
         self.window.blit(self.gui_surface, relToAbsDual(1, 0))
+        self.window.blit(self.testtexture.get(), (0, 0))
         pygame.display.update()

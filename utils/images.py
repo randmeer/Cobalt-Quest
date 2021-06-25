@@ -6,17 +6,7 @@ from json import JSONDecodeError
 
 import pygame
 
-import utils
-
 tex_dir = './Resources/textures/'
-
-def frame_list_sorter(e):
-    return e['index']
-
-class TextureError(utils.DefaultError):
-
-    def __init__(self, errmsg):
-        utils.DefaultError.__init__(errmsg)
 
 class Texture:
     """
@@ -97,9 +87,9 @@ class Texture:
                 self.single_loop_time = 0
                 empty = []
                 for i in self.frame_list:
-                    if 'time' not in i.keys:
+                    if 'time' not in i:
                         i['time'] = self.default_time
-                    if 'index' not in i.keys:
+                    if 'index' not in i:
                         if self.randomized:
                             empty.append(self.frame_list.index(i))
                         else:
@@ -112,7 +102,7 @@ class Texture:
 
                 for i in self.frame_list:
                     self.single_loop_time += i['time']
-                self.init_time -= random.randint(0, self.single_loop_time)
+                self.init_time -= random.uniform(0, self.single_loop_time)
 
             except KeyError:
                 self.frame_list = [{"index": i, "time": self.default_time} for i in range(self.frame_count)]
@@ -137,48 +127,58 @@ class Texture:
                 delta_time -= i['time']
         return self.image
 
-Elia03_texture = pygame.image.load("3lia03.png")
-num_1_texture = pygame.image.load("1.png")
-num_2_texture = pygame.image.load("2.png")
-num_3_texture = pygame.image.load("3.png")
-actual_background_copy_texture = pygame.image.load("actual_background_copy.png")
-background_texture = pygame.image.load("background.png")
-bow_texture = pygame.image.load("bow.png")
-brick_texture = pygame.image.load("brick.png")
-broken_heart_texture = pygame.image.load("broken_heart.png")
-chest_texture = pygame.image.load("chest.png")
-cobblestone_texture = pygame.image.load("cobblestone.png")
-cross_texture = pygame.image.load("cross.png")
-crosshair_texture = pygame.image.load("crosshair.png")
-dagger_texture = pygame.image.load("dagger.png")
-damage_texture = pygame.image.load("damage.png")
-damage_player_texture = pygame.image.load("damage_player.png")
-defeat_texture = pygame.image.load("defeat.png")
-empty_texture = pygame.image.load("empty.png")
-gui_background_texture = pygame.image.load("gui_background.png")
-gui_template_texture = pygame.image.load("gui_template.png")
-heart_texture = pygame.image.load("heart.png")
-ichkeksi_texture = pygame.image.load("ichkeksi.png")
-icon_texture = pygame.image.load("icon.png")
-icon_big_texture = pygame.image.load("icon_big.png")
-lava_texture = pygame.image.load("lava.png")
-level_selection_texture = pygame.image.load("level_selection.png")
-menu_texture = pygame.image.load("menu.png")
-menu_mode_1_texture = pygame.image.load("menu_mode_1.png")
-menu_mode_2_texture = pygame.image.load("menu_mode_2.png")
-menu_mode_3_texture = pygame.image.load("menu_mode_3.png")
-mud_texture = pygame.image.load("mud.png")
-outline_texture = pygame.image.load("outline.png")
-overlay_texture = pygame.image.load("overlay.png")
-pause_menu_texture = pygame.image.load("pause_menu.png")
-rande_texture = pygame.image.load("rande.png")
-sandstone_texture = pygame.image.load("sandstone.png")
-selection_texture = pygame.image.load("selection.png")
-settings_menu_texture = pygame.image.load("settings_menu.png")
-shuriken_texture = pygame.image.load("shuriken.png")
-tick_texture = pygame.image.load("tick.png")
-title_screen_texture = pygame.image.load("title_screen.png")
-victory_texture = pygame.image.load("victory.png")
-wall_texture = pygame.image.load("wall.png")
-web_texture = pygame.image.load("web.png")
-wert32_texture = pygame.image.load("wert32.png")
+Elia03_texture = pygame.image.load(tex_dir + "3lia03.png")
+num_1_texture = pygame.image.load(tex_dir + "1.png")
+num_2_texture = pygame.image.load(tex_dir + "2.png")
+num_3_texture = pygame.image.load(tex_dir + "3.png")
+actual_background_copy_texture = pygame.image.load(tex_dir + "actual_background_copy.png")
+background_texture = pygame.image.load(tex_dir + "background.png")
+bow_texture = pygame.image.load(tex_dir + "bow.png")
+brick_texture = pygame.image.load(tex_dir + "brick.png")
+broken_heart_texture = pygame.image.load(tex_dir + "broken_heart.png")
+chest_texture = pygame.image.load(tex_dir + "chest.png")
+cobblestone_texture = pygame.image.load(tex_dir + "cobblestone.png")
+cross_texture = pygame.image.load(tex_dir + "cross.png")
+crosshair_texture = pygame.image.load(tex_dir + "crosshair.png")
+dagger_texture = pygame.image.load(tex_dir + "dagger.png")
+damage_texture = pygame.image.load(tex_dir + "damage.png")
+damage_player_texture = pygame.image.load(tex_dir + "damage_player.png")
+defeat_texture = pygame.image.load(tex_dir + "defeat.png")
+empty_texture = pygame.image.load(tex_dir + "empty.png")
+gui_background_texture = pygame.image.load(tex_dir + "gui_background.png")
+gui_template_texture = pygame.image.load(tex_dir + "gui_template.png")
+heart_texture = pygame.image.load(tex_dir + "heart.png")
+ichkeksi_texture = pygame.image.load(tex_dir + "ichkeksi.png")
+icon_texture = pygame.image.load(tex_dir + "icon.png")
+icon_big_texture = pygame.image.load(tex_dir + "icon_big.png")
+lava_texture = pygame.image.load(tex_dir + "lava.png")
+level_selection_texture = pygame.image.load(tex_dir + "level_selection.png")
+menu_texture = pygame.image.load(tex_dir + "menu.png")
+menu_mode_1_texture = pygame.image.load(tex_dir + "menu_mode_1.png")
+menu_mode_2_texture = pygame.image.load(tex_dir + "menu_mode_2.png")
+menu_mode_3_texture = pygame.image.load(tex_dir + "menu_mode_3.png")
+mud_texture = pygame.image.load(tex_dir + "mud.png")
+outline_texture = pygame.image.load(tex_dir + "outline.png")
+overlay_texture = pygame.image.load(tex_dir + "overlay.png")
+pause_menu_texture = pygame.image.load(tex_dir + "pause_menu.png")
+rande_texture = pygame.image.load(tex_dir + "rande.png")
+sandstone_texture = pygame.image.load(tex_dir + "sandstone.png")
+selection_texture = pygame.image.load(tex_dir + "selection.png")
+settings_menu_texture = pygame.image.load(tex_dir + "settings_menu.png")
+shuriken_texture = pygame.image.load(tex_dir + "shuriken.png")
+tick_texture = pygame.image.load(tex_dir + "tick.png")
+title_screen_texture = pygame.image.load(tex_dir + "title_screen.png")
+victory_texture = pygame.image.load(tex_dir + "victory.png")
+wall_texture = pygame.image.load(tex_dir + "wall.png")
+web_texture = pygame.image.load(tex_dir + "web.png")
+wert32_texture = pygame.image.load(tex_dir + "wert32.png")
+
+import utils
+
+def frame_list_sorter(e):
+    return e['index']
+
+class TextureError(utils.DefaultError):
+
+    def __init__(self, errmsg):
+        utils.DefaultError.__init__(errmsg)

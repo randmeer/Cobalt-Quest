@@ -1,0 +1,17 @@
+{
+    "time": 0.05,
+    "randomized": false,
+    "random_start": false,
+    "frames": [
+      {"index": 0, "time": 0.05},
+      {"index": 1, "time": 0.05},
+      {"index": 2, "time": 0.05},
+      {"index": 3, "time": 0.05},
+      {"index": 4, "time": 0.05},
+      {"index": 5, "time": 0.05},
+      {"index": 6, "time": 0.05},
+      {"index": 7, "time": 0.05},
+      {"index": 8, "time": 0.05},
+      {"index": 9, "time": 0.05}
+        ]
+    }
