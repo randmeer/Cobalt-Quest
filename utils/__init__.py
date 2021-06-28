@@ -372,7 +372,7 @@ def showSettings(window):
         pygame.display.update()
     playSound('click')
 
-def checkCollision(sprite1, sprite2):
+def check_collision(sprite1, sprite2):
     col = pygame.sprite.collide_rect(sprite1, sprite2)
     if col:
         return True
