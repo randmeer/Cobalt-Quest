@@ -1,6 +1,6 @@
 import pygame
 
-from sprites import particle
+from Render.sprites import particle
 from utils.__init__ import relToAbsDual, relToAbs
 
 

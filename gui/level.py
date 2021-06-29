@@ -4,7 +4,7 @@ import pygame
 
 from utils import globs
 from utils.images import gui_background_texture, background_texture, Texture
-from sprites import gui
+from Render.sprites import gui
 from utils.__init__ import relToAbsDual, setGlobalDefaults, setGameDefaults, setupWindow, resizeWindow, showPauseScreen
 
 class LevelTemplate:

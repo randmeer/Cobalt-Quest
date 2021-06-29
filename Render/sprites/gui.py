@@ -2,7 +2,7 @@ import pygame
 
 from utils.images import selection_texture, cross_texture, bow_texture, shuriken_texture, dagger_texture, \
     broken_heart_texture, tick_texture, ichkeksi_texture, heart_texture
-from sprites import label
+from Render.sprites import label
 from utils import relToAbsDual, relToAbs, renderText, globs
 
 # GUI class is unfinished, working on it. ~Rande

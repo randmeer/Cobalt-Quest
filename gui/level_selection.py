@@ -1,7 +1,7 @@
 import pygame
 
 from utils import globs, __init__, images
-from sprites import button
+from Render.sprites import button
 from utils.images import background_texture, level_selection_texture
 from utils.__init__ import relToAbsDual
 

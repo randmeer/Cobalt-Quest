@@ -169,7 +169,7 @@ def playTheme():
     pygame.mixer.music.load("sounds/theme.wav")
     pygame.mixer.music.play(-1)
 
-from sprites import button
+from Render.sprites import button
 
 def showPauseScreen(window, mainsurf):
     setGlobalDefaults()

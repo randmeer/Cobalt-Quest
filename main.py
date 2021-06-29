@@ -3,7 +3,7 @@ import pygame
 import utils
 from gui import title_screen, menu, level_selection
 from gui.level import LevelTemplate
-from utils import images, globs, rndebug
+from utils import globs, rndebug
 
 
 if __name__ == '__main__':
