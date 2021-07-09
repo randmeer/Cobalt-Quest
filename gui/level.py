@@ -5,6 +5,7 @@ import pygame
 from utils import globs
 from utils.images import gui_background_texture, background_texture, Texture
 from Render.sprites import gui
+from Render.sprites.progress_bar import ProgressBar
 from utils.__init__ import relToAbsDual, setGlobalDefaults, setGameDefaults, setupWindow, resizeWindow, showPauseScreen
 
 class LevelTemplate:
@@ -21,8 +22,7 @@ class LevelTemplate:
         self.window = setupWindow()
         self.background = pygame.transform.scale(background_texture, (globs.height, globs.height))
         self.gui_background = pygame.transform.scale(gui_background_texture, (globs.height, globs.height))
-        self.game_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
-        self.gui_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
+        self.game_surface = pygame.Surface(pygame.display.get_window_size(), pygame.SRCALPHA, 32)
         self.guisprite = gui.GUI()
 
         self.prev_time = time.time()
@@ -31,7 +31,28 @@ class LevelTemplate:
         self.run = True
         self.auto_render = True
         self.events = []
-        self.testtexture = Texture("Resources/textures/sparkling_shuriken.png")
+
+        # IGNORE THOSE TEXTURES FOR NOW, BUT WE'LL NEED THEM LATER
+
+        #self.maptex = Texture("Resources/textures/map.png")
+        #self.playeruptex = Texture("Resources/textures/player_animation_up.png")
+        #self.playerdowntex = Texture("Resources/textures/player_animation_down.png")
+        #self.playerrighttex = Texture("Resources/textures/player_animation_right.png")
+        #self.playerlefttex = Texture("Resources/textures/player_animation_left.png")
+        #self.playeridletex = Texture("Resources/textures/player_animation_idle.png")
+        #self.apprenticedowntex = Texture("Resources/textures/apprentice_animation_down.png")
+        #self.apprenticeuptex = Texture("Resources/textures/apprentice_animation_up.png")
+        #self.apprenticerighttex = Texture("Resources/textures/apprentice_animation_right.png")
+        #self.apprenticelefttex = Texture("Resources/textures/apprentice_animation_left.png")
+        #self.apprenticeidletex = Texture("Resources/textures/apprentice_animation_idle.png")
+        #self.wielderdowntex = Texture("Resources/textures/wielder_animation_down.png")
+        #self.wielderuptex = Texture("Resources/textures/wielder_animation_up.png")
+        #self.wielderrighttex = Texture("Resources/textures/apprentice_animation_right.png")
+        #self.wielderlefttex = Texture("Resources/textures/apprentice_animation_left.png")
+        #self.testbar = ProgressBar(iconpath="Resources/textures/heart.png", maxvalue=100, colors=((255, 0, 0), (75, 75, 75)), relsize=(1, 0.05))
+        #self.testrun = 0
+        #self.testsurf = pygame.Surface((1100, 1100))
+        #self.testsurf.fill((255, 255, 255))
 
     def single_loop(self):
         """
@@ -72,8 +93,8 @@ class LevelTemplate:
                 self.resizeupdate = False
                 w, h = pygame.display.get_surface().get_size()
                 resizeWindow(w, h)
-                self.game_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
-                self.gui_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
+                self.game_surface = pygame.Surface(pygame.display.get_window_size(), pygame.SRCALPHA, 32)
+                self.gui_surface = pygame.Surface(pygame.display.get_window_size(), pygame.SRCALPHA, 32)
                 self.background = pygame.transform.scale(background_texture, (relToAbsDual(1, 1)))
                 self.gui_background = pygame.transform.scale(gui_background_texture, (relToAbsDual(1, 1)))
                 # gui_surface = pygame.transform.scale(gui_surface_original, (relToAbsDual(1, 0.06)))
@@ -98,15 +119,26 @@ class LevelTemplate:
         renders the gui and game surface
         """
         self.game_surface.blit(self.background, (0, 0))
-        self.gui_surface.blit(self.gui_background, relToAbsDual(0, 0))
-
-        self.guisprite.draw(self.gui_surface)
-        # game_surface.blit(gui_surface, (0, 0))
-        # utils.renderIngameText(game_surface)
+        self.game_surface.blit(self.background, relToAbsDual(1, 0))
         # utils.renderText(window=game_surface, text=str(round(clock.get_fps())) + "",
         #                 position=relToAbsDual(0.92, 0.02),
         #                 color=globs.WHITE, size=relToAbs(0.048))
+        self.guisprite.draw(self.game_surface)
         self.window.blit(self.game_surface, (0, 0))
-        self.window.blit(self.gui_surface, relToAbsDual(1, 0))
-        self.window.blit(self.testtexture.get(), (0, 0))
+        #self.window.blit(self.maptex.get(), (0, 0))
+        #self.window.blit(self.testsurf, (0, 0))
+        #self.window.blit(self.playerdowntex.get(), (500, self.testrun + 500))
+        #self.window.blit(self.playeruptex.get(), (500, 500 - self.testrun))
+        #self.window.blit(self.playerrighttex.get(), (self.testrun + 500, 500))
+        #self.window.blit(self.playerlefttex.get(), (500 - self.testrun, 500))
+        #self.window.blit(self.playeridletex.get(), (500, 500))
+        #self.window.blit(self.apprenticedowntex.get(), (500, int(self.testrun/2 + 500)))
+        #self.window.blit(self.apprenticeuptex.get(), (500, 500 - int(self.testrun/2)))
+        #self.window.blit(self.apprenticerighttex.get(), (int(self.testrun/2) + 500, 500))
+        #self.window.blit(self.apprenticelefttex.get(), (int(500 - self.testrun/2), 500))
+        #self.window.blit(self.apprenticeidletex.get(), (600, 500))
+        #self.window.blit(self.wielderdowntex.get(), (400, int(self.testrun/2 + 500)))
+        #self.window.blit(self.wielderuptex.get(), (400, 500 - int(self.testrun/2)))
+        #self.window.blit(self.testbar.get(), (400, 400))
+        #self.testrun += 2
         pygame.display.update()

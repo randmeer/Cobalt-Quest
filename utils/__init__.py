@@ -25,27 +25,47 @@ class DefaultError(Exception):
 from utils.images import icon_texture
 
 def resizeWindow(eventw, eventh):
+    # if eventw == globs.width and eventh != globs.height:
+    #     if eventh < 500:
+    #         globs.height = 500
+    #         globs.width = int(500 * 16 / 9)
+    #     else:
+    #         globs.height = eventh
+    #         globs.width = int(eventh * 16 / 9)
+    # elif eventw != globs.width and eventh == globs.height:
+    #     if eventw < int(500 * 16 / 9):
+    #         globs.height = 500
+    #         globs.width = int(500 * 16 / 9)
+    #     else:
+    #         globs.width = eventw
+    #         globs.height = int(eventw * 9 / 16)
+    # elif eventw != globs.width and eventh != globs.height:
+    #     if eventh < 500:
+    #         globs.height = 500
+    #         globs.width = int(500 * 16 / 9)
+    #     else:
+    #         globs.height = eventh
+    #         globs.width = int(eventh * 16 / 9)
+    # pygame.display.set_mode((globs.width, globs.height), pygame.RESIZABLE)
     if eventw == globs.width and eventh != globs.height:
-        if eventh < 500:
-            globs.height = 500
-            globs.width = int(500 * 16 / 9)
+        if eventh < 250:
+            globs.height = 250
         else:
             globs.height = eventh
-            globs.width = int(eventh * 16 / 9)
     elif eventw != globs.width and eventh == globs.height:
-        if eventw < int(500 * 16 / 9):
-            globs.height = 500
-            globs.width = int(500 * 16 / 9)
+        if eventw < int(250 * 16 / 9):
+            globs.width = int(250 * 16 / 9)
         else:
             globs.width = eventw
-            globs.height = int(eventw * 9 / 16)
     elif eventw != globs.width and eventh != globs.height:
-        if eventh < 500:
-            globs.height = 500
-            globs.width = int(500 * 16 / 9)
+        if eventh < 250:
+            globs.height = 250
+        if eventw < int(250 * 16 / 9):
+            globs.width = int(250 * 16 / 9)
         else:
             globs.height = eventh
-            globs.width = int(eventh * 16 / 9)
+            globs.width = eventw
+
     pygame.display.set_mode((globs.width, globs.height), pygame.RESIZABLE)
 
 def absToRelDual(input_x, input_y):
@@ -69,6 +89,38 @@ def absToRel(input_value):
     w, h = pygame.display.get_surface().get_size()
     output = input_value / h
     return output
+
+# these rel functions should replace the rel functions someday
+# they work with the whole window, while rel functions only apply to a square with a = windowheight
+
+def relToAbsDual2(input_x, input_y):
+    w, h = pygame.display.get_surface().get_size()
+    output_x = w * input_x
+    output_y = h * input_y
+    return int(output_x), int(output_y)
+
+def relToAbsDualHeight(input_x, input_y):
+    w, h = pygame.display.get_surface().get_size()
+    output_x = h * input_x
+    output_y = h * input_y
+    return int(output_x), int(output_y)
+
+def relToAbsDualWidth(input_x, input_y):
+    w, h = pygame.display.get_surface().get_size()
+    output_x = w * input_x
+    output_y = w * input_y
+    return int(output_x), int(output_y)
+
+def relToAbsWidth(input_value):
+    w, h = pygame.display.get_surface().get_size()
+    output = w * input_value
+    return int(output)
+
+def relToAbsHeight(input_value):
+    w, h = pygame.display.get_surface().get_size()
+    output = h * input_value
+    return int(output)
+
 
 def getSetting(setting):
     with open('./data/data.json', 'r') as fr:
