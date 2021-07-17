@@ -10,17 +10,20 @@ class ProgressBar:
         self.activecolor, self.passivecolor = colors[0], colors[1]
         self.relsize = relsize
         self.rect = pygame.Rect
+        self.value = 50
         self.resize()
-        self.set(value=50)
+        self.set(value=self.value)
 
     def set(self, value):
         self.value = value
         self.surf.fill(self.activecolor)
         self.surf.blit(self.passivesurf, ((self.value / self.maxvalue) * self.surf.get_width(), 0))
-        self.image = pygame.Surface(relToAbsDual(self.relsize[0]+0.175, self.relsize[1]), pygame.SRCALPHA)
-        self.image.blit(self.surf, relToAbsDual(0.175, 0))
-        renderText(self.image, "50", (0, 0), (255, 255, 255), self.relsize[1]*700)
-        self.image.blit(self.icon, relToAbsDual(0.1, 0))
+        self.image = pygame.Surface(relToAbsDual(self.relsize[0]+self.relsize[1]*3, self.relsize[1]), pygame.SRCALPHA)
+        self.image.blit(self.surf, relToAbsDual(self.relsize[1]*3, 0))
+        renderText(self.image, str(self.value), (0, 0), (255, 255, 255), relToAbs(self.relsize[1]*1.25))
+        # the factor 1.25 resizes the text to use the full height of the surface.
+        # this should be calculated with a getTextRect and not hardcoded, but well, i'm lazy
+        self.image.blit(self.icon, relToAbsDual(self.relsize[1]*2-0.0075, 0))
 
     def get(self):
         return self.image
@@ -30,3 +33,4 @@ class ProgressBar:
         self.passivesurf.fill(self.passivecolor)
         self.surf = pygame.Surface(relToAbsDual(self.relsize[0], self.relsize[1]), pygame.SRCALPHA)
         self.icon = pygame.transform.scale(self.icon, relToAbsDual(self.relsize[1], self.relsize[1]))
+        self.set(self.value)

@@ -42,6 +42,9 @@ class GUI(pygame.sprite.Sprite):
             self.rects[i].size = relToAbsDual(0.1, 0.1)
             self.rects[i].center = (i*relToAbsHeight(0.1)+relToAbsHeight(0.05)+i*relToAbsHeight(0.025), relToAbsHeight(0.05))
         self.bar_health = progress_bar.ProgressBar(icon=heart_texture, maxvalue=100, colors=((255, 0, 0), (75, 75, 75)), relsize=(0.6, 0.025))
+        self.bar_mana = progress_bar.ProgressBar(icon=cross_texture, maxvalue=100, colors=((0, 0, 255), (75, 75, 75)), relsize=(0.6, 0.025))
+        self.bar_progress = progress_bar.ProgressBar(icon=cross_texture, maxvalue=100, colors=((0, 255, 0), (75, 75, 75)), relsize=(0.6, 0.025))
+
 
     def update(self):
         self.surf_selection = pygame.Surface(relToAbsDualHeight(0.72, 0.1), pygame.SRCALPHA)
@@ -69,4 +72,6 @@ class GUI(pygame.sprite.Sprite):
         window.blit(self.objectangle, relToAbsDual(0.025, 0.025))
         self.objectivelabel.draw(window=window)
         window.blit(self.bar_health.get(), relToAbsDualHeight(0.025, 0.950))
+        window.blit(self.bar_mana.get(), relToAbsDualHeight(0.025, 0.9125))
+        window.blit(self.bar_progress.get(), relToAbsDualHeight(0.025, 0.875))
 
