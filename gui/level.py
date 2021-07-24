@@ -1,12 +1,9 @@
 import time
-
 import pygame
-
 from utils import globs
-from utils.images import gui_background_texture, background_texture, Texture
+from utils.images import background_texture, Texture
 from Render.sprites import gui
-from Render.sprites.progress_bar import ProgressBar
-from utils.__init__ import relToAbsDual, setGlobalDefaults, setGameDefaults, setupWindow, resizeWindow, showPauseScreen
+from utils.__init__ import relToAbsDual, setGlobalDefaults, setGameDefaults, setupWindow, resizeWindow, pause_screen
 
 class LevelTemplate:
 
@@ -21,9 +18,8 @@ class LevelTemplate:
         setGameDefaults()
         self.window = setupWindow()
         self.background = pygame.transform.scale(background_texture, (globs.height, globs.height))
-        self.gui_background = pygame.transform.scale(gui_background_texture, (globs.height, globs.height))
         self.game_surface = pygame.Surface(pygame.display.get_window_size(), pygame.SRCALPHA, 32)
-        self.guisprite = gui.GUI()
+        self.guisprite = gui.IngameGUI()
 
         self.prev_time = time.time()
         self.resizeupdate = False
@@ -49,7 +45,6 @@ class LevelTemplate:
         #self.wielderuptex = Texture("Resources/textures/wielder_animation_up.png")
         #self.wielderrighttex = Texture("Resources/textures/apprentice_animation_right.png")
         #self.wielderlefttex = Texture("Resources/textures/apprentice_animation_left.png")
-        #self.testbar = ProgressBar(iconpath="Resources/textures/heart.png", maxvalue=100, colors=((255, 0, 0), (75, 75, 75)), relsize=(1, 0.05))
         #self.testrun = 0
         #self.testsurf = pygame.Surface((1100, 1100))
         #self.testsurf.fill((255, 255, 255))
@@ -86,18 +81,16 @@ class LevelTemplate:
             if event.type == pygame.KEYDOWN:
                 # pausekey
                 if event.key == pygame.K_ESCAPE:
-                    showPauseScreen(window=self.window, mainsurf=self.game_surface)
+                    pause_screen(window=self.window, mainsurf=self.game_surface)
                     self.resizeupdate = True
-
+                if event.key == pygame.K_e:
+                    pass
             if event.type == pygame.VIDEORESIZE or self.resizeupdate:
                 self.resizeupdate = False
                 w, h = pygame.display.get_surface().get_size()
                 resizeWindow(w, h)
                 self.game_surface = pygame.Surface(pygame.display.get_window_size(), pygame.SRCALPHA, 32)
-                self.gui_surface = pygame.Surface(pygame.display.get_window_size(), pygame.SRCALPHA, 32)
                 self.background = pygame.transform.scale(background_texture, (relToAbsDual(1, 1)))
-                self.gui_background = pygame.transform.scale(gui_background_texture, (relToAbsDual(1, 1)))
-                # gui_surface = pygame.transform.scale(gui_surface_original, (relToAbsDual(1, 0.06)))
                 self.guisprite.resize()
 
         self.guisprite.update()
@@ -139,6 +132,5 @@ class LevelTemplate:
         #self.window.blit(self.apprenticeidletex.get(), (600, 500))
         #self.window.blit(self.wielderdowntex.get(), (400, int(self.testrun/2 + 500)))
         #self.window.blit(self.wielderuptex.get(), (400, 500 - int(self.testrun/2)))
-        #self.window.blit(self.testbar.get(), (400, 400))
         #self.testrun += 2
         pygame.display.update()

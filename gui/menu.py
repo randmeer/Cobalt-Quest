@@ -10,15 +10,11 @@ def showMenu():
     __init__.setGlobalDefaults()
     window = __init__.setupWindow()
     resizeupdate = False
-
     background = pygame.transform.scale(images.background_texture, (globs.height, globs.height))
     menu = pygame.transform.scale(images.menu_texture, (globs.height, globs.height))
-
     buttongroup = pygame.sprite.Group()
-    levelselection_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Level Selection",
-                                          relpos=(0.05, 0.44))
-    difficulty_button = button.Button(relwidth=0.9, relheight=0.15, textcontent=f" Difficulty: {globs.difficulty}",
-                                      relpos=(0.05, 0.62))
+    levelselection_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Level Selection", relpos=(0.05, 0.44))
+    difficulty_button = button.Button(relwidth=0.9, relheight=0.15, textcontent=f" Difficulty: {globs.difficulty}", relpos=(0.05, 0.62))
     settings_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Settings", relpos=(0.05, 0.80))
     buttongroup.add(levelselection_button, difficulty_button, settings_button)
 
@@ -63,7 +59,7 @@ def showMenu():
                         pygame.display.update()
                         __init__.playSound('click')
                     if settings_button.rect.collidepoint(mousepos):
-                        __init__.showSettings(window=window)
+                        __init__.settings(window=window)
                         resizeupdate = True
             # keypress event
             if event.type == pygame.KEYDOWN:

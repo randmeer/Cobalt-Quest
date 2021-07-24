@@ -1,14 +1,13 @@
 import pygame
-
 from utils.images import selection_texture, cross_texture, bow_texture, shuriken_texture, dagger_texture, \
     broken_heart_texture, tick_texture, ichkeksi_texture, heart_texture
 from Render.sprites import label, progress_bar
 from utils import relToAbsDual, relToAbs, renderText, globs
 from utils import relToAbsDual2, relToAbsWidth, relToAbsHeight, relToAbsDualWidth, relToAbsDualHeight
 
-# GUI class is unfinished, working on it. ~Rande
+# ToDo: Add a GUI-size setting which affects IngameGUI, Button Class ect.
 
-class GUI(pygame.sprite.Sprite):
+class IngameGUI(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.weapons = [["dagger", -1], ["katana", -1], ["shuriken", 25], ["bow", 10], ["unknown", -1], ["unknown", -1]]
@@ -45,7 +44,6 @@ class GUI(pygame.sprite.Sprite):
         self.bar_mana = progress_bar.ProgressBar(icon=cross_texture, maxvalue=100, colors=((0, 0, 255), (75, 75, 75)), relsize=(0.6, 0.025))
         self.bar_progress = progress_bar.ProgressBar(icon=cross_texture, maxvalue=100, colors=((0, 255, 0), (75, 75, 75)), relsize=(0.6, 0.025))
 
-
     def update(self):
         self.surf_selection = pygame.Surface(relToAbsDualHeight(0.72, 0.1), pygame.SRCALPHA)
         self.itemlabels = []
@@ -65,13 +63,10 @@ class GUI(pygame.sprite.Sprite):
             i.update()
             i.draw(window=self.surf_selection)
         window.blit(self.surf_selection, self.surf_selection_rect)
-
         # let's worry about the selectangle later :) not in the mood for rewriting that thing
         # window.blit(self.selectangle, (self.rects[self.weapon].x - relToAbs(0.01), self.rects[self.weapon].y - relToAbs(0.01)))
-
         window.blit(self.objectangle, relToAbsDual(0.025, 0.025))
         self.objectivelabel.draw(window=window)
         window.blit(self.bar_health.get(), relToAbsDualHeight(0.025, 0.950))
         window.blit(self.bar_mana.get(), relToAbsDualHeight(0.025, 0.9125))
         window.blit(self.bar_progress.get(), relToAbsDualHeight(0.025, 0.875))
-

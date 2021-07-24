@@ -9,7 +9,7 @@ from utils import globs, rndebug
 if __name__ == '__main__':
     # if music present play the music
     if utils.getSetting('background_music'):
-        utils.playTheme()
+        utils.play_theme()
         pygame.mixer.music.set_volume(utils.getSetting('volume') / 10)
 
     print(utils.getSetting('volume'))

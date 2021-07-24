@@ -19,7 +19,7 @@ def playLevel1():
     playersprite = player.Player()
     outlinesprite = outline.Outline()
     swordsprite = sword.Sword()
-    guisprite = gui.GUI()
+    guisprite = gui.IngameGUI()
     victimgroup = pygame.sprite.Group()
     webgroup = pygame.sprite.Group()
     blocks, victims, particleclouds, shurikens = [], [], [], []
@@ -74,13 +74,12 @@ def playLevel1():
                     guisprite.weapon += 1
                 # right button and spawn webs
                 if event.button == globs.RIGHT:
-                    # ToDo: bind the block type to the selection
                     blocks.append(Block(blocktype="web"))
             # keyevents
             if event.type == pygame.KEYDOWN:
                 # pausekey
                 if event.key == pygame.K_ESCAPE:
-                    __init__.showPauseScreen(window=window, mainsurf=main_surface)
+                    __init__.pause_screen(window=window, mainsurf=main_surface)
                     resizeupdate = True
                     playersprite.update_skin()
                 if event.key == pygame.K_e:
@@ -145,11 +144,11 @@ def playLevel1():
 
         # determin victory or defeat
         if globs.victimskilled == globs.victimspawns + 1:
-            __init__.showEndScreen(window=window, end="victory", mainsurf=main_surface)
+            __init__.end_screen(window=window, end="victory", mainsurf=main_surface)
             run = False
         elif globs.victimsmissed >= globs.victimspawns and globs.victimspawns - globs.victimsmissed - globs.\
                 victimskilled + 1 <= 0 or globs.playerhealthpoints < 1:
-            __init__.showEndScreen(window=window, end="defeat", mainsurf=main_surface)
+            __init__.end_screen(window=window, end="defeat", mainsurf=main_surface)
             run = False
         # ------------------ GAME LOGIC ---------------
 

@@ -1,5 +1,4 @@
 import pygame
-
 from utils.__init__ import relToAbs, relToAbsDual, renderText, getTextRect, gradientRect
 
 class Button(pygame.sprite.Sprite):
@@ -15,9 +14,7 @@ class Button(pygame.sprite.Sprite):
         self.surface.blit(self.innerarea, (relToAbsDual(relborder / 2, relborder / 2)))
         self.image = self.surface
         self.hoversurface = pygame.Surface(relToAbsDual(relwidth, relheight))
-        self.hoversurface.blit(
-            gradientRect(self.hoversurface.get_width(), self.hoversurface.get_height(), hovergradient[0],
-                         hovergradient[1]), (0, 0))
+        self.hoversurface.blit(gradientRect(self.hoversurface.get_width(), self.hoversurface.get_height(), hovergradient[0], hovergradient[1]), (0, 0))
         self.innerarea.fill(hovercolor)
         self.hoversurface.blit(self.innerarea, (relToAbsDual(relborder / 2, relborder / 2)))
         self.text = textcontent

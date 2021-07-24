@@ -1,18 +1,8 @@
 import json
-
 import pygame
 import pygame.freetype
 import pygame.freetype
-
 from utils import globs
-
-# victory_texture = pygame.image.load("textures/victory.png")
-# defeat_texture = pygame.image.load("textures/defeat.png")
-# overlay_texture = pygame.image.load("textures/overlay.png")
-# background_texture = pygame.image.load("textures/background.png")
-# settingsmenu_texture = pygame.image.load("textures/settings_menu.png")
-# pausemenu_texture = pygame.image.load("textures/pause_menu.png")
-# icon_texture = pygame.image.load("textures/icon.png")
 
 class DefaultError(Exception):
     def __init__(self, errmsg='unknown error has occured'):
@@ -216,17 +206,19 @@ def playSound(sound):
     pygame.mixer.Channel(2).set_volume(getSetting('volume') / 10)
     pygame.mixer.Channel(3).set_volume(getSetting('volume') / 10)
 
-def playTheme():
+def play_theme():
     pygame.mixer.init()
     pygame.mixer.music.load("sounds/theme.wav")
     pygame.mixer.music.play(-1)
 
 from Render.sprites import button
+from utils.images import background_texture, overlay_texture, pause_menu_texture, victory_texture, defeat_texture,\
+    settings_menu_texture
 
-def showPauseScreen(window, mainsurf):
+def pause_screen(window, mainsurf):
     setGlobalDefaults()
     overlay = pygame.transform.scale(overlay_texture, (relToAbsDual(1, 1)))
-    pausemenu = pygame.transform.scale(pausemenu_texture, (relToAbsDual(1, 1)))
+    pausemenu = pygame.transform.scale(pause_menu_texture, (relToAbsDual(1, 1)))
     buttongroup = pygame.sprite.Group()
     resumeplaying_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Resume", relpos=(0.05, 0.44))
     backtomenu_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Back to Menu", relpos=(0.05, 0.62))
@@ -258,7 +250,7 @@ def showPauseScreen(window, mainsurf):
                     if 367 < posY < 432 and 26 < posX < 475:
                         globs.exittomenu = True
                     if settings_button.rect.collidepoint(mousepos):
-                        showSettings(window=window)
+                        settings(window=window)
                         run = False
             if event.type == pygame.KEYDOWN:
                 if event.key == globs.ESCAPE:
@@ -266,14 +258,14 @@ def showPauseScreen(window, mainsurf):
             if event.type == pygame.VIDEORESIZE:
                 resizeWindow(event.w, event.h)
                 window.blit(pygame.transform.scale(mainsurf, relToAbsDual(1, 1)), (0, 0))
-                window.blit(pygame.transform.scale(pausemenu_texture, relToAbsDual(1, 1)), (0, 0))
+                window.blit(pygame.transform.scale(pause_menu_texture, relToAbsDual(1, 1)), (0, 0))
         for i in buttongroup:
             i.update()
             i.draw(window=window)
         pygame.display.update()
     playSound('click')
 
-def showEndScreen(window, mainsurf, end):
+def end_screen(window, mainsurf, end):
     setGlobalDefaults()
     if end == "victory":
         playSound('victory')
@@ -343,24 +335,24 @@ def save_to_json(data, name):
     with open(f'{name}.json', 'w') as json_file:
         json.dump(data, json_file, indent=2)
 
-def showSettings(window):
+def settings(window):
     setGlobalDefaults()
-    backgr = pygame.transform.scale(background_texture, (relToAbsDual(1, 1)))
-    settingsmenu = pygame.transform.scale(settingsmenu_texture, (relToAbsDual(1, 1)))
     buttongroup = pygame.sprite.Group()
-    saveandreturn_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="save and return",
-                                         relpos=(0.05, 0.80))
+    saveandreturn_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="save and return", relpos=(0.05, 0.80))
     buttongroup.add(saveandreturn_button)
-    backgr = pygame.transform.scale(background_texture, (relToAbs(1), relToAbs(1)))
-    settingsmenu = pygame.transform.scale(settingsmenu_texture, (relToAbs(1), relToAbs(1)))
-    window.blit(backgr, (0, 0))
-    window.blit(settingsmenu, (0, 0))
-    pygame.display.update()
+
+    def resize():
+        # background and settings_menu_texture only get blitted on resize to save performance
+        settingsmenu = pygame.transform.scale(settings_menu_texture, (relToAbs(1), relToAbs(1)))
+        backgr = pygame.transform.scale(background_texture, relToAbsDualHeight(1, 1))
+        window.blit(backgr, relToAbsDualHeight(0, 0))
+        window.blit(backgr, relToAbsDualHeight(1, 0))
+        window.blit(settingsmenu, (0, 0))
+    resize()
 
     # TODO: remake the settings gui with label-sprites
     def update():
-        window.blit(backgr, (0, 0))
-        window.blit(settingsmenu, (0, 0))
+        pass
         # renderText(window, 'Backgr. Music:', (50, 190), globs.WHITE, 30)
         # renderText(window, 'Sound Volume:', (50, 220), globs.WHITE, 30)
         # renderText(window, 'Skin:', (50, 250), globs.WHITE, 30)
@@ -370,10 +362,6 @@ def showSettings(window):
         # renderText(window, str(settings['volume']), (300, 220), globs.WHITE, 30)
         # renderText(window, str(settings['skin']), (300, 250), globs.WHITE, 30)
         # renderText(window, 'None', (300, 280), globs.WHITE, 30)
-        for i in buttongroup:
-            i.update()
-            i.draw(window=window)
-        pygame.display.update()
 
     playSound('click')
     clock = pygame.time.Clock()
@@ -382,10 +370,6 @@ def showSettings(window):
     while run:
         clock.tick(60)
         mousepos = pygame.mouse.get_pos()
-
-        with open('./data/data.json', 'r') as fr:
-            settings = json.loads(fr.read())
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -416,8 +400,7 @@ def showSettings(window):
                     run = False
             if event.type == pygame.VIDEORESIZE:
                 resizeWindow(event.w, event.h)
-                window.blit(pygame.transform.scale(background_texture, relToAbsDual(1, 1)), (0, 0))
-                window.blit(pygame.transform.scale(settingsmenu_texture, relToAbsDual(1, 1)), (0, 0))
+                resize()
         for x in buttongroup:
             x.update()
             x.draw(window=window)

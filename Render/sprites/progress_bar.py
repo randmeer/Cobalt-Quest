@@ -1,8 +1,6 @@
 import pygame
 from utils.__init__ import relToAbsDual, relToAbs, renderText, getTextRect
 
-# ProgressBar class is unfinished, working on it. ~Rande
-
 class ProgressBar:
     def __init__(self, icon, maxvalue: int, colors: ((int, int, int), (int, int, int)), relsize: (float, float), textanchor="left"):
         self.icon = icon

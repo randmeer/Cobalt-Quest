@@ -148,7 +148,7 @@ def playLevelOutdated(difficulty):
                             victim1_health = victim1_health - 1
             if event.type == pygame.KEYDOWN:
                 if event.key == ESCAPE:
-                    utils.showPauseScreen(window)
+                    utils.pause_screen(window)
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LSHIFT]:
