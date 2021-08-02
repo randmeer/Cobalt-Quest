@@ -84,7 +84,7 @@ class LevelTemplate:
                     pause_screen(window=self.window, mainsurf=self.game_surface)
                     self.resizeupdate = True
                 if event.key == pygame.K_e:
-                    pass
+                    self.guisprite.set_selectangle(self.guisprite.weapon+1)
             if event.type == pygame.VIDEORESIZE or self.resizeupdate:
                 self.resizeupdate = False
                 w, h = pygame.display.get_surface().get_size()
