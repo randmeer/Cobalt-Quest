@@ -13,7 +13,7 @@ if __name__ == '__main__':
         pygame.mixer.music.set_volume(utils.getSetting('volume') / 10)
 
     print(utils.getSetting('volume'))
-
+    globs.width, globs.height = int(globs.DEFAULT_HEIGHT*16/9), globs.DEFAULT_HEIGHT
     utils.setGlobalDefaults()
     globs.titlescreen = True
     window = utils.setupWindow()

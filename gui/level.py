@@ -77,14 +77,35 @@ class LevelTemplate:
             if event.type == pygame.QUIT:
                 self.end_loop()
                 globs.quitgame = True
+            # buttonevents
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == pygame.BUTTON_LEFT:
+                    pass
+                if event.button == pygame.BUTTON_RIGHT:
+                    pass
+                if event.button == pygame.BUTTON_WHEELUP:
+                    self.guisprite.set_selectangle(self.guisprite.weapon-1)
+                if event.button == pygame.BUTTON_WHEELDOWN:
+                    self.guisprite.set_selectangle(self.guisprite.weapon+1)
             # keyevents
             if event.type == pygame.KEYDOWN:
-                # pausekey
                 if event.key == pygame.K_ESCAPE:
                     pause_screen(window=self.window, mainsurf=self.game_surface)
                     self.resizeupdate = True
                 if event.key == pygame.K_e:
-                    self.guisprite.set_selectangle(self.guisprite.weapon+1)
+                    pass
+                if event.key == pygame.K_1:
+                    self.guisprite.set_selectangle(0)
+                if event.key == pygame.K_2:
+                    self.guisprite.set_selectangle(1)
+                if event.key == pygame.K_3:
+                    self.guisprite.set_selectangle(2)
+                if event.key == pygame.K_4:
+                    self.guisprite.set_selectangle(3)
+                if event.key == pygame.K_5:
+                    self.guisprite.set_selectangle(4)
+                if event.key == pygame.K_6:
+                    self.guisprite.set_selectangle(5)
             if event.type == pygame.VIDEORESIZE or self.resizeupdate:
                 self.resizeupdate = False
                 w, h = pygame.display.get_surface().get_size()

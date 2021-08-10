@@ -1,4 +1,5 @@
 VERSION = "0.8.4"
+DEFAULT_HEIGHT = 500
 height = 500
 width = 0
 # 888 is actually the width of a 16:9 window if it's 500 pixel high

@@ -166,7 +166,7 @@ def setGameDefaults():
 def setupWindow():
     pygame.init()
     pygame.display.set_caption("Cobalt Quest version " + globs.VERSION + " by Rande")
-    window = pygame.display.set_mode((int(globs.height * 16 / 9), globs.height), pygame.RESIZABLE)
+    window = pygame.display.set_mode((globs.width, globs.height), pygame.RESIZABLE)
     pygame.display.set_icon(icon_texture)
     pygame.display.flip()
     return window
@@ -216,17 +216,27 @@ from utils.images import background_texture, overlay_texture, pause_menu_texture
     settings_menu_texture
 
 def pause_screen(window, mainsurf):
+    playSound('click')
     setGlobalDefaults()
-    overlay = pygame.transform.scale(overlay_texture, (relToAbsDual(1, 1)))
-    pausemenu = pygame.transform.scale(pause_menu_texture, (relToAbsDual(1, 1)))
     buttongroup = pygame.sprite.Group()
     resumeplaying_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Resume", relpos=(0.05, 0.44))
     backtomenu_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Back to Menu", relpos=(0.05, 0.62))
     settings_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Settings", relpos=(0.05, 0.80))
     buttongroup.add(resumeplaying_button, backtomenu_button, settings_button)
-    window.blit(overlay, (0, 0))
-    window.blit(pausemenu, (0, 0))
-    playSound('click')
+    def draw(resize=False):
+        if resize:
+            overlay = pygame.Surface(pygame.display.get_window_size(), pygame.SRCALPHA, 32)
+            overlay.fill((0, 0, 0))
+            overlay.set_alpha(128)
+            gamesurf = pygame.transform.scale(mainsurf, relToAbsDual2(1, 1))
+            # TODO: remake the pause gui with buttons and labels, including the "PAUSED" title
+            #pausemenu = pygame.transform.scale(pause_menu_texture, relToAbsDual(1, 1))
+        window.blit(gamesurf, (0, 0))
+        window.blit(overlay, (0, 0))
+        #window.blit(pausemenu, (0, 0))
+        pygame.display.update()
+    draw(resize=True)
+
     clock = pygame.time.Clock()
     run = True
     while run:
@@ -250,19 +260,20 @@ def pause_screen(window, mainsurf):
                     if 367 < posY < 432 and 26 < posX < 475:
                         globs.exittomenu = True
                     if settings_button.rect.collidepoint(mousepos):
-                        settings(window=window)
-                        run = False
+                        settings(window=window, backgr=pygame.transform.scale(mainsurf, relToAbsDual2(1, 1)))
+                        draw(resize=True)
             if event.type == pygame.KEYDOWN:
                 if event.key == globs.ESCAPE:
                     run = False
             if event.type == pygame.VIDEORESIZE:
                 resizeWindow(event.w, event.h)
-                window.blit(pygame.transform.scale(mainsurf, relToAbsDual(1, 1)), (0, 0))
-                window.blit(pygame.transform.scale(pause_menu_texture, relToAbsDual(1, 1)), (0, 0))
+                draw(resize=True)
         for i in buttongroup:
             i.update()
             i.draw(window=window)
         pygame.display.update()
+        if globs.exittomenu:
+            run = False
     playSound('click')
 
 def end_screen(window, mainsurf, end):
@@ -335,22 +346,25 @@ def save_to_json(data, name):
     with open(f'{name}.json', 'w') as json_file:
         json.dump(data, json_file, indent=2)
 
-def settings(window):
+def settings(window, backgr):
     setGlobalDefaults()
     buttongroup = pygame.sprite.Group()
     saveandreturn_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="save and return", relpos=(0.05, 0.80))
     buttongroup.add(saveandreturn_button)
 
     def resize():
-        # background and settings_menu_texture only get blitted on resize to save performance
-        settingsmenu = pygame.transform.scale(settings_menu_texture, (relToAbs(1), relToAbs(1)))
-        backgr = pygame.transform.scale(background_texture, relToAbsDualHeight(1, 1))
-        window.blit(backgr, relToAbsDualHeight(0, 0))
-        window.blit(backgr, relToAbsDualHeight(1, 0))
-        window.blit(settingsmenu, (0, 0))
+        overlay = pygame.Surface(pygame.display.get_window_size(), pygame.SRCALPHA, 32)
+        overlay.fill((0, 0, 0))
+        overlay.set_alpha(128)
+        # background, overlay and settingsmenu only get blitted on resize to save performance
+        #settingsmenu = pygame.transform.scale(settings_menu_texture, (relToAbs(1), relToAbs(1)))
+        settingsbackgr = pygame.transform.scale(backgr, relToAbsDual2(1, 1))
+        window.blit(settingsbackgr, (0, 0))
+        window.blit(overlay, (0, 0))
+        #window.blit(settingsmenu, (0, 0))
     resize()
 
-    # TODO: remake the settings gui with label-sprites
+    # TODO: remake the settings gui with buttons and labels, including the "SETTINGS" title
     def update():
         pass
         # renderText(window, 'Backgr. Music:', (50, 190), globs.WHITE, 30)
