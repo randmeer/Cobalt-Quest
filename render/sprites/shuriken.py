@@ -3,7 +3,7 @@ import math
 import pygame
 
 from utils.images import shuriken_texture
-from Render.sprites import particle_cloud
+from render.sprites import particle_cloud
 from utils.__init__ import relToAbsDual, absToRel, absToRelDual
 
 

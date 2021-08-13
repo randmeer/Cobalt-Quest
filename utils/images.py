@@ -6,7 +6,7 @@ from json import JSONDecodeError
 
 import pygame
 
-tex_dir = './Resources/textures/'
+tex_dir = './resources/textures/'
 
 class Texture:
     """
@@ -131,7 +131,6 @@ Elia03_texture = pygame.image.load(tex_dir + "3lia03.png")
 num_1_texture = pygame.image.load(tex_dir + "1.png")
 num_2_texture = pygame.image.load(tex_dir + "2.png")
 num_3_texture = pygame.image.load(tex_dir + "3.png")
-actual_background_copy_texture = pygame.image.load(tex_dir + "actual_background_copy.png")
 background_texture = pygame.image.load(tex_dir + "background.png")
 bow_texture = pygame.image.load(tex_dir + "bow.png")
 brick_texture = pygame.image.load(tex_dir + "brick.png")

@@ -3,19 +3,19 @@ import pygame
 import utils
 from utils import globs
 
-elia_texture = pygame.image.load("./Resources/textures/3lia03.png")
-ichkeksi_texture = pygame.image.load("./Resources/textures/ichkeksi.png")
-damage_texture = pygame.image.load("./Resources/textures/damage.png")
-outline_texture = pygame.image.load("./Resources/textures/outline.png")
-crosshair_texture = pygame.image.load("./Resources/textures/crosshair.png")
-text_1 = pygame.image.load("./Resources/textures/1.png")
-text_2 = pygame.image.load("./Resources/textures/2.png")
-text_3 = pygame.image.load("./Resources/textures/3.png")
-background_texture = pygame.image.load("./Resources/textures/background.png")
-title_screen_texture = pygame.image.load("./Resources/textures/title_screen.png")
-level_selection_texture = pygame.image.load("./Resources/textures/level_selection.png")
-menu_texture = pygame.image.load("./Resources/textures/menu.png")
-web_texture = pygame.image.load("./Resources/textures/web.png")
+elia_texture = pygame.image.load("./resources/textures/3lia03.png")
+ichkeksi_texture = pygame.image.load("./resources/textures/ichkeksi.png")
+damage_texture = pygame.image.load("./resources/textures/damage.png")
+outline_texture = pygame.image.load("./resources/textures/outline.png")
+crosshair_texture = pygame.image.load("./resources/textures/crosshair.png")
+text_1 = pygame.image.load("./resources/textures/1.png")
+text_2 = pygame.image.load("./resources/textures/2.png")
+text_3 = pygame.image.load("./resources/textures/3.png")
+background_texture = pygame.image.load("./resources/textures/background.png")
+title_screen_texture = pygame.image.load("./resources/textures/title_screen.png")
+level_selection_texture = pygame.image.load("./resources/textures/level_selection.png")
+menu_texture = pygame.image.load("./resources/textures/menu.png")
+web_texture = pygame.image.load("./resources/textures/web.png")
 
 # debugscreen
 def showRNDebug():

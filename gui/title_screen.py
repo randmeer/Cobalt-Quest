@@ -2,23 +2,23 @@ import pygame
 
 import utils
 from utils import globs
-from utils import relToAbsDual
-from utils.images import background_texture, title_screen_texture
+from utils.images import background_texture, logo_texture
 
 
 def showTitleScreen():
     print("TITLE SCREEN START")
     utils.setGlobalDefaults()
     window = utils.setupWindow()
-
-    background = pygame.transform.scale(background_texture, relToAbsDual(1, 1))
-    title_screen = pygame.transform.scale(title_screen_texture, relToAbsDual(1.78, 1))
     rndebugAccess = 0
 
-    window.blit(background, (0, 0))
-    window.blit(background, relToAbsDual(1, 0))
-    window.blit(title_screen, (0, 0))
-    pygame.display.update()
+    def draw():
+        og_surface = pygame.Surface(globs.SIZE)
+        og_surface.blit(background_texture, (0, 0))
+        og_surface.blit(logo_texture, (og_surface.get_width()/2-logo_texture.get_width()/2, og_surface.get_height()/2-logo_texture.get_height()/2))
+        surface = pygame.transform.scale(og_surface, globs.res_size)
+        window.blit(surface, (0, 0))
+        pygame.display.update()
+    draw()
 
     clock = pygame.time.Clock()
     run = True
@@ -28,35 +28,18 @@ def showTitleScreen():
             if event.type == pygame.QUIT:
                 run = False
                 globs.quitgame = True
-
             if event.type == pygame.MOUSEBUTTONDOWN:
                 globs.menu = True
                 run = False
             if event.type == pygame.KEYDOWN:
-                if event.key == globs.KEY_R:
+                if event.key == pygame.K_r or event.key == pygame.K_ESCAPE:
                     pass
-                elif event.key == pygame.K_ESCAPE:
-                    pass
-                # the following elif's let the user CMD-Q (macOS) or ALT-F4 (windows)
-                elif event.key == globs.COMMAND:
-                    pass
-                elif event.key == globs.KEY_Q:
-                    pass
-                elif event.key == globs.ALT:
-                    pass
-                elif event.key == globs.KEY_F4:
+                # the following statement lets the user use the CMD-Q (macOS) or ALT-F4 (windows) -shortcut.
+                elif event.key == globs.COMMAND or event.key == pygame.K_q or event.key == globs.ALT or event.key == globs.KEY_F4:
                     pass
                 else:
                     globs.menu = True
                     run = False
-            if event.type == pygame.VIDEORESIZE:
-                utils.resizeWindow(event.w, event.h)
-                background = pygame.transform.scale(background_texture, (relToAbsDual(1, 1)))
-                title_screen = pygame.transform.scale(title_screen_texture, relToAbsDual(1.78, 1))
-                window.blit(background, (0, 0))
-                window.blit(background, relToAbsDual(1, 0))
-                window.blit(title_screen, (1, 0))
-                pygame.display.update()
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_r]:

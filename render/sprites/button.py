@@ -1,4 +1,5 @@
 import pygame
+from utils import globs
 from utils.__init__ import relToAbs, relToAbsDualHeight, renderText, getTextRect, gradientRect, relToAbsDual2, relToAbsWidth, relToAbsHeight
 
 class Button(pygame.sprite.Sprite):
@@ -20,7 +21,8 @@ class Button(pygame.sprite.Sprite):
         self.text = textcontent
         self.textcolor = textcolor
         self.reltextsize = reltextsize
-        self.textsize = relToAbs(reltextsize)
+        #self.textsize = relToAbsHeight(reltextsize)
+        self.textsize = 10
         self.rect = self.surface.get_rect()
         self.relposx, self.relposy = relpos[0], relpos[1]
         self.relwidth, self.relheight = relwidth, relheight
@@ -40,7 +42,8 @@ class Button(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.surface, relToAbsDual2(self.relwidth, self.relheight))
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y = relToAbsWidth(self.relposx), relToAbsHeight(self.relposy)
-        self.textsize = relToAbs(self.reltextsize)
+        #self.textsize = relToAbsHeight(self.reltextsize)
+        self.textsize = 10
         self.textrect = getTextRect(self.text, self.textsize)
         if self.anchor == "center":
             self.textrect.center = self.rect.center
@@ -50,7 +53,7 @@ class Button(pygame.sprite.Sprite):
         elif self.anchor == "left":
             self.textrect.centery = self.rect.centery
             self.textrect.left = self.rect.left
-        if self.rect.collidepoint(pygame.mouse.get_pos()):
+        if self.rect.collidepoint((pygame.mouse.get_pos()[0] / (globs.res_size[0]/globs.SIZE[0]), pygame.mouse.get_pos()[1] / (globs.res_size[1]/globs.SIZE[1]))):
             self.sethover()
 
     def sethover(self):
@@ -58,4 +61,6 @@ class Button(pygame.sprite.Sprite):
 
     def draw(self, window):
         window.blit(self.image, self.rect)
+        print(self.text + " X: " + str(self.rect.x) + " Y: " + str(self.rect.y))
+        print(self.textsize)
         renderText(window=window, text=self.text, position=self.textrect, color=self.textcolor, size=self.textsize)

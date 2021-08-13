@@ -1,7 +1,7 @@
 import pygame
 
-from utils import globs, __init__
-from Render.sprites import button
+from utils import globs, __init__, mousepos
+from render.sprites import button
 from utils.images import background_texture
 from utils.__init__ import relToAbsDualHeight
 
@@ -25,25 +25,24 @@ def showLevelSelection():
     for i in levelbuttons:
         buttongroup.add(i)
 
-    def resize():
-        w, h = pygame.display.get_surface().get_size()
-        __init__.resizeWindow(w, h)
-        bg = pygame.transform.scale(background_texture, (globs.height, globs.height))
-        window.blit(bg, (0, 0))
-        window.blit(bg, relToAbsDualHeight(1, 0))
     def draw():
+        og_surface = pygame.Surface(globs.SIZE)
+        og_surface.fill((0, 0, 0))
+        og_surface.blit(background_texture, (0, 0))
         for i in buttongroup:
             i.update()
-            i.draw(window=window)
+            i.draw(window=og_surface)
+        surface = pygame.transform.scale(og_surface, globs.res_size)
+        window.blit(surface, (0, 0))
         pygame.display.update()
-    resize()
+    draw()
 
     clock = pygame.time.Clock()
     run = True
     # main game loop
     while run:
         clock.tick(60)
-        mousepos = pygame.mouse.get_pos()
+        mp = mousepos()
         # event iteration
         for event in pygame.event.get():
             # quit event
@@ -53,18 +52,18 @@ def showLevelSelection():
             # mouse event
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == globs.LEFT:
-                    if backtomenu_button.rect.collidepoint(mousepos):
+                    if backtomenu_button.rect.collidepoint(mp):
                         run = False
                         globs.menu = True
-                    if levelbuttons[0].rect.collidepoint(mousepos):
+                    if levelbuttons[0].rect.collidepoint(mp):
                         run = False
                         globs.level1 = True
             if event.type == pygame.KEYDOWN:
-                if event.key == globs.ESCAPE:
+                if event.key == pygame.K_ESCAPE:
                     run = False
                     globs.menu = True
-            if event.type == pygame.VIDEORESIZE:
-                resize()
+            #if event.type == pygame.VIDEORESIZE:
+            #    resize()
         draw()
     __init__.playSound('click')
     print("LEVEL SELECTION END")

@@ -1,9 +1,10 @@
 import time
 import pygame
-from utils import globs
+from utils import globs, mousepos
 from utils.images import background_texture, Texture
-from Render.sprites import gui
-from utils.__init__ import relToAbsDual, setGlobalDefaults, setGameDefaults, setupWindow, resizeWindow, pause_screen
+from render.sprites import gui
+from utils import relToAbsDual, setGlobalDefaults, setGameDefaults, setupWindow, resizeWindow
+from gui.overlay import pause_screen
 
 class LevelTemplate:
 
@@ -18,7 +19,7 @@ class LevelTemplate:
         setGameDefaults()
         self.window = setupWindow()
         self.background = pygame.transform.scale(background_texture, (globs.height, globs.height))
-        self.game_surface = pygame.Surface(pygame.display.get_window_size(), pygame.SRCALPHA, 32)
+        self.game_surface = pygame.Surface(globs.SIZE, pygame.SRCALPHA)
         self.guisprite = gui.IngameGUI()
 
         self.prev_time = time.time()
@@ -30,21 +31,21 @@ class LevelTemplate:
 
         # IGNORE THOSE TEXTURES FOR NOW, BUT WE'LL NEED THEM LATER
 
-        #self.maptex = Texture("Resources/textures/map.png")
-        #self.playeruptex = Texture("Resources/textures/player_animation_up.png")
-        #self.playerdowntex = Texture("Resources/textures/player_animation_down.png")
-        #self.playerrighttex = Texture("Resources/textures/player_animation_right.png")
-        #self.playerlefttex = Texture("Resources/textures/player_animation_left.png")
-        #self.playeridletex = Texture("Resources/textures/player_animation_idle.png")
-        #self.apprenticedowntex = Texture("Resources/textures/apprentice_animation_down.png")
-        #self.apprenticeuptex = Texture("Resources/textures/apprentice_animation_up.png")
-        #self.apprenticerighttex = Texture("Resources/textures/apprentice_animation_right.png")
-        #self.apprenticelefttex = Texture("Resources/textures/apprentice_animation_left.png")
-        #self.apprenticeidletex = Texture("Resources/textures/apprentice_animation_idle.png")
-        #self.wielderdowntex = Texture("Resources/textures/wielder_animation_down.png")
-        #self.wielderuptex = Texture("Resources/textures/wielder_animation_up.png")
-        #self.wielderrighttex = Texture("Resources/textures/apprentice_animation_right.png")
-        #self.wielderlefttex = Texture("Resources/textures/apprentice_animation_left.png")
+        #self.maptex = Texture("resources/textures/map.png")
+        #self.playeruptex = Texture("resources/textures/player_animation_up.png")
+        #self.playerdowntex = Texture("resources/textures/player_animation_down.png")
+        #self.playerrighttex = Texture("resources/textures/player_animation_right.png")
+        #self.playerlefttex = Texture("resources/textures/player_animation_left.png")
+        #self.playeridletex = Texture("resources/textures/player_animation_idle.png")
+        #self.apprenticedowntex = Texture("resources/textures/apprentice_animation_down.png")
+        #self.apprenticeuptex = Texture("resources/textures/apprentice_animation_up.png")
+        #self.apprenticerighttex = Texture("resources/textures/apprentice_animation_right.png")
+        #self.apprenticelefttex = Texture("resources/textures/apprentice_animation_left.png")
+        #self.apprenticeidletex = Texture("resources/textures/apprentice_animation_idle.png")
+        #self.wielderdowntex = Texture("resources/textures/wielder_animation_down.png")
+        #self.wielderuptex = Texture("resources/textures/wielder_animation_up.png")
+        #self.wielderrighttex = Texture("resources/textures/apprentice_animation_right.png")
+        #self.wielderlefttex = Texture("resources/textures/apprentice_animation_left.png")
         #self.testrun = 0
         #self.testsurf = pygame.Surface((1100, 1100))
         #self.testsurf.fill((255, 255, 255))
@@ -54,12 +55,12 @@ class LevelTemplate:
         method performs a single loop of the game loop. This can be overridden to add extra functionality before and
         after the game loop and render. call _single_loop() to perform a raw loop and and render() to render stuff out
         """
-        self._single_loop()
+        self.game_loop()
         self.render()
 
-    def _single_loop(self):
+    def game_loop(self):
         """
-        local method of single_loop
+        updates the game surface
         """
         self.clock.tick(60)
         self.now = time.time()
@@ -69,7 +70,7 @@ class LevelTemplate:
         self.prev_time = self.now
 
         self.click = False
-        mousepos = pygame.mouse.get_pos()
+        mp = mousepos()
 
         self.events = list(pygame.event.get())
         for event in self.events:
@@ -90,7 +91,7 @@ class LevelTemplate:
             # keyevents
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    pause_screen(window=self.window, mainsurf=self.game_surface)
+                    pause_screen(window=self.window, background=self.game_surface)
                     self.resizeupdate = True
                 if event.key == pygame.K_e:
                     pass
@@ -106,14 +107,13 @@ class LevelTemplate:
                     self.guisprite.set_selectangle(4)
                 if event.key == pygame.K_6:
                     self.guisprite.set_selectangle(5)
-            if event.type == pygame.VIDEORESIZE or self.resizeupdate:
-                self.resizeupdate = False
-                w, h = pygame.display.get_surface().get_size()
-                resizeWindow(w, h)
-                self.game_surface = pygame.Surface(pygame.display.get_window_size(), pygame.SRCALPHA, 32)
-                self.background = pygame.transform.scale(background_texture, (relToAbsDual(1, 1)))
-                self.guisprite.resize()
-
+            # if event.type == pygame.VIDEORESIZE or self.resizeupdate:
+            #     self.resizeupdate = False
+            #     w, h = pygame.display.get_surface().get_size()
+            #     resizeWindow(w, h)
+            #     self.game_surface = pygame.Surface(pygame.display.get_window_size(), pygame.SRCALPHA, 32)
+            #     self.background = pygame.transform.scale(background_texture, (relToAbsDual(1, 1)))
+            #     self.guisprite.resize()
         self.guisprite.update()
 
         if globs.exittomenu:
@@ -132,13 +132,16 @@ class LevelTemplate:
         """
         renders the gui and game surface
         """
-        self.game_surface.blit(self.background, (0, 0))
-        self.game_surface.blit(self.background, relToAbsDual(1, 0))
+        self.game_surface.blit(background_texture, (0, 0))
+        self.guisprite.draw(self.game_surface)
+        surface = pygame.transform.scale(self.game_surface, globs.res_size)
+        self.window.blit(surface, (0, 0))
+
         # utils.renderText(window=game_surface, text=str(round(clock.get_fps())) + "",
         #                 position=relToAbsDual(0.92, 0.02),
         #                 color=globs.WHITE, size=relToAbs(0.048))
-        self.guisprite.draw(self.game_surface)
-        self.window.blit(self.game_surface, (0, 0))
+
+
         #self.window.blit(self.maptex.get(), (0, 0))
         #self.window.blit(self.testsurf, (0, 0))
         #self.window.blit(self.playerdowntex.get(), (500, self.testrun + 500))

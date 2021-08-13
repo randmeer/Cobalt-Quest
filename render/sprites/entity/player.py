@@ -3,7 +3,7 @@ from math import pi, atan2
 import pygame
 
 from utils.images import rande_texture, Elia03_texture, empty_texture
-from Render.sprites.entity import entity
+from render.sprites.entity import entity
 from utils.__init__ import getSetting, relToAbs
 
 

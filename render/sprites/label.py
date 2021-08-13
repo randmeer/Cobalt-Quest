@@ -1,5 +1,5 @@
 import pygame
-from utils.__init__ import relToAbs, relToAbsDual, renderText, getTextRect
+from utils.__init__ import relToAbsDual2, renderText, getTextRect
 
 class Label(pygame.sprite.Sprite):
 
@@ -13,7 +13,8 @@ class Label(pygame.sprite.Sprite):
         self.update()
 
     def update(self):
-        self.textsize = relToAbs(self.reltextsize)
+        #self.textsize = relToAbs(self.reltextsize)
+        self.textsize = 10
         self.textrect = getTextRect(self.text, self.textsize)
         self.surface = pygame.Surface((self.textrect.width, self.textrect.height))
         self.surface = pygame.Surface.convert_alpha(self.surface)
@@ -21,23 +22,23 @@ class Label(pygame.sprite.Sprite):
         self.image = self.surface
 
         if self.anchor == "topcenter":
-            self.textrect.midbottom = relToAbsDual(self.relpos[0], self.relpos[1])
+            self.textrect.midbottom = relToAbsDual2(self.relpos[0], self.relpos[1])
         elif self.anchor == "bottomcenter":
-            self.textrect.midbottom = relToAbsDual(self.relpos[0], self.relpos[1])
+            self.textrect.midbottom = relToAbsDual2(self.relpos[0], self.relpos[1])
         elif self.anchor == "leftcenter":
-            self.textrect.midleft = relToAbsDual(self.relpos[0], self.relpos[1])
+            self.textrect.midleft = relToAbsDual2(self.relpos[0], self.relpos[1])
         elif self.anchor == "rightcenter":
-            self.textrect.midright = relToAbsDual(self.relpos[0], self.relpos[1])
+            self.textrect.midright = relToAbsDual2(self.relpos[0], self.relpos[1])
         elif self.anchor == "topleft":
-            self.textrect.topleft = relToAbsDual(self.relpos[0], self.relpos[1])
+            self.textrect.topleft = relToAbsDual2(self.relpos[0], self.relpos[1])
         elif self.anchor == "topright":
-            self.textrect.topright = relToAbsDual(self.relpos[0], self.relpos[1])
+            self.textrect.topright = relToAbsDual2(self.relpos[0], self.relpos[1])
         elif self.anchor == "bottomleft":
-            self.textrect.bottomleft = relToAbsDual(self.relpos[0], self.relpos[1])
+            self.textrect.bottomleft = relToAbsDual2(self.relpos[0], self.relpos[1])
         elif self.anchor == "bottomright":
-            self.textrect.bottomright = relToAbsDual(self.relpos[0], self.relpos[1])
+            self.textrect.bottomright = relToAbsDual2(self.relpos[0], self.relpos[1])
         elif self.anchor == "center":
-            self.textrect.center = relToAbsDual(self.relpos[0], self.relpos[1])
+            self.textrect.center = relToAbsDual2(self.relpos[0], self.relpos[1])
 
     def draw(self, window):
         window.blit(self.image, self.textrect)
