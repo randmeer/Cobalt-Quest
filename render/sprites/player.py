@@ -3,7 +3,7 @@ from math import pi, atan2
 import pygame
 
 from utils import globs
-from utils.__init__ import getSetting, relToAbs, relToAbsDual
+from utils.__init__ import getSetting, relToAbs, rta_dual
 
 
 class Player(pygame.sprite.Sprite):
@@ -52,7 +52,7 @@ class Player(pygame.sprite.Sprite):
         if self.tookdamage:
             self.tookdamage = False
             self.hurtanimationcooldown = 10
-            self.original_image.blit(pygame.transform.scale(damage_image, (relToAbsDual(0.1, 0.1))), (0, 0))
+            self.original_image.blit(pygame.transform.scale(damage_image, (rta_dual(0.1, 0.1))), (0, 0))
 
         self.image = pygame.transform.rotate(self.original_image, int(self.angle))
         self.rect = self.image.get_rect(center=self.position)

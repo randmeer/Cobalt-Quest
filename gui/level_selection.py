@@ -1,17 +1,15 @@
 import pygame
 
-from utils import globs, __init__, mousepos
+from utils import globs, mousepos, setGlobalDefaults, playSound
 from render.sprites import button
 from utils.images import background_texture
-from utils.__init__ import relToAbsDualHeight
 
-def showLevelSelection():
+def showLevelSelection(window):
     print("LEVEL SELECTION START")
-    __init__.setGlobalDefaults()
-    window = __init__.setupWindow()
+    setGlobalDefaults()
 
     buttongroup = pygame.sprite.Group()
-    backtomenu_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Back to Menu", relpos=(0.05, 0.05))
+    backtomenu_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="BACK TO MENU", relpos=(0.05, 0.05))
     buttongroup.add(backtomenu_button)
     # create the lvl buttons and use a uneccessary compicated alorithm to align them in a 3x3 grid
     levelbuttons = []
@@ -20,7 +18,7 @@ def showLevelSelection():
         lvlrelposx = 0.05 + 0.31 * (i - ((int(i / 3)) * 3))
         if i == 3 or i == 6:
             lvlrelposy += 0.25
-        levelbutton = button.Button(relwidth=0.28, relheight=0.22, textcontent=f"lvl {i}", relpos=(lvlrelposx, lvlrelposy))
+        levelbutton = button.Button(relwidth=0.28, relheight=0.22, textcontent=f"LVL {i}", relpos=(lvlrelposx, lvlrelposy))
         levelbuttons.append(levelbutton)
     for i in levelbuttons:
         buttongroup.add(i)
@@ -31,7 +29,7 @@ def showLevelSelection():
         og_surface.blit(background_texture, (0, 0))
         for i in buttongroup:
             i.update()
-            i.draw(window=og_surface)
+            i.draw(surface=og_surface)
         surface = pygame.transform.scale(og_surface, globs.res_size)
         window.blit(surface, (0, 0))
         pygame.display.update()
@@ -65,5 +63,5 @@ def showLevelSelection():
             #if event.type == pygame.VIDEORESIZE:
             #    resize()
         draw()
-    __init__.playSound('click')
+    playSound('click')
     print("LEVEL SELECTION END")

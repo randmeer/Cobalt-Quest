@@ -6,7 +6,7 @@ from sprites.block import Block
 from utils import globs, __init__
 from sprites import sword, outline, victim, gui, particle_cloud, shuriken
 from sprites.entity import player
-from utils.__init__ import relToAbsDual, absToRelDual
+from utils.__init__ import rta_dual, atr_dual
 
 def playLevel1():
     print("LEVEL1 START")
@@ -24,9 +24,9 @@ def playLevel1():
     webgroup = pygame.sprite.Group()
     blocks, victims, particleclouds, shurikens = [], [], [], []
     victim_summon_cooldown = victimcounter = 0
-    main_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
-    gui_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
-    damage_player = pygame.transform.scale(damage_player_texture, (relToAbsDual(1, 1)))
+    main_surface = pygame.Surface(rta_dual(1, 1), pygame.SRCALPHA, 32)
+    gui_surface = pygame.Surface(rta_dual(1, 1), pygame.SRCALPHA, 32)
+    damage_player = pygame.transform.scale(damage_player_texture, (rta_dual(1, 1)))
 
     prev_time = time.time()
     resizeupdate = False
@@ -63,10 +63,10 @@ def playLevel1():
                         swordsprite.visibility = True
                         swordsprite.animation = 1
                         particleclouds.append(
-                            particle_cloud.ParticleCloud(relcenter=absToRelDual(mousepos[0], mousepos[1]), relradius=0.06, relparticlesize=0.02, color=(230, 0, 0), density=10, relvelocity=1.5, distribution=0.5))
+                            particle_cloud.ParticleCloud(relcenter=atr_dual(mousepos[0], mousepos[1]), relradius=0.06, relparticlesize=0.02, color=(230, 0, 0), density=10, relvelocity=1.5, distribution=0.5))
                     if guisprite.weapons[guisprite.weapon][0] == "shuriken" and guisprite.weapons[guisprite.weapon][1] > 0:
                         angle = math.atan2(mousepos[1] - playersprite.rect.centery, mousepos[0] - playersprite.rect.centerx)
-                        shurikens.append(shuriken.Shuriken(relpos=absToRelDual(playersprite.rect.centerx, playersprite.rect.centery), radians=angle))
+                        shurikens.append(shuriken.Shuriken(relpos=atr_dual(playersprite.rect.centerx, playersprite.rect.centery), radians=angle))
                         guisprite.weapons[guisprite.weapon][1] -= 1
                 if event.button == globs.WHEELUP:
                     guisprite.weapon -= 1
@@ -110,11 +110,11 @@ def playLevel1():
                 resizeupdate = False
                 w, h = pygame.display.get_surface().get_size()
                 __init__.resizeWindow(w, h)
-                main_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
-                gui_surface = pygame.Surface(relToAbsDual(1, 1), pygame.SRCALPHA, 32)
-                damage_player = pygame.transform.scale(damage_player_texture, (relToAbsDual(1, 1)))
-                background = pygame.transform.scale(background_original, (relToAbsDual(1, 1)))
-                gui_background = pygame.transform.scale(gui_background_original, (relToAbsDual(1, 1)))
+                main_surface = pygame.Surface(rta_dual(1, 1), pygame.SRCALPHA, 32)
+                gui_surface = pygame.Surface(rta_dual(1, 1), pygame.SRCALPHA, 32)
+                damage_player = pygame.transform.scale(damage_player_texture, (rta_dual(1, 1)))
+                background = pygame.transform.scale(background_original, (rta_dual(1, 1)))
+                gui_background = pygame.transform.scale(gui_background_original, (rta_dual(1, 1)))
                 #gui_surface = pygame.transform.scale(gui_surface_original, (relToAbsDual(1, 0.06)))
                 for i in victimgroup:
                     i.resize()
@@ -163,7 +163,7 @@ def playLevel1():
 
         # ------------------ DRAWING ------------------
         main_surface.blit(background, (0, 0))
-        gui_surface.blit(gui_background, relToAbsDual(0, 0))
+        gui_surface.blit(gui_background, rta_dual(0, 0))
         outlinesprite.draw(main_surface)
         for i in blocks:
             i.update(window=main_surface)
@@ -183,7 +183,7 @@ def playLevel1():
         #                 position=relToAbsDual(0.92, 0.02),
         #                 color=globs.WHITE, size=relToAbs(0.048))
         window.blit(main_surface, (0, 0))
-        window.blit(gui_surface, relToAbsDual(1, 0))
+        window.blit(gui_surface, rta_dual(1, 0))
         pygame.display.update()
         # ------------------ DRAWING ------------------
 

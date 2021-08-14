@@ -4,7 +4,7 @@ import pygame
 
 from utils.images import shuriken_texture
 from render.sprites import particle_cloud
-from utils.__init__ import relToAbsDual, absToRel, absToRelDual
+from utils.__init__ import rta_dual, absToRel, atr_dual
 
 
 class Shuriken(pygame.sprite.Sprite):
@@ -20,7 +20,7 @@ class Shuriken(pygame.sprite.Sprite):
         self.explosiontimer = 1
 
     def resize(self):
-        self.original_image = pygame.transform.scale(shuriken_texture, relToAbsDual(0.1, 0.1))
+        self.original_image = pygame.transform.scale(shuriken_texture, rta_dual(0.1, 0.1))
         self.image = self.original_image
 
     def update(self, delta_time, window):
@@ -38,7 +38,7 @@ class Shuriken(pygame.sprite.Sprite):
         if self.rotangle > 360:
             self.rotangle = 0
         self.rect = self.image.get_rect()
-        self.rect.center = relToAbsDual(self.relpos[0] + self.reldxtotal, self.relpos[1] + self.reldytotal)
+        self.rect.center = rta_dual(self.relpos[0] + self.reldxtotal, self.relpos[1] + self.reldytotal)
         self.reldxtotal += self.reldx * self.velocity * 50 * delta_time
         self.reldytotal += self.reldy * self.velocity * 50 * delta_time
 
@@ -46,15 +46,15 @@ class Shuriken(pygame.sprite.Sprite):
 
     def explode(self):
         if self.dead: return
-        self.smoke = particle_cloud.ParticleCloud(relcenter=absToRelDual(self.rect.centerx, self.rect.centery),
+        self.smoke = particle_cloud.ParticleCloud(relcenter=atr_dual(self.rect.centerx, self.rect.centery),
                                                   relradius=0.09,
                                                   relparticlesize=0.07, color=(70, 70, 70), density=10, relvelocity=1.5,
                                                   distribution=0.7, colorvariation=5)
-        self.fire = particle_cloud.ParticleCloud(relcenter=absToRelDual(self.rect.centerx, self.rect.centery),
+        self.fire = particle_cloud.ParticleCloud(relcenter=atr_dual(self.rect.centerx, self.rect.centery),
                                                  relradius=0.08,
                                                  relparticlesize=0.04, color=(200, 70, 0), density=20, relvelocity=1.2,
                                                  distribution=0.5, colorvariation=30)
-        self.sparks = particle_cloud.ParticleCloud(relcenter=absToRelDual(self.rect.centerx, self.rect.centery),
+        self.sparks = particle_cloud.ParticleCloud(relcenter=atr_dual(self.rect.centerx, self.rect.centery),
                                                    relradius=0.1,
                                                    relparticlesize=0.01, color=(200, 100, 0), density=20, relvelocity=2,
                                                    distribution=0.5, colorvariation=5)

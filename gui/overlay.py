@@ -1,6 +1,6 @@
 import pygame
 
-from utils import globs, playSound, setGlobalDefaults, relToAbsDual2, mousepos
+from utils import globs, playSound, setGlobalDefaults, rta_dual, mousepos
 from utils.images import overlay_texture, victory_texture, defeat_texture
 from render.sprites import button
 
@@ -15,7 +15,7 @@ def draw(background, buttongroup, window):
     og_surface.blit(overlay, (0, 0))
     for i in buttongroup:
         i.update()
-        i.draw(window=og_surface)
+        i.draw(surface=og_surface)
     surface = pygame.transform.scale(og_surface, globs.res_size)
     window.blit(surface, (0, 0))
     pygame.display.update()
@@ -25,9 +25,9 @@ def pause_screen(window, background):
     playSound('click')
     setGlobalDefaults()
     buttongroup = pygame.sprite.Group()
-    resumeplaying_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Resume", relpos=(0.05, 0.44))
-    backtomenu_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Back to Menu", relpos=(0.05, 0.62))
-    settings_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Settings", relpos=(0.05, 0.80))
+    resumeplaying_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="RESUME", relpos=(0.05, 0.44))
+    backtomenu_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="BAck TO MENU", relpos=(0.05, 0.62))
+    settings_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="SETTINGS", relpos=(0.05, 0.80))
     buttongroup.add(resumeplaying_button, backtomenu_button, settings_button)
 
     clock = pygame.time.Clock()
@@ -67,16 +67,16 @@ def end_screen(window, mainsurf, end):
         playSound('victory')
     if end == "defeat":
         playSound('defeat')
-    victory = pygame.transform.scale(victory_texture, (relToAbsDual2(1, 1)))
-    defeat = pygame.transform.scale(defeat_texture, (relToAbsDual2(1, 1)))
-    overlay = pygame.transform.scale(overlay_texture, (relToAbsDual2(1, 1)))
+    victory = pygame.transform.scale(victory_texture, (rta_dual(1, 1)))
+    defeat = pygame.transform.scale(defeat_texture, (rta_dual(1, 1)))
+    overlay = pygame.transform.scale(overlay_texture, (rta_dual(1, 1)))
     buttongroup = pygame.sprite.Group()
     backtomenu_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Back to Menu", relpos=(0.05, 0.44))
     replay_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="Replay", relpos=(0.05, 0.62))
     buttongroup.add(backtomenu_button, replay_button)
     overlay.set_alpha(2)
     window.blit(overlay, (0, 0))
-    main_surface = pygame.Surface(relToAbsDual2(1, 1))
+    main_surface = pygame.Surface(rta_dual(1, 1))
     if end == "victory":
         main_surface.blit(victory, (0, 0))
     elif end == "defeat":
@@ -127,7 +127,7 @@ def end_screen(window, mainsurf, end):
 def settings(window, background):
     setGlobalDefaults()
     buttongroup = pygame.sprite.Group()
-    saveandreturn_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="save and return", relpos=(0.05, 0.80))
+    saveandreturn_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="SAVE AND RETURN", relpos=(0.05, 0.80))
     buttongroup.add(saveandreturn_button)
 
     # TODO: remake the settings gui with buttons and labels, including the "SETTINGS" title

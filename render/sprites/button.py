@@ -1,32 +1,32 @@
 import pygame
 from utils import globs
-from utils.__init__ import relToAbs, relToAbsDualHeight, renderText, getTextRect, gradientRect, relToAbsDual2, relToAbsWidth, relToAbsHeight
+from utils.__init__ import renderText, getTextRect, gradientRect, rta_dual, rta_width, rta_height
 
 class Button(pygame.sprite.Sprite):
 
     def __init__(self, relwidth, relheight, textcontent, relpos, textcolor=(75, 75, 75), reltextsize=0.1,
-                 relborder=0.02, bordercolor=(255, 255, 255), innercolor=(194, 205, 209), anchor="center",
+                 border=1, bordercolor=(255, 255, 255), innercolor=(194, 205, 209), anchor="center",
                  hovergradient=((255, 141, 141), (141, 187, 255)), hovercolor=(214, 225, 229)):
         pygame.sprite.Sprite.__init__(self)
-        self.surface = pygame.Surface(relToAbsDual2(relwidth, relheight))
+        self.surface = pygame.Surface(rta_dual(relwidth, relheight))
         self.surface.fill(bordercolor)
-        self.innerarea = pygame.Surface(relToAbsDual2(relwidth - relborder/2, relheight - relborder))
+        self.innerarea = pygame.Surface((rta_width(relwidth) - border * 2, rta_height(relheight) - border * 2))
         self.innerarea.fill(innercolor)
-        self.surface.blit(self.innerarea, (relToAbsDualHeight(relborder / 2, relborder / 2)))
+        self.surface.blit(self.innerarea, (border, border))
         self.image = self.surface
-        self.hoversurface = pygame.Surface(relToAbsDual2(relwidth, relheight))
+        self.hoversurface = pygame.Surface(rta_dual(relwidth, relheight))
         self.hoversurface.blit(gradientRect(self.hoversurface.get_width(), self.hoversurface.get_height(), hovergradient[0], hovergradient[1]), (0, 0))
         self.innerarea.fill(hovercolor)
-        self.hoversurface.blit(self.innerarea, (relToAbsDualHeight(relborder / 2, relborder / 2)))
+        self.hoversurface.blit(self.innerarea, (border, border))
         self.text = textcontent
         self.textcolor = textcolor
         self.reltextsize = reltextsize
         #self.textsize = relToAbsHeight(reltextsize)
-        self.textsize = 10
+        self.textsize = 5
         self.rect = self.surface.get_rect()
         self.relposx, self.relposy = relpos[0], relpos[1]
         self.relwidth, self.relheight = relwidth, relheight
-        self.rect.x, self.rect.y = relToAbsWidth(relpos[0]), relToAbsHeight(relpos[1])
+        self.rect.x, self.rect.y = rta_width(relpos[0]), rta_height(relpos[1])
         self.textrect = getTextRect(textcontent, self.textsize)
         self.anchor = anchor
         if self.anchor == "center":
@@ -39,11 +39,11 @@ class Button(pygame.sprite.Sprite):
             self.textrect.left = self.rect.left
 
     def update(self):
-        self.image = pygame.transform.scale(self.surface, relToAbsDual2(self.relwidth, self.relheight))
+        self.image = pygame.transform.scale(self.surface, rta_dual(self.relwidth, self.relheight))
         self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = relToAbsWidth(self.relposx), relToAbsHeight(self.relposy)
+        self.rect.x, self.rect.y = rta_width(self.relposx), rta_height(self.relposy)
         #self.textsize = relToAbsHeight(self.reltextsize)
-        self.textsize = 10
+        self.textsize = 5
         self.textrect = getTextRect(self.text, self.textsize)
         if self.anchor == "center":
             self.textrect.center = self.rect.center
@@ -57,10 +57,8 @@ class Button(pygame.sprite.Sprite):
             self.sethover()
 
     def sethover(self):
-        self.image = pygame.transform.scale(self.hoversurface, relToAbsDual2(self.relwidth, self.relheight))
+        self.image = pygame.transform.scale(self.hoversurface, rta_dual(self.relwidth, self.relheight))
 
-    def draw(self, window):
-        window.blit(self.image, self.rect)
-        print(self.text + " X: " + str(self.rect.x) + " Y: " + str(self.rect.y))
-        print(self.textsize)
-        renderText(window=window, text=self.text, position=self.textrect, color=self.textcolor, size=self.textsize)
+    def draw(self, surface):
+        surface.blit(self.image, self.rect)
+        renderText(window=surface, text=self.text, position=self.textrect, color=self.textcolor, size=self.textsize)

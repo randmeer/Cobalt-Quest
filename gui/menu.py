@@ -1,22 +1,21 @@
 import pygame
 
 import utils
-from utils import globs, mousepos, setGlobalDefaults, setupWindow, playSound
+from utils import globs, mousepos, setGlobalDefaults, playSound
 from render.sprites import button
 from utils.images import background_texture, logo_texture
 from gui.overlay import settings
 
-def showMenu():
+def showMenu(window):
     print("MENU START")
     setGlobalDefaults()
-    window = setupWindow()
 
     buttongroup = pygame.sprite.Group()
-    map_button = button.Button(relwidth=0.4375, relheight=0.15, textcontent="Map", relpos=(0.05, 0.44))
-    shop_button = button.Button(relwidth=0.4375, relheight=0.15, textcontent="Shop", relpos=(0.5125, 0.44))
-    inventory_button = button.Button(relwidth=0.6875, relheight=0.15, textcontent="Inventory", relpos=(0.05, 0.62))
+    map_button = button.Button(relwidth=0.4375, relheight=0.15, textcontent="MAP", relpos=(0.05, 0.44))
+    shop_button = button.Button(relwidth=0.4375, relheight=0.15, textcontent="SHOP", relpos=(0.5125, 0.44))
+    inventory_button = button.Button(relwidth=0.6875, relheight=0.15, textcontent="INVENTORY", relpos=(0.05, 0.62))
     menga_button = button.Button(relwidth=0.1875, relheight=0.15, textcontent="?", relpos=(0.7625, 0.62))
-    settings_button = button.Button(relwidth=0.6875, relheight=0.15, textcontent="Settings", relpos=(0.05, 0.80))
+    settings_button = button.Button(relwidth=0.6875, relheight=0.15, textcontent="SETTINGS", relpos=(0.05, 0.80))
     difficulty_button = button.Button(relwidth=0.1875, relheight=0.15, textcontent=f"{globs.difficulty}", relpos=(0.7625, 0.80))
     buttongroup.add(map_button, shop_button, inventory_button, menga_button, settings_button, difficulty_button)
 
@@ -26,7 +25,7 @@ def showMenu():
         og_surface.blit(logo_texture, (og_surface.get_width()/4-logo_texture.get_width()/2, og_surface.get_height()/4-logo_texture.get_height()/2))
         for i in buttongroup:
             i.update()
-            i.draw(window=og_surface)
+            i.draw(surface=og_surface)
         surface = pygame.transform.scale(og_surface, globs.res_size)
         window.blit(surface, (0, 0))
         pygame.display.update()

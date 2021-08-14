@@ -5,208 +5,150 @@ import pygame.freetype
 from utils import globs
 
 
+def write_json(data, name):
+    with open(f'{name}.json', 'w') as json_file:
+        json.dump(data, json_file, indent=2)
+
+def read_json(path):
+    with open(path, 'r') as fr:
+        data = json.loads(fr.read())
+    return data
+
+def getSetting(setting):
+    settings = read_json('./data/data.json')
+    return settings[setting]
+
+
+def set_resolution():
+    aspect_ratio = getSetting('aspect_ratio')
+    resolution = getSetting('resolution')
+    fullscreen = getSetting('fullscreen')
+    if aspect_ratio == "16to9":
+        globs.res = globs.RES_16TO9[resolution]
+    elif aspect_ratio == "16to10":
+        globs.res = globs.RES_16TO10[resolution]
+    elif aspect_ratio == "4to3":
+        globs.res = globs.RES_4TO3[resolution]
+    globs.fullscreen = fullscreen
+    globs.res_size = globs.res[0]
+    globs.res_name = globs.res[1]
+    print("RESOLUTION: " + str(globs.res))
+
 class DefaultError(Exception):
     def __init__(self, errmsg='unknown error has occured'):
         self.errmsg = errmsg
         Exception.__init__(self, errmsg)
-
     def __reduce__(self):
         return self.__class__, self.errmsg
 
 
-from utils.images import icon_texture
+w, h = 256, 144
 
+def rta_width(input_value):
+    output = w * input_value
+    return round(output)
 
-def resizeWindow(eventw, eventh):
-    # if eventw == globs.width and eventh != globs.height:
-    #     if eventh < 500:
-    #         globs.height = 500
-    #         globs.width = int(500 * 16 / 9)
-    #     else:
-    #         globs.height = eventh
-    #         globs.width = int(eventh * 16 / 9)
-    # elif eventw != globs.width and eventh == globs.height:
-    #     if eventw < int(500 * 16 / 9):
-    #         globs.height = 500
-    #         globs.width = int(500 * 16 / 9)
-    #     else:
-    #         globs.width = eventw
-    #         globs.height = int(eventw * 9 / 16)
-    # elif eventw != globs.width and eventh != globs.height:
-    #     if eventh < 500:
-    #         globs.height = 500
-    #         globs.width = int(500 * 16 / 9)
-    #     else:
-    #         globs.height = eventh
-    #         globs.width = int(eventh * 16 / 9)
-    # pygame.display.set_mode((globs.width, globs.height), pygame.RESIZABLE)
-    if eventw == globs.width and eventh != globs.height:
-        if eventh < 250:
-            globs.height = 250
-        else:
-            globs.height = eventh
-    elif eventw != globs.width and eventh == globs.height:
-        if eventw < int(250 * 16 / 9):
-            globs.width = int(250 * 16 / 9)
-        else:
-            globs.width = eventw
-    elif eventw != globs.width and eventh != globs.height:
-        if eventh < 250:
-            globs.height = 250
-        if eventw < int(250 * 16 / 9):
-            globs.width = int(250 * 16 / 9)
-        else:
-            globs.height = eventh
-            globs.width = eventw
+def atr_width(input_value):
+    output = input_value / w
+    return output
 
-    pygame.display.set_mode((globs.width, globs.height), pygame.RESIZABLE)
-
-
-def absToRelDual(input_x, input_y):
-    w, h = pygame.display.get_surface().get_size()
-    output_x = input_x / h
-    output_y = input_y / h
-    return output_x, output_y
-
-
-def relToAbsDual(input_x, input_y):
-    w, h = pygame.display.get_surface().get_size()
-    output_x = h * input_x
-    output_y = h * input_y
-    return int(output_x), int(output_y)
-
-
-def relToAbs(input_value):
-    w, h = pygame.display.get_surface().get_size()
+def rta_height(input_value):
     output = h * input_value
-    return int(output)
+    return round(output)
 
-
-def absToRel(input_value):
-    w, h = pygame.display.get_surface().get_size()
+def atr_height(input_value):
     output = input_value / h
     return output
 
+def rta_dual(input_x, input_y):
+    output_x, output_y = w * input_x, h * input_y
+    return round(output_x), round(output_y)
 
-# these rel functions should replace the rel functions someday
-# they work with the whole window, while rel functions only apply to a square with a = windowheight
+def atr_dual(input_x, input_y):
+    output_x, output_y = input_x / w, input_y / h
+    return output_x, output_y
 
-def relToAbsDual2(input_x, input_y):
-    # w, h = pygame.display.get_surface().get_size()
-    w, h = 256, 144
-    output_x = w * input_x
-    output_y = h * input_y
-    return int(output_x), int(output_y)
+def rta_dual_height(input_x, input_y):
+    output_x, output_y = h * input_x, h * input_y
+    return round(output_x), round(output_y)
 
+def atr_dual_height(input_x, input_y):
+    output_x, output_y = input_x / h, input_y / h
+    return output_x, output_y
 
-def relToAbsDualHeight(input_x, input_y):
-    # w, h = pygame.display.get_surface().get_size()
-    w, h = 256, 144
-    output_x = h * input_x
-    output_y = h * input_y
-    return int(output_x), int(output_y)
+def rta_dual_width(input_x, input_y):
+    output_x, output_y = w * input_x, w * input_y
+    return round(output_x), round(output_y)
 
-
-def relToAbsDualWidth(input_x, input_y):
-    # w, h = pygame.display.get_surface().get_size()
-    w, h = 256, 144
-    output_x = w * input_x
-    output_y = w * input_y
-    return int(output_x), int(output_y)
-
-
-def relToAbsWidth(input_value):
-    # w, h = pygame.display.get_surface().get_size()
-    w, h = 256, 144
-    output = w * input_value
-    return int(output)
-
-
-def relToAbsHeight(input_value):
-    # w, h = pygame.display.get_surface().get_size()
-    w, h = 256, 144
-    output = h * input_value
-    return int(output)
-
-
-def getSetting(setting):
-    with open('./data/data.json', 'r') as fr:
-        settings = json.loads(fr.read())
-    if setting == 'background_music':
-        return settings['background_music']
-    elif setting == 'volume':
-        return settings['volume']
-    elif setting == 'skin':
-        return settings['skin']
-
-
-def background():
-    return pygame.transform.scale(background_texture, (500, 500))
+def atr_dual_width(input_x, input_y):
+    output_x, output_y = input_x / w, input_y / w
+    return output_x, output_y
 
 
 def setGlobalDefaults():
-    globs.quitgame = False
-    globs.exittomenu = False
-    globs.titlescreen = False
-    globs.menu = False
-    globs.level_selection = False
-    globs.rndebug = False
-    globs.level1 = False
     globs.quitgame = globs.exittomenu = globs.titlescreen = globs.menu = globs.level_selection = globs.rndebug = globs.level1 = False
 
 
 def setGameDefaults():
-    globs.victimbreakcooldownmax = 500 - 100 * globs.difficulty
-
-    globs.victimsmissed = 0
-    globs.victimskilled = 0
-
-    globs.victimbreakcooldownmax = 500 - 100 * globs.difficulty
-    globs.victimsmissed = globs.victimskilled = 0
-    # globs.victimspawns = (15 * globs.difficulty + globs.difficulty - 1)
-    globs.victimspawns = 0
-    globs.playerhealthpoints = (32 / globs.difficulty + globs.difficulty - 1)
-    globs.maxcooldown = (60 / globs.difficulty)
-
-    globs.damagecooldown = globs.maxcooldown
-    globs.damageoverlaycooldown = 0
-    globs.damagesum = 0
-
-    globs.webs_left = 3
-    globs.webcounter = 0
-    globs.victimspawns = 0
-    globs.playerhealthpoints = (32 / globs.difficulty + globs.difficulty - 1)
-    globs.maxcooldown = (60 / globs.difficulty)
-    globs.damagecooldown = globs.maxcooldown
-    globs.damageoverlaycooldown = 0
-    globs.damagesum = 0
-    globs.webs_left = 3
-    globs.webcounter = 0
+    pass
+    # globs.victimbreakcooldownmax = 500 - 100 * globs.difficulty
+    #
+    # globs.victimsmissed = 0
+    # globs.victimskilled = 0
+    #
+    # globs.victimbreakcooldownmax = 500 - 100 * globs.difficulty
+    # globs.victimsmissed = globs.victimskilled = 0
+    # # globs.victimspawns = (15 * globs.difficulty + globs.difficulty - 1)
+    # globs.victimspawns = 0
+    # globs.playerhealthpoints = (32 / globs.difficulty + globs.difficulty - 1)
+    # globs.maxcooldown = (60 / globs.difficulty)
+    #
+    # globs.damagecooldown = globs.maxcooldown
+    # globs.damageoverlaycooldown = 0
+    # globs.damagesum = 0
+    #
+    # globs.webs_left = 3
+    # globs.webcounter = 0
+    # globs.victimspawns = 0
+    # globs.playerhealthpoints = (32 / globs.difficulty + globs.difficulty - 1)
+    # globs.maxcooldown = (60 / globs.difficulty)
+    # globs.damagecooldown = globs.maxcooldown
+    # globs.damageoverlaycooldown = 0
+    # globs.damagesum = 0
+    # globs.webs_left = 3
+    # globs.webcounter = 0
 
 
 def setupWindow():
     pygame.display.quit()
     pygame.display.init()
     pygame.display.set_caption("Cobalt Quest version " + globs.VERSION + " by Rande")
-    pygame.display.set_icon(icon_texture)
+    pygame.display.set_icon(pygame.image.load('./resources/textures/' + "icon.png"))
     if globs.fullscreen:
         window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     else:
         window = pygame.display.set_mode(globs.res_size)
-    print(window.get_size())
     return window
 
 
-def renderText(window, text, position, color, size):
-    pygame.freetype.init()
-    font = pygame.freetype.Font("./resources/fonts/standart.otf", size)
-    font.render_to(surf=window, dest=position, text=text, fgcolor=color)
+def renderText(window, text, position, color, size=5, antialiased=False, vertical=False, font="game"):
+    if font == "game":
+        f = pygame.freetype.Font("./resources/fonts/PortableVengeanceRegular.ttf", size)
+    elif font == "debug":
+        f = pygame.freetype.Font("./resources/fonts/standart.otf", size)
+    # PortableVengeance by Pixel Kitchen on fontspace.com, Licensed as Public Domain
+    # px * .75 = pt (example: 8px is equivalent to 6pt)
+    f.antialiased = antialiased
+    f.vertical = vertical
+    f.render_to(surf=window, dest=position, text=text, fgcolor=color)
 
 
-def getTextRect(text, size):
-    pygame.freetype.init()
-    font = pygame.freetype.Font("./resources/fonts/standart.otf", size)
-    return font.get_rect(text=text)
+def getTextRect(text, size=5, font="game"):
+    if font == "game":
+        f = pygame.freetype.Font("./resources/fonts/PortableVengeanceRegular.ttf", size)
+    elif font == "debug":
+        f = pygame.freetype.Font("./resources/fonts/standart.otf", size)
+    return f.get_rect(text=text)
 
 
 def gradientRect(width, height, left_colour, right_color):
@@ -218,7 +160,6 @@ def gradientRect(width, height, left_colour, right_color):
 
 
 def playSound(sound):
-    pygame.mixer.init()
     if sound == 'click':
         pygame.mixer.Channel(1).play(pygame.mixer.Sound("./resources/sounds/click.wav"))
     elif sound == 'hit':
@@ -238,15 +179,10 @@ def playSound(sound):
     pygame.mixer.Channel(3).set_volume(getSetting('volume') / 10)
 
 
-def play_theme():
-    pygame.mixer.init()
-    pygame.mixer.music.load("sounds/theme.wav")
+def play_music(music):
+    if music == "menu":
+        pygame.mixer.music.load("./resources/sounds/theme1_calm_before_the_storm.wav")
     pygame.mixer.music.play(-1)
-
-
-def save_to_json(data, name):
-    with open(f'{name}.json', 'w') as json_file:
-        json.dump(data, json_file, indent=2)
 
 
 def check_collision(sprite1, sprite2):

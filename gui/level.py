@@ -3,12 +3,12 @@ import pygame
 from utils import globs, mousepos
 from utils.images import background_texture, Texture
 from render.sprites import gui
-from utils import relToAbsDual, setGlobalDefaults, setGameDefaults, setupWindow, resizeWindow
+from utils import setGlobalDefaults, setGameDefaults, setupWindow
 from gui.overlay import pause_screen
 
 class LevelTemplate:
 
-    def __init__(self, name='{name}'):
+    def __init__(self, window, name='{name}'):
         """
         level class. inherit in local levelsubclass and draw game on game_surface
         :param name: level name or number
@@ -17,8 +17,7 @@ class LevelTemplate:
 
         setGlobalDefaults()
         setGameDefaults()
-        self.window = setupWindow()
-        self.background = pygame.transform.scale(background_texture, (globs.height, globs.height))
+        self.window = window
         self.game_surface = pygame.Surface(globs.SIZE, pygame.SRCALPHA)
         self.guisprite = gui.IngameGUI()
 

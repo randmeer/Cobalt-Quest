@@ -1,23 +1,27 @@
 import pygame
 
 import utils
-from gui import title_screen, menu, level_selection
-from gui.level import LevelTemplate
 from utils import globs, rndebug
 
 
 if __name__ == '__main__':
+    pygame.freetype.init()
+    pygame.mixer.init()
+
     # if music present play the music
     if utils.getSetting('background_music'):
-        utils.play_theme()
+        utils.play_music("menu")
         pygame.mixer.music.set_volume(utils.getSetting('volume') / 10)
 
-    print(utils.getSetting('volume'))
-    globs.width, globs.height = int(globs.DEFAULT_HEIGHT*16/9), globs.DEFAULT_HEIGHT
     utils.setGlobalDefaults()
+    utils.set_resolution()
     globs.titlescreen = True
+
     window = utils.setupWindow()
     clock = pygame.time.Clock()
+
+    from gui import title_screen, menu, level_selection
+    from gui.level import LevelTemplate
 
     # main game loop
     run = True
@@ -36,13 +40,13 @@ if __name__ == '__main__':
             run = False
             print("DETECTED ORDER TO QUIT GAME")
         elif globs.titlescreen:
-            title_screen.showTitleScreen()
+            title_screen.showTitleScreen(window=window)
         elif globs.menu:
-            menu.showMenu()
+            menu.showMenu(window=window)
         elif globs.level_selection:
-            level_selection.showLevelSelection()
+            level_selection.showLevelSelection(window=window)
         elif globs.level1:
-            level = LevelTemplate()
+            level = LevelTemplate(window=window)
             level.start_loop()
         elif globs.rndebug:
             rndebug.showRNDebug()

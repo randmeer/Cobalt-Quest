@@ -5,16 +5,21 @@ from utils import globs
 from utils.images import background_texture, logo_texture
 
 
-def showTitleScreen():
+def showTitleScreen(window):
     print("TITLE SCREEN START")
     utils.setGlobalDefaults()
-    window = utils.setupWindow()
     rndebugAccess = 0
 
     def draw():
         og_surface = pygame.Surface(globs.SIZE)
         og_surface.blit(background_texture, (0, 0))
         og_surface.blit(logo_texture, (og_surface.get_width()/2-logo_texture.get_width()/2, og_surface.get_height()/2-logo_texture.get_height()/2))
+        version_rect = utils.getTextRect(f"v {globs.VERSION}", font="debug", size=10)
+        version_rect.bottomleft = utils.rta_dual_height(0.02, 0.98)
+        studio_rect = utils.getTextRect("Rande Studios", font="debug", size=10)
+        studio_rect.bottomright = (utils.rta_width(1) - utils.rta_height(0.02), utils.rta_height(0.98))
+        utils.renderText(og_surface, f"v {globs.VERSION}", version_rect, (16, 16, 16), font="debug", size=10)
+        utils.renderText(og_surface, "Rande Studios", studio_rect, (16, 16, 16), font="debug", size=10)
         surface = pygame.transform.scale(og_surface, globs.res_size)
         window.blit(surface, (0, 0))
         pygame.display.update()

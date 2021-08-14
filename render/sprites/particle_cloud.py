@@ -1,7 +1,7 @@
 import pygame
 
 from render.sprites import particle
-from utils.__init__ import relToAbsDual, relToAbs
+from utils.__init__ import rta_dual, relToAbs
 
 
 class ParticleCloud(pygame.sprite.Sprite):
@@ -35,7 +35,7 @@ class ParticleCloud(pygame.sprite.Sprite):
         self.rect = pygame.Rect(relToAbs(self.relcenter[0] - self.relradius),
                                 relToAbs(self.relcenter[1] - self.relradius), relToAbs(self.relradius * 2),
                                 relToAbs(self.relradius * 2))
-        self.rect.center = relToAbsDual(self.relcenter[0], self.relcenter[1])
+        self.rect.center = rta_dual(self.relcenter[0], self.relcenter[1])
 
     def reset(self):
         for i in self.particles:

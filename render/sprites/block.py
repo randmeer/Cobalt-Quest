@@ -1,7 +1,7 @@
 import pygame
 
 from utils.images import web_texture, mud_texture, brick_texture, cobblestone_texture, sandstone_texture, wall_texture
-from utils.__init__ import relToAbs, relToAbsDual, absToRel
+from utils.__init__ import relToAbs, rta_dual, absToRel
 
 blocks = ["web", "wall", "brick", "cobble", "sandstone", "mud"]
 textures = [web_texture, wall_texture, brick_texture, cobblestone_texture, sandstone_texture, mud_texture]
@@ -24,7 +24,7 @@ class Block(pygame.sprite.Sprite):
         self.draw(window=window)
 
     def resize(self):
-        self.image = pygame.transform.scale(self.original_image, (relToAbsDual(0.1, 0.1)))
+        self.image = pygame.transform.scale(self.original_image, (rta_dual(0.1, 0.1)))
         self.rect = self.image.get_rect()
 
     def draw(self, window):

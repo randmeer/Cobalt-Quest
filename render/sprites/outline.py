@@ -1,7 +1,7 @@
 import pygame
 
 from utils.images import outline_texture
-from utils.__init__ import absToRel, relToAbsDual, relToAbs
+from utils.__init__ import absToRel, rta_dual, relToAbs
 
 
 def rel_pos(ind):
@@ -10,14 +10,14 @@ def rel_pos(ind):
 class Outline(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.original_image = pygame.transform.scale(outline_texture, relToAbsDual(0.1, 0.1))
+        self.original_image = pygame.transform.scale(outline_texture, rta_dual(0.1, 0.1))
         self.image = self.original_image
         self.rect = self.image.get_rect()
         self.rect.center = (-100, -100)
         self.relposx = self.relposy = 0.0
 
     def resize(self):
-        self.image = pygame.transform.scale(self.original_image, (relToAbsDual(0.1, 0.1)))
+        self.image = pygame.transform.scale(self.original_image, (rta_dual(0.1, 0.1)))
 
     def draw(self, window):
         self.relposx, self.relposy = rel_pos(0), rel_pos(1)

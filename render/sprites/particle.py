@@ -3,7 +3,7 @@ import random
 
 import pygame
 
-from utils.__init__ import absToRel, relToAbsDual
+from utils.__init__ import absToRel, rta_dual
 
 
 class Particle(pygame.sprite.Sprite):
@@ -40,12 +40,12 @@ class Particle(pygame.sprite.Sprite):
 
     def update(self, delta_time):
         if self.dead: return
-        self.image = pygame.Surface(relToAbsDual(self.relsize, self.relsize))
+        self.image = pygame.Surface(rta_dual(self.relsize, self.relsize))
         self.image.fill(self.color)
         self.image = pygame.transform.rotate(self.image, self.rotangle)
         self.image = self.image.convert_alpha()
         self.rect = self.image.get_rect()
-        self.rect.center = relToAbsDual(self.relpos[0] + self.reldxtotal, self.relpos[1] + self.reldytotal)
+        self.rect.center = rta_dual(self.relpos[0] + self.reldxtotal, self.relpos[1] + self.reldytotal)
         if self.rotangle > 90:
             self.rotangle = 0
         else:
