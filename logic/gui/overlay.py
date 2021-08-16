@@ -2,33 +2,18 @@ import pygame
 
 from utils import globs, playSound, setGlobalDefaults, rta_dual, mousepos
 from utils.images import overlay_texture, victory_texture, defeat_texture
-from render.sprites import button
-
-
-def draw(background, buttongroup, window):
-    og_surface = pygame.Surface(globs.SIZE, pygame.SRCALPHA)
-    overlay = pygame.Surface(globs.SIZE, pygame.SRCALPHA)
-    overlay.fill((0, 0, 0))
-    overlay.set_alpha(128)
-    # TODO: remake the pause gui with buttons and labels, including the "PAUSED" title
-    og_surface.blit(background, (0, 0))
-    og_surface.blit(overlay, (0, 0))
-    for i in buttongroup:
-        i.update()
-        i.draw(surface=og_surface)
-    surface = pygame.transform.scale(og_surface, globs.res_size)
-    window.blit(surface, (0, 0))
-    pygame.display.update()
+from render.elements import button
+from render import gui
 
 
 def pause_screen(window, background):
     playSound('click')
     setGlobalDefaults()
-    buttongroup = pygame.sprite.Group()
-    resumeplaying_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="RESUME", relpos=(0.05, 0.44))
-    backtomenu_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="BAck TO MENU", relpos=(0.05, 0.62))
-    settings_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="SETTINGS", relpos=(0.05, 0.80))
-    buttongroup.add(resumeplaying_button, backtomenu_button, settings_button)
+
+    pause = gui.GUI(background=background, overlay=128, buttons=[
+        button.Button(anchor="center", relwidth=0.4, relheight=0.1, textcontent="RESUME", relpos=(0.5, 0.44)),
+        button.Button(anchor="center", relwidth=0.4, relheight=0.1, textcontent="BAck TO MENU", relpos=(0.5, 0.62)),
+        button.Button(anchor="bottomright", relwidth=0.4, relheight=0.1, textcontent="SETTINGS", relpos=(0.95, 0.95))])
 
     clock = pygame.time.Clock()
     run = True
@@ -42,19 +27,17 @@ def pause_screen(window, background):
                 globs.quitgame = True
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == globs.LEFT:
-                    if resumeplaying_button.rect.collidepoint(mp):
+                    if pause.buttongroup[0].rect.collidepoint(mp):
                         run = False
-                    if backtomenu_button.rect.collidepoint(mp):
+                    if pause.buttongroup[1].rect.collidepoint(mp):
                         run = False
                         globs.exittomenu = True
-                    #if 367 < posY < 432 and 26 < posX < 475:
-                    #    globs.exittomenu = True
-                    if settings_button.rect.collidepoint(mp):
+                    if pause.buttongroup[2].rect.collidepoint(mp):
                         settings(window=window, background=background)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False
-        draw(background, buttongroup, window)
+        pause.draw(window=window)
         if globs.exittomenu:
             run = False
     playSound('click')
@@ -127,21 +110,9 @@ def end_screen(window, mainsurf, end):
 def settings(window, background):
     setGlobalDefaults()
     buttongroup = pygame.sprite.Group()
-    saveandreturn_button = button.Button(relwidth=0.9, relheight=0.15, textcontent="SAVE AND RETURN", relpos=(0.05, 0.80))
-    buttongroup.add(saveandreturn_button)
 
-    # TODO: remake the settings gui with buttons and labels, including the "SETTINGS" title
-    def update():
-        pass
-        # renderText(window, 'Backgr. Music:', (50, 190), globs.WHITE, 30)
-        # renderText(window, 'Sound Volume:', (50, 220), globs.WHITE, 30)
-        # renderText(window, 'Skin:', (50, 250), globs.WHITE, 30)
-        # renderText(window, 'Nickname:', (50, 280), globs.WHITE, 30)
-        # renderText(window, 'WWOPW v0.8 by Rande', (50, 310), globs.GRAY, 30)
-        # renderText(window, str(settings['background_music']), (300, 190), globs.WHITE, 30)
-        # renderText(window, str(settings['volume']), (300, 220), globs.WHITE, 30)
-        # renderText(window, str(settings['skin']), (300, 250), globs.WHITE, 30)
-        # renderText(window, 'None', (300, 280), globs.WHITE, 30)
+    settings = gui.GUI(background=background, overlay=128, buttons=[
+        button.Button(anchor="bottomright", relwidth=0.4, relheight=0.1, textcontent="SAVE AND RETURN", relpos=(0.95, 0.95))])
 
     playSound('click')
     clock = pygame.time.Clock()
@@ -157,8 +128,10 @@ def settings(window, background):
                 globs.quitgame = True
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == globs.LEFT:
-                    if saveandreturn_button.rect.collidepoint(mp):
+                    pass
+                    if settings.buttongroup[0].rect.collidepoint(mp):
                         run = False
+
                     # elif 190 < posY < 220 and 300 < posX < 450:
                     #    settings['background_music'] = not settings['background_music']
                     #    save_to_json(settings, "data")
@@ -178,5 +151,6 @@ def settings(window, background):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False
-        draw(background, buttongroup, window)
+        #draw(background, buttongroup, window)
+        settings.draw(window=window)
     playSound('click')

@@ -1,7 +1,7 @@
-# Cobalt Quest English
+# English
 
 A Dungeon Crawler made in python with the pygame-library.
 
-# Cobalt Quest Deutsch
+# Deutsch
 
 Ein Dungeon Crawler in Python mit der Pygame library.

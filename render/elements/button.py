@@ -1,12 +1,10 @@
 import pygame
-from utils import globs
-from utils.__init__ import renderText, getTextRect, gradientRect, rta_dual, rta_width, rta_height
+from utils import globs, renderText, getTextRect, gradientRect, rta_dual, rta_width, rta_height, set_anchor_point
 
 class Button(pygame.sprite.Sprite):
-
     def __init__(self, relwidth, relheight, textcontent, relpos, textcolor=(75, 75, 75), reltextsize=0.1,
-                 border=1, bordercolor=(255, 255, 255), innercolor=(194, 205, 209), anchor="center",
-                 hovergradient=((255, 141, 141), (141, 187, 255)), hovercolor=(214, 225, 229)):
+                 border=1, bordercolor=(255, 255, 255), innercolor=(194, 205, 209), textanchor="center",
+                 hovergradient=((255, 141, 141), (141, 187, 255)), hovercolor=(214, 225, 229), anchor="topleft"):
         pygame.sprite.Sprite.__init__(self)
         self.surface = pygame.Surface(rta_dual(relwidth, relheight))
         self.surface.fill(bordercolor)
@@ -28,31 +26,29 @@ class Button(pygame.sprite.Sprite):
         self.relwidth, self.relheight = relwidth, relheight
         self.rect.x, self.rect.y = rta_width(relpos[0]), rta_height(relpos[1])
         self.textrect = getTextRect(textcontent, self.textsize)
+        self.textanchor = textanchor
         self.anchor = anchor
-        if self.anchor == "center":
+        self.textanchorupdate()
+
+    def textanchorupdate(self):
+        if self.textanchor == "center":
             self.textrect.center = self.rect.center
-        elif self.anchor == "right":
+        elif self.textanchor == "right":
             self.textrect.centery = self.rect.centery
             self.textrect.right = self.rect.right
-        elif self.anchor == "left":
+        elif self.textanchor == "left":
             self.textrect.centery = self.rect.centery
             self.textrect.left = self.rect.left
 
     def update(self):
         self.image = pygame.transform.scale(self.surface, rta_dual(self.relwidth, self.relheight))
         self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = rta_width(self.relposx), rta_height(self.relposy)
+        pos = rta_dual(self.relposx, self.relposy)
+        set_anchor_point(self.rect, pos, self.anchor)
         #self.textsize = relToAbsHeight(self.reltextsize)
         self.textsize = 5
         self.textrect = getTextRect(self.text, self.textsize)
-        if self.anchor == "center":
-            self.textrect.center = self.rect.center
-        elif self.anchor == "right":
-            self.textrect.centery = self.rect.centery
-            self.textrect.right = self.rect.right
-        elif self.anchor == "left":
-            self.textrect.centery = self.rect.centery
-            self.textrect.left = self.rect.left
+        self.textanchorupdate()
         if self.rect.collidepoint((pygame.mouse.get_pos()[0] / (globs.res_size[0]/globs.SIZE[0]), pygame.mouse.get_pos()[1] / (globs.res_size[1]/globs.SIZE[1]))):
             self.sethover()
 

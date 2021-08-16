@@ -1,11 +1,9 @@
 import pygame
 
 from utils.images import selection_texture, cross_texture, bow_texture, shuriken_texture, dagger_texture, heart_texture
-from render.sprites import label, progress_bar
+from render.sprites import progress_bar
+from render.elements import label
 from utils import globs, rta_height, rta_dual_height
-
-
-# ToDo: Add a GUI-size setting which affects IngameGUI, Button Class ect.
 
 class IngameGUI(pygame.sprite.Sprite):
     def __init__(self):

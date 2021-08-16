@@ -2,9 +2,8 @@ import time
 
 import pygame
 
-from utils import globs
+from utils import globs, rta_height
 from utils.images import empty_texture, damage_texture
-from utils.__init__ import relToAbs
 
 
 class entity(pygame.sprite.Sprite):
@@ -69,7 +68,7 @@ class entity(pygame.sprite.Sprite):
                 self.position[0] = 0 + self.rect.width / 2 + 1
 
         self.rect.center = self.position
-        self.rect.centerx, self.rect.centery = relToAbs(self.relposx), relToAbs(self.relposy)
+        self.rect.centerx, self.rect.centery = rta_height(self.relposx), rta_height(self.relposy)
 
     def render_image(self):
         if self.damage_overlay_on and self.hurt_animation_cooldown > 0:

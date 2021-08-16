@@ -1,12 +1,13 @@
 import time
 import pygame
 from utils import globs, mousepos
-from utils.images import background_texture, Texture
+from utils.images import background_texture
 from render.sprites import gui
-from utils import setGlobalDefaults, setGameDefaults, setupWindow
-from gui.overlay import pause_screen
+from utils import setGlobalDefaults, setGameDefaults
+from logic.gui.overlay import pause_screen
 
-class LevelTemplate:
+# Template for handling game logic in a single floor of a dungeon
+class FloorTemplate:
 
     def __init__(self, window, name='{name}'):
         """

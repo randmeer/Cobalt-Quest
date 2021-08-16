@@ -1,4 +1,4 @@
-VERSION = "0.8.5"
+VERSION = "0.9.0"
 
 # VIDEO SETTINGS:
 SIZE = (256, 144)
@@ -54,7 +54,7 @@ fullscreen = False
 # settings that reset on startup
 # (plz dont change these the game will crash)
 quitgame = exittomenu = titlescreen = menu = level_selection = rndebug = level1 = None
-difficulty = 1
+savegame = 1
 
 # variables for the numbers pygame assigns to the keys. If you change these,
 # the keybinds change (so, dont)
@@ -71,7 +71,7 @@ RED = (255, 0, 0)
 # variables used for the gameplay
 victimbreakcooldownmax = 0
 victimhealthpointsmax = 32
-playerhealthpoints = int(48 / difficulty)
+playerhealthpoints = int(48 / savegame)
 victimspawns = victimskilled = victimsmissed = 0
 damagecooldown = maxcooldown = 0
 

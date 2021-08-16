@@ -15,7 +15,7 @@ def read_json(path):
     return data
 
 def getSetting(setting):
-    settings = read_json('./data/data.json')
+    settings = read_json('./data/settings.json')
     return settings[setting]
 
 
@@ -122,7 +122,7 @@ def setGameDefaults():
 def setupWindow():
     pygame.display.quit()
     pygame.display.init()
-    pygame.display.set_caption("Cobalt Quest version " + globs.VERSION + " by Rande")
+    pygame.display.set_caption(f"Cobalt Quest {globs.VERSION}")
     pygame.display.set_icon(pygame.image.load('./resources/textures/' + "icon.png"))
     if globs.fullscreen:
         window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
@@ -133,10 +133,11 @@ def setupWindow():
 
 def renderText(window, text, position, color, size=5, antialiased=False, vertical=False, font="game"):
     if font == "game":
-        f = pygame.freetype.Font("./resources/fonts/PortableVengeanceRegular.ttf", size)
+        f = pygame.freetype.Font("./resources/fonts/PortableVengeance.ttf", size)
     elif font == "debug":
         f = pygame.freetype.Font("./resources/fonts/standart.otf", size)
     # PortableVengeance by Pixel Kitchen on fontspace.com, Licensed as Public Domain
+    # The dot (.) has been modified
     # px * .75 = pt (example: 8px is equivalent to 6pt)
     f.antialiased = antialiased
     f.vertical = vertical
@@ -145,7 +146,7 @@ def renderText(window, text, position, color, size=5, antialiased=False, vertica
 
 def getTextRect(text, size=5, font="game"):
     if font == "game":
-        f = pygame.freetype.Font("./resources/fonts/PortableVengeanceRegular.ttf", size)
+        f = pygame.freetype.Font("./resources/fonts/PortableVengeance.ttf", size)
     elif font == "debug":
         f = pygame.freetype.Font("./resources/fonts/standart.otf", size)
     return f.get_rect(text=text)
@@ -196,3 +197,24 @@ def check_collision(sprite1, sprite2):
 def mousepos():
     return (pygame.mouse.get_pos()[0] / (globs.res_size[0] / globs.SIZE[0]),
             pygame.mouse.get_pos()[1] / (globs.res_size[1] / globs.SIZE[1]))
+
+
+def set_anchor_point(rect, pos, anchor):
+    if anchor == "midtop":
+        rect.midtop = pos
+    elif anchor == "midbottom":
+        rect.midbottom = pos
+    elif anchor == "midleft":
+        rect.midleft = pos
+    elif anchor == "midright":
+        rect.midright = pos
+    elif anchor == "topleft":
+        rect.topleft = pos
+    elif anchor == "topright":
+        rect.topright = pos
+    elif anchor == "bottomleft":
+        rect.bottomleft = pos
+    elif anchor == "bottomright":
+        rect.bottomright = pos
+    elif anchor == "center":
+        rect.center = pos

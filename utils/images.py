@@ -129,9 +129,7 @@ class Texture:
 
 pygame.display.init()
 Elia03_texture = pygame.image.load(tex_dir + "3lia03.png").convert_alpha()
-num_1_texture = pygame.image.load(tex_dir + "1.png").convert_alpha()
-num_2_texture = pygame.image.load(tex_dir + "2.png").convert_alpha()
-num_3_texture = pygame.image.load(tex_dir + "3.png").convert_alpha()
+background_menu_texture = pygame.image.load(tex_dir + "background_menu.png").convert_alpha()
 background_texture = pygame.image.load(tex_dir + "background.png").convert_alpha()
 bow_texture = pygame.image.load(tex_dir + "bow.png").convert_alpha()
 brick_texture = pygame.image.load(tex_dir + "brick.png").convert_alpha()

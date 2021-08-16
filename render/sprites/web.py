@@ -1,7 +1,7 @@
 import pygame
 
 from utils.images import web_texture
-from utils.__init__ import relToAbs, rta_dual, absToRel
+from utils.__init__ import rta_height, rta_dual, atr_height
 
 
 class Web(pygame.sprite.Sprite):
@@ -14,11 +14,11 @@ class Web(pygame.sprite.Sprite):
         self.relposx = self.relposy = 0.0
 
     def summon(self):
-        self.relposx = round(number=(round((absToRel(pygame.mouse.get_pos()[0]) - 0.05) / 0.1) * 0.1), ndigits=1)
-        self.relposy = round(number=(round((absToRel(pygame.mouse.get_pos()[1]) - 0.05) / 0.1) * 0.1), ndigits=1)
+        self.relposx = round(number=(round((atr_height(pygame.mouse.get_pos()[0]) - 0.05) / 0.1) * 0.1), ndigits=1)
+        self.relposy = round(number=(round((atr_height(pygame.mouse.get_pos()[1]) - 0.05) / 0.1) * 0.1), ndigits=1)
 
     def update(self):
-        self.rect.x, self.rect.y = relToAbs(self.relposx), relToAbs(self.relposy)
+        self.rect.x, self.rect.y = rta_height(self.relposx), rta_height(self.relposy)
 
     def resize(self):
         self.image = pygame.transform.scale(self.original_image, (rta_dual(0.1, 0.1)))

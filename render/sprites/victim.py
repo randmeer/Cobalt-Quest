@@ -5,7 +5,7 @@ import pygame
 
 from utils import globs, __init__
 from utils.images import damage_texture, ichkeksi_texture
-from utils.__init__ import absToRel, relToAbs, rta_dual
+from utils.__init__ import atr_height, rta_height, rta_dual
 
 # noinspection DuplicatedCode
 class Victim(pygame.sprite.Sprite):
@@ -20,7 +20,7 @@ class Victim(pygame.sprite.Sprite):
         self.rect.center = (-100, -100)
         self.direction = random.randint(1, 4)
         self.onscreen = True
-        self.velocity = globs.difficulty
+        self.velocity = globs.savegame
         self.health = globs.victimhealthpointsmax
         self.breakcooldown = 0
         self.relposx = self.relposy = 0
@@ -31,27 +31,27 @@ class Victim(pygame.sprite.Sprite):
     def summon():
         self = Victim()
         if self.onscreen:
-            position = random.randint(relToAbs(0.1), relToAbs(0.9))
+            position = random.randint(rta_height(0.1), rta_height(0.9))
 
             if self.direction == 1:
-                self.rect.center = (position, relToAbs(0.1) * -1)
-                self.relposx = absToRel(position - relToAbs(0.05))
-                self.relposy = absToRel(relToAbs(0.1) * -1 - relToAbs(0.05))
+                self.rect.center = (position, rta_height(0.1) * -1)
+                self.relposx = atr_height(position - rta_height(0.05))
+                self.relposy = atr_height(rta_height(0.1) * -1 - rta_height(0.05))
 
             elif self.direction == 3:
-                self.rect.center = (position, relToAbs(1.1))
-                self.relposx = absToRel(position - relToAbs(0.05))
-                self.relposy = absToRel(relToAbs(1.1) - relToAbs(0.05))
+                self.rect.center = (position, rta_height(1.1))
+                self.relposx = atr_height(position - rta_height(0.05))
+                self.relposy = atr_height(rta_height(1.1) - rta_height(0.05))
 
             elif self.direction == 2:
-                self.rect.center = (relToAbs(1.1), position)
-                self.relposx = absToRel(relToAbs(1.1) - relToAbs(0.05))
-                self.relposy = absToRel(position - relToAbs(0.05))
+                self.rect.center = (rta_height(1.1), position)
+                self.relposx = atr_height(rta_height(1.1) - rta_height(0.05))
+                self.relposy = atr_height(position - rta_height(0.05))
 
             elif self.direction == 4:
-                self.rect.center = (relToAbs(0.1) * -1, position)
-                self.relposx = absToRel(relToAbs(0.1) * -1 - relToAbs(0.05))
-                self.relposy = absToRel(position - relToAbs(0.05))
+                self.rect.center = (rta_height(0.1) * -1, position)
+                self.relposx = atr_height(rta_height(0.1) * -1 - rta_height(0.05))
+                self.relposy = atr_height(position - rta_height(0.05))
         return self
 
     def update(self, player, click, webgroup, delta_time):
@@ -67,7 +67,7 @@ class Victim(pygame.sprite.Sprite):
                     collideweb.kill()
                     self.breakcooldown = 0
                 self.breakcooldown += 1
-                self.velocity = 0.05 * delta_time * globs.difficulty
+                self.velocity = 0.05 * delta_time * globs.savegame
             else:
                 self.velocity = 0.1 * delta_time
 
@@ -83,10 +83,10 @@ class Victim(pygame.sprite.Sprite):
             elif self.direction == 4:
                 self.relposx += self.velocity
 
-            self.rect.x, self.rect.y = relToAbs(self.relposx), relToAbs(self.relposy)
+            self.rect.x, self.rect.y = rta_height(self.relposx), rta_height(self.relposy)
 
-            if self.rect.centerx > relToAbs(1.1) or self.rect.centerx < relToAbs(
-                    0.1) * -1 or self.rect.centery > relToAbs(1.1) or self.rect.centery < relToAbs(0.1) * -1:
+            if self.rect.centerx > rta_height(1.1) or self.rect.centerx < rta_height(
+                    0.1) * -1 or self.rect.centery > rta_height(1.1) or self.rect.centery < rta_height(0.1) * -1:
                 self.kill()
                 self.rect = None
                 self.onscreen = False
@@ -99,7 +99,7 @@ class Victim(pygame.sprite.Sprite):
                 self.image = pygame.transform.scale(ichkeksi_texture, (rta_dual(0.1, 0.1)))
                 self.damage_animation_cooldown -= 100 * delta_time
 
-            if click and collidemouse and collidereach <= relToAbs(player.reach):
+            if click and collidemouse and collidereach <= rta_height(player.reach):
                 self.damage_animation_cooldown = 5
                 surface = pygame.transform.scale(ichkeksi_texture, (rta_dual(0.1, 0.1)))
                 surface.blit(pygame.transform.scale(damage_texture, (rta_dual(0.1, 0.1))), (0, 0))

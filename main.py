@@ -3,6 +3,17 @@ import pygame
 import utils
 from utils import globs, rndebug
 
+"""
+How the File Sytem works:
+
+The logic folder contains scripts chaning the state of the game.
+The render folder contains scripts displaying the state of the game.
+The utils folder contains useful functions used by multiple scripts in different folders.
+The resources folder contains non-script files and read by logic scripts.
+The data folder contains non-script files and is read and written by scripts.
+main.py is the script initializing and supervising all the action
+"""
+
 
 if __name__ == '__main__':
     pygame.freetype.init()
@@ -20,8 +31,8 @@ if __name__ == '__main__':
     window = utils.setupWindow()
     clock = pygame.time.Clock()
 
-    from gui import title_screen, menu, level_selection
-    from gui.level import LevelTemplate
+    from logic.gui import menu, title_screen, map
+    from logic.gui.level import FloorTemplate
 
     # main game loop
     run = True
@@ -44,9 +55,9 @@ if __name__ == '__main__':
         elif globs.menu:
             menu.showMenu(window=window)
         elif globs.level_selection:
-            level_selection.showLevelSelection(window=window)
+            map.showLevelSelection(window=window)
         elif globs.level1:
-            level = LevelTemplate(window=window)
+            level = FloorTemplate(window=window)
             level.start_loop()
         elif globs.rndebug:
             rndebug.showRNDebug()

@@ -1,10 +1,9 @@
 from math import pi, atan2
-
 import pygame
 
 from utils.images import rande_texture, Elia03_texture, empty_texture
 from render.sprites.entity import entity
-from utils.__init__ import getSetting, relToAbs
+from utils import getSetting, rta_dual_height
 
 
 # noinspection DuplicatedCode
@@ -40,7 +39,7 @@ class Player(entity):
         self.skin = getSetting('skin')
         if self.skin == '3lia03':
             self.original_image = pygame.Surface.convert_alpha(
-                pygame.transform.scale(Elia03_texture, (relToAbs(0.1), relToAbs(0.1))))
+                pygame.transform.scale(Elia03_texture, rta_dual_height(0.1, 0.1)))
         elif self.skin == 'Rande':
             self.original_image = pygame.Surface.convert_alpha(
-                pygame.transform.scale(rande_texture, (relToAbs(0.1), relToAbs(0.1))))
+                pygame.transform.scale(rande_texture, rta_dual_height(0.1, 0.1)))
