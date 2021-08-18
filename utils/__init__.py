@@ -1,28 +1,34 @@
 import json
 import pygame
 import pygame.freetype
-import pygame.freetype
+import QuickJSON
 from utils import globs
 
+settings = QuickJSON.QJSON("./data/settings.json")
 
-def write_json(data, name):
-    with open(f'{name}.json', 'w') as json_file:
-        json.dump(data, json_file, indent=2)
 
-def read_json(path):
-    with open(path, 'r') as fr:
-        data = json.loads(fr.read())
-    return data
+#def write_json(data, name):
+#    with open(f'{name}.json', 'w') as json_file:
+#        json.dump(data, json_file, indent=2)
+#
+#def read_json(path):
+#    with open(path, 'r') as fr:
+#        data = json.loads(fr.read())
+#    return data
 
-def getSetting(setting):
-    settings = read_json('./data/settings.json')
+def set_setting(setting, value):
+    settings[setting] = value
+    settings.save()
+
+def get_setting(setting):
+    settings.load()
     return settings[setting]
 
 
 def set_resolution():
-    aspect_ratio = getSetting('aspect_ratio')
-    resolution = getSetting('resolution')
-    fullscreen = getSetting('fullscreen')
+    aspect_ratio = get_setting('aspect_ratio')
+    resolution = get_setting('resolution')
+    fullscreen = get_setting('fullscreen')
     if aspect_ratio == "16to9":
         globs.res = globs.RES_16TO9[resolution]
     elif aspect_ratio == "16to10":
@@ -33,6 +39,7 @@ def set_resolution():
     globs.res_size = globs.res[0]
     globs.res_name = globs.res[1]
     print("RESOLUTION: " + str(globs.res))
+
 
 class DefaultError(Exception):
     def __init__(self, errmsg='unknown error has occured'):
@@ -85,11 +92,11 @@ def atr_dual_width(input_x, input_y):
     return output_x, output_y
 
 
-def setGlobalDefaults():
-    globs.quitgame = globs.exittomenu = globs.titlescreen = globs.menu = globs.level_selection = globs.rndebug = globs.level1 = False
+def set_global_defaults():
+    globs.quitgame = globs.exittomenu = globs.titlescreen = globs.menu = globs.map = globs.rndebug = globs.dungeon = False
 
 
-def setGameDefaults():
+def set_game_defaults():
     pass
     # globs.victimbreakcooldownmax = 500 - 100 * globs.difficulty
     #
@@ -119,7 +126,7 @@ def setGameDefaults():
     # globs.webcounter = 0
 
 
-def setupWindow():
+def setup_window():
     pygame.display.quit()
     pygame.display.init()
     pygame.display.set_caption(f"Cobalt Quest {globs.VERSION}")
@@ -131,7 +138,7 @@ def setupWindow():
     return window
 
 
-def renderText(window, text, position, color, size=5, antialiased=False, vertical=False, font="game"):
+def render_text(window, text, pos, color, size=5, antialiased=False, vertical=False, font="game"):
     if font == "game":
         f = pygame.freetype.Font("./resources/fonts/PortableVengeance.ttf", size)
     elif font == "debug":
@@ -141,10 +148,10 @@ def renderText(window, text, position, color, size=5, antialiased=False, vertica
     # px * .75 = pt (example: 8px is equivalent to 6pt)
     f.antialiased = antialiased
     f.vertical = vertical
-    f.render_to(surf=window, dest=position, text=text, fgcolor=color)
+    f.render_to(surf=window, dest=pos, text=text, fgcolor=color)
 
 
-def getTextRect(text, size=5, font="game"):
+def get_text_rect(text, size=5, font="game"):
     if font == "game":
         f = pygame.freetype.Font("./resources/fonts/PortableVengeance.ttf", size)
     elif font == "debug":
@@ -152,15 +159,15 @@ def getTextRect(text, size=5, font="game"):
     return f.get_rect(text=text)
 
 
-def gradientRect(width, height, left_colour, right_color):
+def gradient_rect(width, height, colors):
     color_rect = pygame.Surface((2, 2))
-    pygame.draw.line(color_rect, left_colour, (0, 0), (0, 1))
-    pygame.draw.line(color_rect, right_color, (1, 0), (1, 1))
+    pygame.draw.line(color_rect, colors[0], (0, 0), (0, 1))
+    pygame.draw.line(color_rect, colors[1], (1, 0), (1, 1))
     color_rect = pygame.transform.smoothscale(color_rect, (width, height))
     return color_rect
 
 
-def playSound(sound):
+def play_sound(sound):
     if sound == 'click':
         pygame.mixer.Channel(1).play(pygame.mixer.Sound("./resources/sounds/click.wav"))
     elif sound == 'hit':
@@ -175,9 +182,11 @@ def playSound(sound):
         pygame.mixer.Channel(3).play(pygame.mixer.Sound("./resources/sounds/victory.wav"))
     elif sound == 'defeat':
         pygame.mixer.Channel(3).play(pygame.mixer.Sound("./resources/sounds/defeat.wav"))
-    pygame.mixer.Channel(1).set_volume(getSetting('volume') / 10)
-    pygame.mixer.Channel(2).set_volume(getSetting('volume') / 10)
-    pygame.mixer.Channel(3).set_volume(getSetting('volume') / 10)
+    elif sound == 'alert':
+        pygame.mixer.Channel(2).play(pygame.mixer.Sound("./resources/sounds/hurt.wav"))
+    pygame.mixer.Channel(1).set_volume(get_setting('volume') / 10)
+    pygame.mixer.Channel(2).set_volume(get_setting('volume') / 10)
+    pygame.mixer.Channel(3).set_volume(get_setting('volume') / 10)
 
 
 def play_music(music):
@@ -218,3 +227,45 @@ def set_anchor_point(rect, pos, anchor):
         rect.bottomright = pos
     elif anchor == "center":
         rect.center = pos
+
+
+def draw_outline_mask(surface, img, loc, thickness=1, color=(255, 255, 255)):
+    mask = pygame.mask.from_surface(img)
+    mask_outline = mask.outline()
+    n = 0
+    for point in mask_outline:
+        mask_outline[n] = (point[0] + loc[0], point[1] + loc[1])
+        n += 1
+    pygame.draw.polygon(surface, color, mask_outline, thickness)
+
+def get_outline_mask(img, thickness=1, color=(255, 255, 255)):
+    surface = pygame.Surface((img.get_width(), img.get_height()), pygame.SRCALPHA)
+    mask = pygame.mask.from_surface(img)
+    mask_outline = mask.outline()
+    n = 0
+    for point in mask_outline:
+        mask_outline[n] = (point[0], point[1])
+        n += 1
+    pygame.draw.polygon(surface, color, mask_outline, thickness)
+    return surface
+
+def perfect_outline(surface, img, loc):
+    mask = pygame.mask.from_surface(img)
+    mask_surf = mask.to_surface()
+    mask_surf.set_colorkey((0, 0, 0))
+    surface.blit(mask_surf, (loc[0] - 1, loc[1]))
+    surface.blit(mask_surf, (loc[0] + 1, loc[1]))
+    surface.blit(mask_surf, (loc[0], loc[1] - 1))
+    surface.blit(mask_surf, (loc[0], loc[1] + 1))
+
+def perfect_outline_2(surface, img, loc):
+    mask = pygame.mask.from_surface(img)
+    mask_outline = mask.outline()
+    mask_surf = pygame.Surface(img.get_size())
+    for pixel in mask_outline:
+        mask_surf.set_at(pixel, (255, 255, 255))
+    mask_surf.set_colorkey((0, 0, 0))
+    surface.blit(mask_surf, (loc[0] - 1, loc[1]))
+    surface.blit(mask_surf, (loc[0] + 1, loc[1]))
+    surface.blit(mask_surf, (loc[0], loc[1] - 1))
+    surface.blit(mask_surf, (loc[0], loc[1] + 1))

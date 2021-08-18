@@ -1,36 +1,20 @@
 import pygame
 
-from utils import globs, setGlobalDefaults, playSound
-from utils.images import background_menu_texture, logo_texture
+from utils import globs, set_global_defaults, play_sound
+from utils.images import bg_gui_tx
 from render import gui
-from render.elements import image, label
+from render.elements import label
 
 
-def showTitleScreen(window):
-    print("TITLE SCREEN START")
-    setGlobalDefaults()
-    rndebugAccess = 0
+def show_title_screen(window):
+    print("    TITLE SCREEN START")
+    set_global_defaults()
 
-    title_screen = gui.GUI(
-        background=background_menu_texture, overlay=192,
+    title_screen_gui = gui.GUI(
+        background=bg_gui_tx, overlay=192,
         labels=[
-            label.Label(text="PRESS ANY KEY TO START", relpos=(0.5, 0.5), anchor="center", textcolor=(255, 255, 255))])
-
-    #def draw():
-    #    og_surface = pygame.Surface(globs.SIZE)
-    #    og_surface.blit(background_texture, (0, 0))
-    #    og_surface.blit(logo_texture, (og_surface.get_width()/2-logo_texture.get_width()/2, og_surface.get_height()/2-logo_texture.get_height()/2))
-    #    version_rect = utils.getTextRect(f"v {globs.VERSION}", font="debug", size=10)
-    #    version_rect.bottomleft = utils.rta_dual_height(0.02, 0.98)
-    #    studio_rect = utils.getTextRect("Rande Studios", font="debug", size=10)
-    #    studio_rect.bottomright = (utils.rta_width(1) - utils.rta_height(0.02), utils.rta_height(0.98))
-    #    utils.renderText(og_surface, f"v {globs.VERSION}", version_rect, (16, 16, 16), font="debug", size=10)
-    #    utils.renderText(og_surface, "Rande Studios", studio_rect, (16, 16, 16), font="debug", size=10)
-    #    surface = pygame.transform.scale(og_surface, globs.res_size)
-    #    window.blit(surface, (0, 0))
-    #    pygame.display.update()
-    #draw()
-    title_screen.draw(window=window)
+            label.Label(text="PRESS ANY KEY TO START", relpos=(0.5, 0.5), anchor="center", color=(255, 255, 255))])
+    title_screen_gui.draw(window=window)
 
     clock = pygame.time.Clock()
     run = True
@@ -52,17 +36,5 @@ def showTitleScreen(window):
                 else:
                     globs.menu = True
                     run = False
-
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_r]:
-            rndebugAccess = rndebugAccess + 1
-        if not keys[pygame.K_r]:
-            rndebugAccess = 0
-
-        if rndebugAccess == 150:
-            print("ACCESS GRANTED")
-            globs.rndebug = True
-            run = False
-
-    playSound('click')
+    play_sound('click')
     print("TITLE SCREEN END")

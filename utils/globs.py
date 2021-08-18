@@ -1,4 +1,4 @@
-VERSION = "0.9.0"
+VERSION = "0.9.1"
 
 # VIDEO SETTINGS:
 SIZE = (256, 144)
@@ -53,8 +53,7 @@ fullscreen = False
 
 # settings that reset on startup
 # (plz dont change these the game will crash)
-quitgame = exittomenu = titlescreen = menu = level_selection = rndebug = level1 = None
-savegame = 1
+quitgame = exittomenu = titlescreen = menu = map = dungeon = dungeon_str = floor = floor_str = None
 
 # variables for the numbers pygame assigns to the keys. If you change these,
 # the keybinds change (so, dont)
@@ -71,7 +70,7 @@ RED = (255, 0, 0)
 # variables used for the gameplay
 victimbreakcooldownmax = 0
 victimhealthpointsmax = 32
-playerhealthpoints = int(48 / savegame)
+playerhealthpoints = 48
 victimspawns = victimskilled = victimsmissed = 0
 damagecooldown = maxcooldown = 0
 
@@ -80,3 +79,5 @@ tookdamage = False
 damagesum = 0
 
 skin = ''
+
+GRAYSHADES = [(235, 237, 233), (199, 207, 204), (168, 181, 178), (129, 151, 150), (87, 114, 119), (57, 74, 80), (32, 46, 55), (21, 29, 40), (16, 20, 31), (9, 10, 20)]

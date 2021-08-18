@@ -1,5 +1,5 @@
 import pygame
-from utils.__init__ import rta_dual, rta_height, renderText, rta_dual_height
+from utils.__init__ import rta_dual, rta_height, render_text, rta_dual_height
 
 class ProgressBar:
     def __init__(self, icon, maxvalue: int, colors: ((int, int, int), (int, int, int)), relsize: (float, float), relpos: (float, float), textanchor="left"):
@@ -19,7 +19,7 @@ class ProgressBar:
         self.surf.blit(self.passivesurf, ((self.value / self.maxvalue) * self.surf.get_width(), 0))
         self.image = pygame.Surface(rta_dual(self.relsize[0] + self.relsize[1]*1.5, self.relsize[1]), pygame.SRCALPHA)
         self.image.blit(self.surf, rta_dual(self.relsize[1]*1.5, 0))
-        renderText(self.image, str(self.value), (0, 0), (255, 255, 255), 5)
+        render_text(self.image, str(self.value), (0, 0), (255, 255, 255), 5)
         #self.image.blit(self.icon, rta_dual(self.relsize[1] * 2 - 0.0075, 0))
 
     def get(self):

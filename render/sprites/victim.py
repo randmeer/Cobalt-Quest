@@ -106,13 +106,13 @@ class Victim(pygame.sprite.Sprite):
                 self.image = surface
                 self.health -= 1
                 globs.damagesum += 1
-                __init__.playSound('hit')
+                __init__.play_sound('hit')
 
             if collideplayer and globs.damagecooldown >= globs.maxcooldown:
                 globs.playerhealthpoints -= 1
                 globs.damagecooldown = 0
                 player.tookdamage = True
-                __init__.playSound('hurt')
+                __init__.play_sound('hurt')
 
             if self.health == 0:
                 self.kill()

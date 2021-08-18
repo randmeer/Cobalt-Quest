@@ -1,13 +1,13 @@
 import pygame
 
-from utils import globs, mousepos, setGlobalDefaults, playSound
+from utils import globs, mousepos, set_global_defaults, play_sound
 from render.elements import button
 from render import gui
-from utils.images import background_menu_texture
+from utils.images import bg_tx
 
-def showLevelSelection(window):
-    print("LEVEL SELECTION START")
-    setGlobalDefaults()
+def show_map(window):
+    print("    LEVEL SELECTION START")
+    set_global_defaults()
 
     # create the lvl buttons and use a uneccessary compicated alorithm to align them in a 3x3 grid
     # TODO: replace this shit with a real map
@@ -17,11 +17,11 @@ def showLevelSelection(window):
         lvlrelposx = 0.05 + 0.31 * (i - ((int(i / 3)) * 3))
         if i == 3 or i == 6:
             lvlrelposy += 0.25
-        levelbutton = button.Button(relwidth=0.28, relheight=0.22, textcontent=f"LVL {i}", relpos=(lvlrelposx, lvlrelposy))
+        levelbutton = button.Button(relwidth=0.28, relheight=0.22, text=f"LVL {i}", relpos=(lvlrelposx, lvlrelposy))
         levelbuttons.append(levelbutton)
 
-    map = gui.GUI(background=background_menu_texture, overlay=128, buttons=[
-        button.Button(anchor="topleft", relwidth=0.4, relheight=0.1, textcontent="BACK TO MENU", relpos=(0.05, 0.05)),
+    map = gui.GUI(background=bg_tx, overlay=128, buttons=[
+        button.Button(anchor="topleft", relwidth=0.4, relheight=0.1, text="BACK TO MENU", relpos=(0.05, 0.05)),
         levelbuttons[0]
     ])
 
@@ -45,12 +45,12 @@ def showLevelSelection(window):
                         globs.menu = True
                     if map.buttongroup[1].rect.collidepoint(mp):
                         run = False
-                        globs.level1 = True
+                        globs.dungeon = True
+                        globs.dungeon_str = "northern_plains"
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False
                     globs.menu = True
         map.draw(window=window)
-        #draw()
-    playSound('click')
+    play_sound('click')
     print("LEVEL SELECTION END")

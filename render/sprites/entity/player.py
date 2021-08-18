@@ -3,7 +3,7 @@ import pygame
 
 from utils.images import rande_texture, Elia03_texture, empty_texture
 from render.sprites.entity import entity
-from utils import getSetting, rta_dual_height
+from utils import get_setting, rta_dual_height
 
 
 # noinspection DuplicatedCode
@@ -12,7 +12,7 @@ class Player(entity):
     def __init__(self):
 
         entity.__init__(self, original_image=empty_texture)
-        self.skin = getSetting('skin')
+        self.skin = get_setting('skin')
         self.update_skin()
 
     def update(self, webgroup, main_surface) -> None:
@@ -36,7 +36,7 @@ class Player(entity):
         self.render_image()
 
     def update_skin(self):
-        self.skin = getSetting('skin')
+        self.skin = get_setting('skin')
         if self.skin == '3lia03':
             self.original_image = pygame.Surface.convert_alpha(
                 pygame.transform.scale(Elia03_texture, rta_dual_height(0.1, 0.1)))

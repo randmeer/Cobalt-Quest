@@ -1,7 +1,7 @@
 import pygame
 
 import utils
-from utils import globs, rndebug
+from utils import globs
 
 """
 How the File Sytem works:
@@ -20,19 +20,19 @@ if __name__ == '__main__':
     pygame.mixer.init()
 
     # if music present play the music
-    if utils.getSetting('background_music'):
+    if utils.get_setting('background_music'):
         utils.play_music("menu")
-        pygame.mixer.music.set_volume(utils.getSetting('volume') / 10)
+        pygame.mixer.music.set_volume(utils.get_setting('volume') / 10)
 
-    utils.setGlobalDefaults()
+    utils.set_global_defaults()
     utils.set_resolution()
     globs.titlescreen = True
 
-    window = utils.setupWindow()
+    window = utils.setup_window()
     clock = pygame.time.Clock()
 
-    from logic.gui import menu, title_screen, map
-    from logic.gui.level import FloorTemplate
+    from logic.gui import menu, title_screen, map, dungeon
+    #from logic.floor import FloorTemplate
 
     # main game loop
     run = True
@@ -51,22 +51,18 @@ if __name__ == '__main__':
             run = False
             print("DETECTED ORDER TO QUIT GAME")
         elif globs.titlescreen:
-            title_screen.showTitleScreen(window=window)
+            title_screen.show_title_screen(window=window)
         elif globs.menu:
-            menu.showMenu(window=window)
-        elif globs.level_selection:
-            map.showLevelSelection(window=window)
-        elif globs.level1:
-            level = FloorTemplate(window=window)
-            level.start_loop()
-        elif globs.rndebug:
-            rndebug.showRNDebug()
+            menu.show_menu(window=window)
+        elif globs.map:
+            map.show_map(window=window)
+        elif globs.dungeon:
+            dungeon.show_dungeon(window=window, dungeon=globs.dungeon_str)
+            #level = FloorTemplate(window=window)
+            #level.start_loop()
         else:
             print("yeah so there is no current state u f**ked up")
-
-        print("CYCLED TROUGH CURRENT STATES")
+            run = False
         print("MAIN LOOP ROUND END")
-        print(" ")
 
-    print(" ")
     print("MAIN LOOP FULLY EXECUTED, PROGRAM END")

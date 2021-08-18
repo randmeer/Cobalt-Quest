@@ -3,13 +3,13 @@ from math import pi, atan2
 import pygame
 
 from utils import globs
-from utils.__init__ import getSetting, relToAbs, rta_dual
+from utils.__init__ import get_setting, relToAbs, rta_dual
 
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.skin = getSetting('skin')
+        self.skin = get_setting('skin')
         self.update_skin()
         self.image = self.original_image
         self.rect = self.image.get_rect()
@@ -68,7 +68,7 @@ class Player(pygame.sprite.Sprite):
         window.blit(self.image, self.rect)
 
     def update_skin(self):
-        self.skin = getSetting('skin')
+        self.skin = get_setting('skin')
         if self.skin == '3lia03':
             self.original_image = pygame.Surface.convert_alpha(
                 pygame.transform.scale(elia_texture, (relToAbs(0.1), relToAbs(0.1))))

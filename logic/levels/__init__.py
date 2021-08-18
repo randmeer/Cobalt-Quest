@@ -1,5 +1,5 @@
 import render.gui.level
-from render import camera
+from render import floor
 
 class BasicLevel(render.gui.level.FloorTemplate):
 
@@ -14,8 +14,8 @@ class BasicLevel(render.gui.level.FloorTemplate):
 
         self.camera = self.game_surface.get_rect()
         self.size = (self.lvl_width * 32, self.lvl_height * 32)
-        self.block_mask = camera.CameraScene(size=self.size, camera=self.camera)
-        self.entity_mask = camera.CameraScene(size=self.size, camera=self.camera)
+        self.block_mask = floor.CameraScene(size=self.size, camera=self.camera)
+        self.entity_mask = floor.CameraScene(size=self.size, camera=self.camera)
 
         self.render_blocks()
         self.render_entities()

@@ -25,7 +25,7 @@ class IngameGUI(pygame.sprite.Sprite):
         self.objectangle = pygame.Surface(rta_dual_height(0.725, 0.11), pygame.SRCALPHA)
         self.objectangle.fill((255, 255, 255))
         self.objectangle.set_alpha(75)
-        self.objectivelabel = label.Label(text="Objective: Complete GUI Class", anchor="topleft", reltextsize=0.04, relpos=(0.035, 0.035), textcolor=(255, 255, 255))
+        self.objectivelabel = label.Label(text="Objective: Complete GUI Class", anchor="topleft", reltextsize=0.04, relpos=(0.035, 0.035), color=(255, 255, 255))
         self.itemtextures = [dagger_texture,
                              cross_texture,
                              shuriken_texture,
@@ -49,7 +49,7 @@ class IngameGUI(pygame.sprite.Sprite):
         self.itemlabels = []
         for i in range(len(self.weapons)):
             if self.weapons[i][1] != -1:
-                self.itemlabels.append(label.Label(text=str(self.weapons[i][1]), anchor="topleft", reltextsize=0.04, relpos=(i * 0.045 + i * 0.025 + 0.005, 0.055), textcolor=(255, 255, 255)))
+                self.itemlabels.append(label.Label(text=str(self.weapons[i][1]), anchor="topleft", reltextsize=0.04, relpos=(i * 0.045 + i * 0.025 + 0.005, 0.055), color=(255, 255, 255)))
         if self.weapon >= len(self.rects):
             self.weapon = 0
         elif self.weapon < 0:

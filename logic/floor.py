@@ -1,9 +1,9 @@
 import time
 import pygame
 from utils import globs, mousepos
-from utils.images import background_texture
+from utils.images import bg_tx
 from render.sprites import gui
-from utils import setGlobalDefaults, setGameDefaults
+from utils import set_global_defaults, set_game_defaults
 from logic.gui.overlay import pause_screen
 
 # Template for handling game logic in a single floor of a dungeon
@@ -16,8 +16,8 @@ class FloorTemplate:
         """
         self.name = name
 
-        setGlobalDefaults()
-        setGameDefaults()
+        set_global_defaults()
+        set_game_defaults()
         self.window = window
         self.game_surface = pygame.Surface(globs.SIZE, pygame.SRCALPHA)
         self.guisprite = gui.IngameGUI()
@@ -132,7 +132,7 @@ class FloorTemplate:
         """
         renders the gui and game surface
         """
-        self.game_surface.blit(background_texture, (0, 0))
+        self.game_surface.blit(bg_tx, (0, 0))
         self.guisprite.draw(self.game_surface)
         surface = pygame.transform.scale(self.game_surface, globs.res_size)
         self.window.blit(surface, (0, 0))
@@ -141,20 +141,19 @@ class FloorTemplate:
         #                 position=relToAbsDual(0.92, 0.02),
         #                 color=globs.WHITE, size=relToAbs(0.048))
 
-
-        #self.window.blit(self.maptex.get(), (0, 0))
-        #self.window.blit(self.testsurf, (0, 0))
-        #self.window.blit(self.playerdowntex.get(), (500, self.testrun + 500))
-        #self.window.blit(self.playeruptex.get(), (500, 500 - self.testrun))
-        #self.window.blit(self.playerrighttex.get(), (self.testrun + 500, 500))
-        #self.window.blit(self.playerlefttex.get(), (500 - self.testrun, 500))
-        #self.window.blit(self.playeridletex.get(), (500, 500))
-        #self.window.blit(self.apprenticedowntex.get(), (500, int(self.testrun/2 + 500)))
-        #self.window.blit(self.apprenticeuptex.get(), (500, 500 - int(self.testrun/2)))
-        #self.window.blit(self.apprenticerighttex.get(), (int(self.testrun/2) + 500, 500))
-        #self.window.blit(self.apprenticelefttex.get(), (int(500 - self.testrun/2), 500))
-        #self.window.blit(self.apprenticeidletex.get(), (600, 500))
-        #self.window.blit(self.wielderdowntex.get(), (400, int(self.testrun/2 + 500)))
-        #self.window.blit(self.wielderuptex.get(), (400, 500 - int(self.testrun/2)))
-        #self.testrun += 2
+        # self.window.blit(self.maptex.get(), (0, 0))
+        # self.window.blit(self.testsurf, (0, 0))
+        # self.window.blit(self.playerdowntex.get(), (500, self.testrun + 500))
+        # self.window.blit(self.playeruptex.get(), (500, 500 - self.testrun))
+        # self.window.blit(self.playerrighttex.get(), (self.testrun + 500, 500))
+        # self.window.blit(self.playerlefttex.get(), (500 - self.testrun, 500))
+        # self.window.blit(self.playeridletex.get(), (500, 500))
+        # self.window.blit(self.apprenticedowntex.get(), (500, int(self.testrun/2 + 500)))
+        # self.window.blit(self.apprenticeuptex.get(), (500, 500 - int(self.testrun/2)))
+        # self.window.blit(self.apprenticerighttex.get(), (int(self.testrun/2) + 500, 500))
+        # self.window.blit(self.apprenticelefttex.get(), (int(500 - self.testrun/2), 500))
+        # self.window.blit(self.apprenticeidletex.get(), (600, 500))
+        # self.window.blit(self.wielderdowntex.get(), (400, int(self.testrun/2 + 500)))
+        # self.window.blit(self.wielderuptex.get(), (400, 500 - int(self.testrun/2)))
+        # self.testrun += 2
         pygame.display.update()
