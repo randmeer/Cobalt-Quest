@@ -3,15 +3,15 @@ import time
 import pygame
 
 from utils import globs, rta_height
-from utils.images import empty_texture, damage_texture
+from utils.images import empty_tx, damage_tx
 
 
-class entity(pygame.sprite.Sprite):
+class Entity(pygame.sprite.Sprite):
 
     def __init__(self, in_web_speed_multiplier=0.75, max_health=20, health=20, damage_overlay_on=True,
                  immune_to_web=False,
-                 damage_cooldown=20, damage=1, reach=20, relposy=0, relposx=0, position=(250, 250),
-                 velocity=None, original_image=empty_texture, rotation=0, auto_rotation=True, ghost=False):
+                 damage_cooldown=20, damage=1, reach=20, relposy=0, relposx=0, position=(0, 0),
+                 velocity=None, original_image=empty_tx, rotation=0, auto_rotation=True, ghost=False):
         pygame.sprite.Sprite.__init__(self)
 
         if velocity is None:
@@ -39,7 +39,7 @@ class entity(pygame.sprite.Sprite):
         self.damage_taken = 0
         self.last_move_time = time.time()
         self.rect = self.image.get_rect()
-        self.rect.center = (globs.height / 2, globs.height / 2)
+        self.rect.center = (0, 0)
 
     def move(self, webgroup, main_surf):
         w, h = main_surf.get_size()
@@ -72,7 +72,7 @@ class entity(pygame.sprite.Sprite):
 
     def render_image(self):
         if self.damage_overlay_on and self.hurt_animation_cooldown > 0:
-            self.original_image = damage_texture
+            self.original_image = damage_tx
         if self.auto_rotation:
             self.image = pygame.transform.rotate(self.original_image, int(self.rotation))
         else:

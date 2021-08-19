@@ -1,10 +1,10 @@
 import pygame
 
-from utils import globs, mousepos, set_global_defaults, play_sound
+from utils import globs, mousepos, set_global_defaults, play_sound, get_setting
 from render.elements import button, image, label
 from render import gui
 from utils.images import bg_gui_tx, logo_tx
-from logic.gui.overlay import show_settings
+from logic.gui.overlay import show_settings, alert
 
 
 def show_menu(window):
@@ -14,12 +14,12 @@ def show_menu(window):
     menu_gui = gui.GUI(
         background=bg_gui_tx, overlay=128,
         buttons=[
-            button.Button(anchor="topleft", relwidth=0.264, relheight=0.1, text="MAP", relpos=(0.225, 0.40)),
-            button.Button(anchor="topright", relwidth=0.264, relheight=0.1, text="SHOP", relpos=(0.775, 0.40)),
-            button.Button(anchor="topleft", relwidth=0.413, relheight=0.1, text="INVENTORY", relpos=(0.225, 0.525)),
-            button.Button(anchor="topright", relwidth=0.116, relheight=0.1, text="?", relpos=(0.775, 0.525)),
-            button.Button(anchor="topleft", relwidth=0.413, relheight=0.1, text="SETTINGS", relpos=(0.225, 0.65)),
-            button.Button(anchor="topright", relwidth=0.116, relheight=0.1, text="?", relpos=(0.775, 0.65))],
+            button.Button(tags=["map"], anchor="topleft", relsize=(0.264, 0.1), text="MAP", relpos=(0.225, 0.40)),
+            button.Button(tags=["shop"], anchor="topright", relsize=(0.264, 0.1), text="SHOP", relpos=(0.775, 0.40)),
+            button.Button(tags=["inventory"], anchor="topleft", relsize=(0.413, 0.1), text="INVENTORY", relpos=(0.225, 0.525)),
+            button.Button(tags=["unset1"], anchor="topright", relsize=(0.116, 0.1), text="?", relpos=(0.775, 0.525)),
+            button.Button(tags=["settings"], anchor="topleft", relsize=(0.413, 0.1), text="SETTINGS", relpos=(0.225, 0.65)),
+            button.Button(tags=["unset2"], anchor="topright", relsize=(0.116, 0.1), text="?", relpos=(0.775, 0.65))],
         images=[
             image.Image(relpos=(0.5, 0.2), anchor="center", image=logo_tx)],
         labels=[
@@ -30,8 +30,6 @@ def show_menu(window):
     run = True
     while run:
         clock.tick(60)
-        if globs.quitgame:
-            run = False
         mp = mousepos()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -39,15 +37,27 @@ def show_menu(window):
                 globs.quitgame = True
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == globs.LEFT:
-                    if menu_gui.buttongroup[0].rect.collidepoint(mp):
-                        run = False
-                        globs.map = True
-                    if menu_gui.buttongroup[4].rect.collidepoint(mp):
-                        show_settings(window=window, background=bg_gui_tx)
+                    for i in menu_gui.buttongroup:
+                        if i.rect.collidepoint(mp):
+                            if i.tags[0] == "map":
+                                if get_setting("current_savegame") == "":
+                                    alert(window, menu_gui.get_surface(), ["PLEASE SELECT A SAVEGAME FIRST"])
+                                else:
+                                    run = False
+                                    globs.map = True
+                            if i.tags[0] == "shop":
+                                alert(window, menu_gui.get_surface(), ["THE SHOP IS NOT AVAILABLE YET"])
+                            if i.tags[0] == "inventory":
+                                alert(window, menu_gui.get_surface(), ["THE INVENTORY IS NOT AVAILABLE YET"])
+                            if i.tags[0] == "settings":
+                                show_settings(window=window, background=bg_gui_tx)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False
                     globs.titlescreen = True
-        menu_gui.draw(window=window)
+        if globs.quitgame:
+            run = False
+        if run:
+            menu_gui.draw(window=window)
     play_sound('click')
     print("MENU END")

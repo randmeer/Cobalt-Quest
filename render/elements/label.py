@@ -13,8 +13,8 @@ class Label(pygame.sprite.Sprite):
 
     > textbox: call text_input() on keystroke
     """
-    def __init__(self, text, relpos, color=(globs.GRAYSHADES[0]), textsize=5, anchor="center", font="game", hoverevent=False,
-                 hovercolor=(globs.GRAYSHADES[0]), default_outlined=False, hoveroutlined=False, outlinecolor=(globs.GRAYSHADES[0]),
+    def __init__(self, text, relpos, color=(globs.GRAYSHADES[0]), textsize=5, anchor="center", font="game", h_event=False,
+                 h_color=(globs.GRAYSHADES[0]), default_outlined=False, h_outlined=False, outlinecolor=(globs.GRAYSHADES[0]),
                  visible=True, tags=None):
         pygame.sprite.Sprite.__init__(self)
         if tags is None:
@@ -23,8 +23,8 @@ class Label(pygame.sprite.Sprite):
             self.tags = tags
         self.text = text
         self.color = color
-        self.hovercolor = hovercolor
-        self.hoverevent = hoverevent
+        self.hovercolor = h_color
+        self.hoverevent = h_event
         self.textsize = textsize
         self.relpos = relpos
         self.anchor = anchor
@@ -33,7 +33,7 @@ class Label(pygame.sprite.Sprite):
         self.hoverbool = self.outlinebool = False
         self.visible = visible
         self.default_outlined = default_outlined
-        self.hoveroutlined = hoveroutlined
+        self.hoveroutlined = h_outlined
         self.outlinecolor = outlinecolor
         if not self.visible:
             self.visible = True

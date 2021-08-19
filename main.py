@@ -32,7 +32,7 @@ if __name__ == '__main__':
     clock = pygame.time.Clock()
 
     from logic.gui import menu, title_screen, map, dungeon
-    #from logic.floor import FloorTemplate
+    from logic.floor import Floor
 
     # main game loop
     run = True
@@ -60,6 +60,11 @@ if __name__ == '__main__':
             dungeon.show_dungeon(window=window, dungeon=globs.dungeon_str)
             #level = FloorTemplate(window=window)
             #level.start_loop()
+        elif globs.floor:
+            globs.floor_str = "entrance"
+            floor = Floor(window=window)
+            floor.load()
+            floor.start_loop()
         else:
             print("yeah so there is no current state u f**ked up")
             run = False

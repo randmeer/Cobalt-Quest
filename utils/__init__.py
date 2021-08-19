@@ -4,17 +4,8 @@ import pygame.freetype
 import QuickJSON
 from utils import globs
 
+
 settings = QuickJSON.QJSON("./data/settings.json")
-
-
-#def write_json(data, name):
-#    with open(f'{name}.json', 'w') as json_file:
-#        json.dump(data, json_file, indent=2)
-#
-#def read_json(path):
-#    with open(path, 'r') as fr:
-#        data = json.loads(fr.read())
-#    return data
 
 def set_setting(setting, value):
     settings[setting] = value
@@ -209,23 +200,23 @@ def mousepos():
 
 
 def set_anchor_point(rect, pos, anchor):
-    if anchor == "midtop":
+    if anchor == "midtop" or anchor == "mt":
         rect.midtop = pos
-    elif anchor == "midbottom":
+    elif anchor == "midbottom" or anchor == "mb":
         rect.midbottom = pos
-    elif anchor == "midleft":
+    elif anchor == "midleft" or anchor == "ml":
         rect.midleft = pos
-    elif anchor == "midright":
+    elif anchor == "midright" or anchor == "mr":
         rect.midright = pos
-    elif anchor == "topleft":
+    elif anchor == "topleft" or anchor == "tl":
         rect.topleft = pos
-    elif anchor == "topright":
+    elif anchor == "topright" or anchor == "tr":
         rect.topright = pos
-    elif anchor == "bottomleft":
+    elif anchor == "bottomleft" or anchor == "bl":
         rect.bottomleft = pos
-    elif anchor == "bottomright":
+    elif anchor == "bottomright" or anchor == "br":
         rect.bottomright = pos
-    elif anchor == "center":
+    elif anchor == "center" or anchor == "c":
         rect.center = pos
 
 

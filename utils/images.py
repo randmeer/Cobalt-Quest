@@ -195,6 +195,14 @@ map_dungeon_tx = {
     },
 }
 
+block_tx = {
+    "cobblestone": pygame.image.load(tex_dir + "cobblestone.png").convert_alpha()
+}
+
+
+scene_test_tx = pygame.image.load(tex_dir + "scene_test.png").convert_alpha()
+
+
 bg_gui_tx = pygame.image.load(tex_dir + "background_menu.png").convert_alpha()
 bg_tx = pygame.image.load(tex_dir + "background.png").convert_alpha()
 
@@ -203,7 +211,6 @@ bow_tx = pygame.image.load(tex_dir + "bow.png").convert_alpha()
 brick_tx = pygame.image.load(tex_dir + "brick.png").convert_alpha()
 broken_heart_tx = pygame.image.load(tex_dir + "broken_heart.png").convert_alpha()
 chest_tx = pygame.image.load(tex_dir + "chest.png").convert_alpha()
-cobblestone_tx = pygame.image.load(tex_dir + "cobblestone.png").convert_alpha()
 cross_tx = pygame.image.load(tex_dir + "cross.png").convert_alpha()
 crosshair_tx = pygame.image.load(tex_dir + "crosshair.png").convert_alpha()
 dagger_tx = pygame.image.load(tex_dir + "dagger.png").convert_alpha()

@@ -3,7 +3,8 @@ from math import pi, atan2
 import pygame
 
 from utils import globs
-from utils.__init__ import get_setting, relToAbs, rta_dual
+from utils import get_setting, rta_height, rta_dual
+from utils.images import damage_tx, rande_tx, Elia03_tx
 
 
 class Player(pygame.sprite.Sprite):
@@ -52,7 +53,7 @@ class Player(pygame.sprite.Sprite):
         if self.tookdamage:
             self.tookdamage = False
             self.hurtanimationcooldown = 10
-            self.original_image.blit(pygame.transform.scale(damage_image, (rta_dual(0.1, 0.1))), (0, 0))
+            self.original_image.blit(pygame.transform.scale(damage_tx, (rta_dual(0.1, 0.1))), (0, 0))
 
         self.image = pygame.transform.rotate(self.original_image, int(self.angle))
         self.rect = self.image.get_rect(center=self.position)
@@ -62,7 +63,7 @@ class Player(pygame.sprite.Sprite):
         else:
             self.update_skin()
 
-        self.rect.centerx, self.rect.centery = relToAbs(self.relposx), relToAbs(self.relposy)
+        self.rect.centerx, self.rect.centery = rta_height(self.relposx), rta_height(self.relposy)
 
     def draw(self, window):
         window.blit(self.image, self.rect)
@@ -71,7 +72,7 @@ class Player(pygame.sprite.Sprite):
         self.skin = get_setting('skin')
         if self.skin == '3lia03':
             self.original_image = pygame.Surface.convert_alpha(
-                pygame.transform.scale(elia_texture, (relToAbs(0.1), relToAbs(0.1))))
+                pygame.transform.scale(Elia03_tx, (rta_height(0.1), rta_height(0.1))))
         elif self.skin == 'Rande':
             self.original_image = pygame.Surface.convert_alpha(
-                pygame.transform.scale(rande_texture, (relToAbs(0.1), relToAbs(0.1))))
+                pygame.transform.scale(rande_tx, (rta_height(0.1), rta_height(0.1))))

@@ -1,6 +1,7 @@
 import pygame
 import QuickJSON
 import os
+import shutil
 
 from distutils.dir_util import copy_tree
 from utils import globs, play_sound, set_global_defaults, rta_dual, mousepos
@@ -14,9 +15,9 @@ def pause_screen(window, background):
     set_global_defaults()
 
     pause_gui = gui.GUI(background=background, overlay=128, buttons=[
-        button.Button(anchor="center", relwidth=0.4, relheight=0.1, text="RESUME", relpos=(0.5, 0.44)),
-        button.Button(anchor="center", relwidth=0.4, relheight=0.1, text="BAck TO MENU", relpos=(0.5, 0.62)),
-        button.Button(anchor="bottomright", relwidth=0.4, relheight=0.1, text="SETTINGS", relpos=(0.95, 0.95))])
+        button.Button(anchor="center", relsize=(0.4, 0.1), text="RESUME", relpos=(0.5, 0.44)),
+        button.Button(anchor="center", relsize=(0.4, 0.1), text="BAck TO MENU", relpos=(0.5, 0.62)),
+        button.Button(anchor="bottomright", relsize=(0.4, 0.1), text="SETTINGS", relpos=(0.95, 0.95))])
 
     clock = pygame.time.Clock()
     run = True
@@ -57,8 +58,8 @@ def end_screen(window, mainsurf, end):
     defeat = pygame.transform.scale(defeat_tx, (rta_dual(1, 1)))
     overlay = pygame.transform.scale(overlay_tx, (rta_dual(1, 1)))
     buttongroup = pygame.sprite.Group()
-    backtomenu_button = button.Button(relwidth=0.9, relheight=0.15, text="Back to Menu", relpos=(0.05, 0.44))
-    replay_button = button.Button(relwidth=0.9, relheight=0.15, text="Replay", relpos=(0.05, 0.62))
+    backtomenu_button = button.Button(relsize=(0.9, 0.15), text="Back to Menu", relpos=(0.05, 0.44))
+    replay_button = button.Button(relsize=(0.9, 0.15), text="Replay", relpos=(0.05, 0.62))
     buttongroup.add(backtomenu_button, replay_button)
     overlay.set_alpha(2)
     window.blit(overlay, (0, 0))
@@ -109,45 +110,79 @@ def end_screen(window, mainsurf, end):
         pygame.display.update()
     play_sound('click')
 
-
 def show_settings(window, background):
+    """
+    background should be the current view of the window, not scaled,
+    in order for the settings gui to look like it lays on top of the window
+    """
+    s = True
+    while s:
+        s = _show_settings(window=window, background=background)
+
+
+def _show_settings(window, background):
+    """
+    local function of show_settings
+    to re-run this function, call 'return True'
+    to exit this function, call 'return False'
+    """
+
+    # dear future self, have fun trying to understand this
     set_global_defaults()
     play_sound('click')
 
     settings = QuickJSON.QJSON("./data/settings.json")
     settings.load()
     saves = os.listdir("./data/savegames")
-
-    #
     labels = []
 
     # saves tab labels
     for i in range(len(saves)):
-        labels.append(label.Label(tags=["saves", "saveslist"], text=saves[i], relpos=(0.05, 0.2+0.05*i+0.02*i+0.1), anchor="topleft", color=globs.GRAYSHADES[1]))
-    labels.append(label.Label(tags=["saves", ""], text="SELECT SAVEGAME", relpos=(0.05, 0.2), anchor="topleft"))
-    labels.append(label.Label(tags=["saves", "createbutton"], text="CREATE NEW SAVEGAME", relpos=(0.5, 0.2), anchor="topleft", hoverevent=True, hovercolor=globs.GRAYSHADES[1]))
-    labels.append(label.Label(tags=["saves", "create", "input"], text="NAME: ", relpos=(0.5, 0.3), anchor="topleft", color=globs.GRAYSHADES[1], visible=False))
-    labels.append(label.Label(tags=["saves", "create", "savebutton"], text="CREATE", relpos=(0.5, 0.4), anchor="topleft", hoverevent=True, hovercolor=globs.GRAYSHADES[1], visible=False))
+        labels.append(label.Label(tags=["saves", "saveslist"], text=saves[i], relpos=(0.05, 0.2+0.05*i+0.02*i+0.1), anchor="topleft", color=globs.GRAYSHADES[2]))
+    if len(saves) == 0:
+        labels.append(label.Label(tags=["saves", "nosaves"], text="NO SAVES YET", relpos=(0.05, 0.2 + 0.05 * 0 + 0.02 * 0 + 0.1), anchor="topleft", color=globs.GRAYSHADES[1]))
+    labels.append(label.Label(tags=["saves", ""], text="SELECT SAVEGAME", relpos=(0.05, 0.2), anchor="topleft", color=globs.GRAYSHADES[0]))
+    labels.append(label.Label(tags=["saves", ""], text="CREATE NEW SAVEGAME", relpos=(0.5, 0.2), anchor="topleft", color=globs.GRAYSHADES[0]))
+    labels.append(label.Label(tags=["saves", "input"], text="NAME: ", relpos=(0.5, 0.3), anchor="topleft", color=globs.GRAYSHADES[2]))
+    labels.append(label.Label(tags=["saves", "create"], text="CREATE", relpos=(0.5, 0.4), anchor="topleft", h_event=True, h_color=globs.GRAYSHADES[4], color=globs.GRAYSHADES[2]))
+    labels.append(label.Label(tags=["saves", "delete"], text="DELETE SAVEGAME", relpos=(0.55, 0.6), anchor="topleft", h_event=True, h_color=globs.REDSHADES[3], color=globs.REDSHADES[2]))
+    labels.append(label.Label(tags=["saves", "unselect"], text="UNSELECT SAVEGAME", relpos=(0.55, 0.7), anchor="topleft", h_event=True, h_color=globs.GRAYSHADES[2], color=globs.GRAYSHADES[0]))
 
     # audio tab labels
+    labels.append(label.Label(tags=["audio"], text="VOLUME:", relpos=(0.05, 0.2), anchor="topleft"))
+    labels.append(label.Label(tags=["audio"], text="BACKGROUND MUSIC:", relpos=(0.05, 0.3), anchor="topleft"))
 
     # video tab labels
+    labels.append(label.Label(tags=["video"], text="RESOLUTION:", relpos=(0.05, 0.2), anchor="topleft"))
+    labels.append(label.Label(tags=["video"], text="ASPECT RATIO:", relpos=(0.05, 0.3), anchor="topleft"))
+    labels.append(label.Label(tags=["video"], text="PARTICLES:", relpos=(0.05, 0.4), anchor="topleft"))
+    labels.append(label.Label(tags=["video"], text="ASPECT RATIO:", relpos=(0.05, 0.3), anchor="topleft"))
 
-    settings_gui = gui.GUI(background=background, overlay=128, labels=labels, buttons=[
-        button.Button(anchor="center", relwidth=0.2, relheight=0.1, text="SAVES", relpos=(0.15, 0.1)),
-        button.Button(anchor="center", relwidth=0.2, relheight=0.1, text="AUDIO", relpos=(0.3875, 0.1)),
-        button.Button(anchor="center", relwidth=0.2, relheight=0.1, text="VIDEO", relpos=(0.6135, 0.1)),
-        button.Button(anchor="center", relwidth=0.2, relheight=0.1, text="TAB XY", relpos=(0.85, 0.1)),
-        button.Button(anchor="bottomright", relwidth=0.4, relheight=0.1, text="SAVE AND RETURN", relpos=(0.95, 0.95))])
+    # general tab labels
+    labels.append(label.Label(tags=["general"], text="RELOAD SETTINGS GUI", relpos=(0.05, 0.2), anchor="topleft"))
+
+    settings_gui = gui.GUI(background=background, overlay=200, labels=labels, buttons=[
+        button.Button(tags=["saves", ""], anchor="center", relsize=(0.2, 0.1), text="SAVES", relpos=(0.15, 0.1)),
+        button.Button(tags=["audio", ""], anchor="center", relsize=(0.2, 0.1), text="AUDIO", relpos=(0.3875, 0.1)),
+        button.Button(tags=["video", ""], anchor="center", relsize=(0.2, 0.1), text="VIDEO", relpos=(0.6135, 0.1)),
+        button.Button(tags=["general", ""], anchor="center", relsize=(0.2, 0.1), text="GENERAL", relpos=(0.85, 0.1)),
+        button.Button(tags=["", ""], anchor="bottomright", relsize=(0.4, 0.1), text="SAVE AND RETURN", relpos=(0.95, 0.95))])
 
     settings_gui.buttongroup[0].set_pressed(press=True)
     for i in settings_gui.labelgroup:
         if i.tags[0] == "saves" and i.text == settings["current_savegame"]:
             i.set_outline(outline=True)
-    current_tab = "SAVES"
+    current_tab = "saves"
 
-    clock = pygame.time.Clock()
+    def set_current_tab():
+        for i in settings_gui.labelgroup:
+            i.set_visible(visible=True)
+            if i.tags[0] != current_tab:
+                i.set_visible(visible=False)
+    set_current_tab()
+
     run = True
+    clock = pygame.time.Clock()
     while run:
         clock.tick(60)
         mp = mousepos()
@@ -165,11 +200,8 @@ def show_settings(window, background):
                             for j in range(4):
                                 settings_gui.buttongroup[j].set_pressed(press=False)
                             settings_gui.buttongroup[i].set_pressed(press=True)
-                            current_tab = settings_gui.buttongroup[i].text.lower()
-                            for j in settings_gui.labelgroup:
-                                j.set_visible(visible=True)
-                                if j.tags[0] != current_tab:
-                                    j.set_visible(visible=False)
+                            current_tab = settings_gui.buttongroup[i].tags[0]
+                            set_current_tab()
                             play_sound('click')
                     # label click events
                     for i in settings_gui.labelgroup:
@@ -183,50 +215,70 @@ def show_settings(window, background):
                                     i.set_outline(outline=True)
                                     settings["current_savegame"] = i.text
                                     play_sound('click')
-                                # clicked label is saves.createbutton
-                                if i.tags[0] == "saves" and i.tags[1] == "createbutton":
+                                # clicked label is saves.unselect
+                                if i.tags[0] == "saves" and i.tags[1] == "unselect":
+                                    settings["current_savegame"] = ""
+                                    settings.save()
+                                    return True
+
+                                # clicked label is saves.create
+                                if i.tags[0] == "saves" and i.tags[1] == "create":
                                     for j in settings_gui.labelgroup:
-                                        if j.tags[0] == "saves" and j.tags[1] == "create":
-                                            j.set_visible(visible=True)
-                                    play_sound('click')
-                                # clicked label is saves.create.savebutton
-                                if i.tags[0] == "saves" and i.tags[1] == "create" and i.tags[2] == "savebutton":
-                                    print("savebutton")
-                                    for j in settings_gui.labelgroup:
-                                        if j.tags[0] == "saves" and j.tags[1] == "create" and j.tags[2] == "input":
+                                        if j.tags[0] == "saves" and j.tags[1] == "input":
                                             if j.text != "NAME: ":
-                                                copy_tree("./resources/dungeons", f"./data/savegames/{j.text[6:]}")
+                                                copy_tree("./resources/savegame_template", f"./data/savegames/{j.text[6:]}")
                                                 settings["current_savegame"] = j.text[6:]
                                                 settings.save()
-                                                alert(window=window, background=settings_gui.get_surface(), message=[f"SUCCESSFULLY CREATED '{j.text[6:]}'.", "RE-ENTER SETTINGS TO", "SEE YOUR NEW SAVES LIST"])
-                                                run = False
-                                                show_settings(window=window, background=background)
+                                                alert(window=window, background=settings_gui.get_surface(), message=[f"SUCCESSFULLY CREATED '{j.text[6:]}'."])
+                                                return True
                                             else:
-                                                alert(window=window, background=settings_gui.get_surface(), message=["PLEASE INPUT A NAME FOR YOUR SAVEGAME"])
+                                                alert(window=window, background=settings_gui.get_surface(), message=["PLEASE INPUT A NAME", "FOR YOUR SAVEGAME FIRST"])
+
+                                # clicked label is saves.delete
+                                if i.tags[0] == "saves" and i.tags[1] == "delete":
+                                    if settings["current_savegame"] == "":
+                                        alert(window=window, background=settings_gui.get_surface(), message=["PLEASE SELECT A SAVEGAME FIRST"])
+                                    else:
+                                        del_bool = alert(window=window, background=settings_gui.get_surface(), question=True, question_keyword="DELETE", message=[f"ARE YOU SURE YOU WANT TO DELETE", f"THE SAVEGAME '{settings['current_savegame']}'"])
+                                        if del_bool:
+                                            shutil.rmtree(f"./data/savegames/{settings['current_savegame']}")
+                                            settings["current_savegame"] = ""
+                                            settings.save()
+                                            return True
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False
                 for i in settings_gui.labelgroup:
-                    if i.tags[0] == "saves" and i.tags[1] == "create" and i.tags[2] == "input":
+                    if i.tags[0] == "saves" and i.tags[1] == "input":
                         if i.visible:
                             key_str = pygame.key.name(event.key)
                             i.text_input(key_str=key_str, fix_chars=6, max_chars=16)
+        if globs.quitgame:
+            run = False
         if run:
             settings_gui.draw(window=window)
 
     settings.save()
     play_sound('click')
+    return False
 
 
-def alert(window, background, message, color=(0, 0, 0)):
+def alert(window, background, message, color=(0, 0, 0), question=False, question_keyword="OK"):
     set_global_defaults()
     play_sound('alert')
     labels = []
+    buttons = []
     for i in range(len(message)):
-        labels.append(label.Label(text=message[i], relpos=(0.5, 0.1*i+0.4-0.1*len(message)), anchor="center"))
+        labels.append(label.Label(text=message[i], relpos=(0.5, 0.1*i+0.5-0.1*len(message)), anchor="center"))
 
-    alert_gui = gui.GUI(background=background, overlay=200, labels=labels, overlaycolor=color,
-                        buttons=[button.Button(anchor="center", relwidth=0.1, relheight=0.1, text="OK", relpos=(0.5, 0.6))])
+    if question:
+        buttons.append(button.Button(anchor="center", relsize=(0.2, 0.1), text=question_keyword, relpos=(0.35, 0.6)))
+        buttons.append(button.Button(anchor="center", relsize=(0.2, 0.1), text="CANCEL", relpos=(0.65, 0.6)))
+    else:
+        buttons.append(button.Button(anchor="center", relsize=(0.1, 0.1), text="OK", relpos=(0.5, 0.6)))
+
+    alert_gui = gui.GUI(background=background, overlay=200, labels=labels, overlaycolor=color, buttons=buttons)
     alert_gui.draw(window=window)
     pygame.display.update()
     clock = pygame.time.Clock()
@@ -237,10 +289,17 @@ def alert(window, background, message, color=(0, 0, 0)):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-                globs.exittomenu = True
                 globs.quitgame = True
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == globs.LEFT:
                     if alert_gui.buttongroup[0].rect.collidepoint(mp):
                         run = False
+                        if question:
+                            play_sound('click')
+                            return True
+                    if question:
+                        if alert_gui.buttongroup[1].rect.collidepoint(mp):
+                            play_sound('click')
+                            return False
+        alert_gui.draw(window=window)
     play_sound('click')

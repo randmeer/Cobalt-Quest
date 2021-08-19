@@ -1,0 +1,12 @@
+{
+  "size": 20,
+  "blocks": [
+    {"block": "cobblestone", "pos": [-16, -16]},
+    {"block": "cobblestone", "pos": [16, 16]},
+    {"block": "cobblestone", "pos": [200, 100]}
+  ],
+  "entitys": [
+
+  ],
+  "player": [0, 0]
+}

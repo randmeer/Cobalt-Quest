@@ -3,20 +3,33 @@ from utils import globs, render_text, get_text_rect, gradient_rect, rta_dual, rt
 
 
 class Button(pygame.sprite.Sprite):
-    def __init__(self, relwidth, relheight, text, relpos, textcolor=(57, 74, 80), textsize=5, visible=True, border=1, textanchor="center", anchor="topleft", gradients=False, tag=None,
-                 bordergradientcolors=((255, 141, 141), (141, 187, 255)),       bordercolor=globs.GRAYSHADES[3],
+    def __init__(self, relsize, text, relpos, textcolor=(57, 74, 80), textsize=5, visible=True, border=1, textanchor="center", anchor="topleft", gradients=False, tags=None,
+                 bordergradientcolors=((255, 141, 141), (141, 187, 255)), bordercolor=globs.GRAYSHADES[3],
                  bordergradientcolors_hover=((255, 141, 141), (141, 187, 255)), bordercolor_hover=globs.GRAYSHADES[4],
                  bordergradientcolors_press=((255, 200, 200), (200, 200, 255)), bordercolor_press=globs.GRAYSHADES[1],
-                 innergradientcolors=((255, 141, 141), (141, 187, 255)),        innercolor=globs.GRAYSHADES[1],
-                 innergradientcolors_hover=((255, 141, 141), (141, 187, 255)),  innercolor_hover=globs.GRAYSHADES[2],
-                 innergradientcolors_press=((255, 200, 200), (200, 200, 255)),  innercolor_press=globs.GRAYSHADES[3]):
+                 innergradientcolors=((255, 141, 141), (141, 187, 255)), innercolor=globs.GRAYSHADES[1],
+                 innergradientcolors_hover=((255, 141, 141), (141, 187, 255)), innercolor_hover=globs.GRAYSHADES[2],
+                 innergradientcolors_press=((255, 200, 200), (200, 200, 255)), innercolor_press=globs.GRAYSHADES[3]):
         pygame.sprite.Sprite.__init__(self)
+        self.relw, self.relh = relsize[0], relsize[1]
+        self.relposx, self.relposy = relpos[0], relpos[1]
+        self.text = text
+        self.textcolor = textcolor
+        self.textanchor = textanchor
+        self.textsize = textsize
+        self.textrect = get_text_rect(text, textsize)
+        self.anchor = anchor
+        self.hover = self.press = False
+        self.visible = True
 
-        self.tag = tag
-        self.surface = pygame.Surface(rta_dual(relwidth, relheight))
-        self.hoversurface = pygame.Surface(rta_dual(relwidth, relheight))
-        self.presssurface = pygame.Surface(rta_dual(relwidth, relheight))
-        self.innerarea = pygame.Surface((rta_width(relwidth) - border * 2, rta_height(relheight) - border * 2))
+        if tags is None:
+            self.tags = []
+        else:
+            self.tags = tags
+        self.surface = pygame.Surface(rta_dual(self.relw, self.relh))
+        self.hoversurface = pygame.Surface(rta_dual(self.relw, self.relh))
+        self.presssurface = pygame.Surface(rta_dual(self.relw, self.relh))
+        self.innerarea = pygame.Surface((rta_width(self.relw) - border * 2, rta_height(self.relh) - border * 2))
 
         if gradients:
             self.surface.blit(gradient_rect(self.surface.get_width(), self.surface.get_height(), bordergradientcolors), (0, 0))
@@ -40,18 +53,8 @@ class Button(pygame.sprite.Sprite):
             self.presssurface.blit(self.innerarea, (border, border))
 
         self.image = self.surface
-        self.text = text
-        self.textcolor = textcolor
-        self.textsize = textsize
         self.rect = self.surface.get_rect()
-        self.relposx, self.relposy = relpos[0], relpos[1]
-        self.relwidth, self.relheight = relwidth, relheight
         self.rect.x, self.rect.y = rta_width(relpos[0]), rta_height(relpos[1])
-        self.textrect = get_text_rect(text, self.textsize)
-        self.textanchor = textanchor
-        self.anchor = anchor
-        self.hover = self.press = False
-        self.visible = True
         self.textanchorupdate()
 
     def textanchorupdate(self):
@@ -75,7 +78,7 @@ class Button(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         pos = rta_dual(self.relposx, self.relposy)
         set_anchor_point(self.rect, pos, self.anchor)
-        self.textsize = 5
+
         self.textrect = get_text_rect(self.text, self.textsize)
         self.textanchorupdate()
 
