@@ -11,12 +11,27 @@ class Block(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.block = block
         self.pos = pos
+        self.posx, self.posy = pos[0]*16, pos[1]*16
         self.image = block_tx[block]
         self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = (pos[0], pos[1])
+
+        # this converts the positions of the blocks from my system to something pygame can use
+        if self.posx < 0 and self.posy < 0:
+            pass
+        elif self.posx > 0 and self.posy < 0:
+            self.posx -= self.image.get_width()
+        elif self.posx > 0 and self.posy > 0:
+            self.posx -= self.image.get_width()
+            self.posy -= self.image.get_height()
+        elif self.posx < 0 and self.posy > 0:
+            self.posy -= self.image.get_height()
+
+        self.rect.x, self.rect.y = (self.posx, self.posy)
+        print(self.rect)
 
     def draw(self, surface):
         surface.blit(self.image, (self.rect.x+surface.get_width()/2, self.rect.y+surface.get_height()/2))
+        #print("drew block")
 
         # for i in range(len(blocks)):
         #     if self.type == blocks[i]:

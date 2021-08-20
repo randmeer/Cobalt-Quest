@@ -1,7 +1,9 @@
 import time
 import pygame
 import QuickJSON
-from utils import globs, mousepos, get_setting
+
+import utils
+from utils import globs, mousepos, get_setting, render_text, rta_dual
 from utils.images import bg_tx
 from render.sprites import gui
 from render import camera
@@ -41,6 +43,7 @@ class Floor:
         self.auto_render = True
         self.events = []
         self.scene = None
+        print("[Floor] initialized Floor")
 
     def load(self):
         """
@@ -50,12 +53,27 @@ class Floor:
         self.floorjson.load()
         self.sidelength = self.floorjson["size"] * 16 * 2
         self.player = player.Player(pos=(self.floorjson["player"][0], self.floorjson["player"][1]))
-        for i in self.floorjson["blocks"]:
-            self.blocks.append(block.Block(block=i["block"], pos=(i["pos"][0], i["pos"][1])))
+        test = list(self.floorjson["blocks"])
+        for i in range(self.floorjson["size"]*2):
+            for j in range(self.floorjson["size"]*2):
+                if test[i][j] != 0:
+                    x, y = j-self.floorjson["size"], i-self.floorjson["size"]
+                    if x < 0 and y < 0:
+                        pass
+                    elif x > 0 and y < 0:
+                        x += 1
+                    elif x > 0 and y > 0:
+                        x += 1
+                        y += 1
+                    elif x < 0 and y > 0:
+                        y += 1
+                    self.blocks.append(block.Block(block=test[i][j], pos=(x, y)))
+
         for i in self.floorjson["entitys"]:
             pass
         self.scene = camera.Scene(path=f"./data/savegames/{get_setting('current_savegame')}/dungeons/{globs.dungeon_str}/{globs.floor_str}.json", sidelength=self.sidelength)
-        self.scene.update(player_=self.player, blocks=self.blocks, entitys=self.entitys)
+        self.scene.camera.follow(target=self.player)
+        print("[Floor] loaded floor json")
 
     def save(self):
         self.floorjson.save()
@@ -81,6 +99,9 @@ class Floor:
 
         self.click = False
         mp = mousepos()
+
+        self.player.update(webgroup=[], scene=self.scene.surface)
+        self.scene.update(playerentity=self.player, blocks=self.blocks, entitys=self.entitys)
 
         self.events = list(pygame.event.get())
         for event in self.events:
@@ -142,14 +163,15 @@ class Floor:
         """
         renders the gui and game surface
         """
-        self.surface.blit(bg_tx, (0, 0))
-        self.scene.draw(self.surface)
-        self.guisprite.draw(self.surface)
-        surface = pygame.transform.scale(self.surface, globs.res_size)
+        if globs.debug:
+            surface = pygame.Surface(self.window.get_size())
+            surface.blit(pygame.transform.scale(bg_tx, self.window.get_size()), (0, 0))
+            self.scene.draw(surface)
+        else:
+            self.surface.blit(bg_tx, (0, 0))
+            self.scene.draw(self.surface)
+            self.guisprite.draw(self.surface)
+            render_text(window=self.surface, text=str(round(self.clock.get_fps())) + "", pos=rta_dual(0.92, 0.02), color=globs.WHITE)
+            surface = pygame.transform.scale(self.surface, globs.res_size)
         self.window.blit(surface, (0, 0))
-
-        # utils.renderText(window=game_surface, text=str(round(clock.get_fps())) + "",
-        #                 position=relToAbsDual(0.92, 0.02),
-        #                 color=globs.WHITE, size=relToAbs(0.048))
-
         pygame.display.update()

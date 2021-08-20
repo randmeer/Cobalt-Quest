@@ -31,7 +31,8 @@ class Entity(pygame.sprite.Sprite):
         self.in_web_speed_multiplier = in_web_speed_multiplier
         self.rotation = rotation
         self.auto_rotation = auto_rotation
-        self.speed = max(velocity)
+        #self.speed = max(velocity)
+        self.speed = 50
         self.ghost = ghost
 
         self.image = self.original_image
@@ -41,8 +42,8 @@ class Entity(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (0, 0)
 
-    def move(self, webgroup, main_surf):
-        w, h = main_surf.get_size()
+    def move(self, webgroup, scene):
+        w, h = scene.get_size()
         deltatime = time.time() - self.last_move_time
         self.last_move_time = time.time()
         speed_multiplier = 1 * deltatime
@@ -79,5 +80,6 @@ class Entity(pygame.sprite.Sprite):
             self.image = self.original_image
         self.rect = self.image.get_rect(center=self.position)
 
-    def draw(self, window):
-        window.blit(self.image, self.rect)
+    def draw(self, surface):
+        surface.blit(self.image, (self.rect.x+surface.get_width()/2, self.rect.y+surface.get_height()/2))
+        #print(self.rect.x, self.rect.y)

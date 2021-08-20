@@ -196,12 +196,10 @@ map_dungeon_tx = {
 }
 
 block_tx = {
-    "cobblestone": pygame.image.load(tex_dir + "cobblestone.png").convert_alpha()
+    1: pygame.image.load(tex_dir + "cobblestone.png").convert_alpha()
 }
 
-
-scene_test_tx = pygame.image.load(tex_dir + "scene_test.png").convert_alpha()
-
+scene_test_tx = pygame.image.load(tex_dir + "debug_scene.png").convert_alpha()
 
 bg_gui_tx = pygame.image.load(tex_dir + "background_menu.png").convert_alpha()
 bg_tx = pygame.image.load(tex_dir + "background.png").convert_alpha()
