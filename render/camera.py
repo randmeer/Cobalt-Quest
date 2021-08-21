@@ -60,7 +60,7 @@ class Scene:
         self.objects_toblit = self.camera.get_objects(objects=self.objects)
         self.objects_toblit.append(playerentity)
         self.objects = []
-        print("[Scene] updated Scene")
+        #print("[Scene] updated Scene")
 
     def draw(self, surface):
         self.surface = pygame.Surface((self.sidelength, self.sidelength), pygame.SRCALPHA)
@@ -78,5 +78,5 @@ class Scene:
         else:
             self.rect.center = (-self.camera.rect.centerx+surface.get_width()/2, -self.camera.rect.centery+surface.get_height()/2)
             surface.blit(self.surface, self.rect)
-        print("[Scene] drew Scene")
+        #print("[Scene] drew Scene")
 

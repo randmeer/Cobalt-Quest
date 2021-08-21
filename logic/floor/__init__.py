@@ -100,7 +100,8 @@ class Floor:
         self.click = False
         mp = mousepos()
 
-        self.player.update(webgroup=[], scene=self.scene.surface)
+        self.player.update(blocks=self.blocks, webgroup=[], scene=self.scene.surface)
+
         self.scene.update(playerentity=self.player, blocks=self.blocks, entitys=self.entitys)
 
         self.events = list(pygame.event.get())

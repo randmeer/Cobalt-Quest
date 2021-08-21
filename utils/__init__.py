@@ -219,6 +219,25 @@ def set_anchor_point(rect, pos, anchor):
     elif anchor == "center" or anchor == "c":
         rect.center = pos
 
+def dual_rect_anchor(rect1, rect2, anchor):
+    if anchor == "midtop" or anchor == "mt":
+        rect1.midtop = rect2.midtop
+    elif anchor == "midbottom" or anchor == "mb":
+        rect1.midbottom = rect2.midbottom
+    elif anchor == "midleft" or anchor == "ml":
+        rect1.midleft = rect2.midleft
+    elif anchor == "midright" or anchor == "mr":
+        rect1.midright = rect2.midright
+    elif anchor == "topleft" or anchor == "tl":
+        rect1.topleft = rect2.topleft
+    elif anchor == "topright" or anchor == "tr":
+        rect1.topright = rect2.topright
+    elif anchor == "bottomleft" or anchor == "bl":
+        rect1.bottomleft = rect2.bottomleft
+    elif anchor == "bottomright" or anchor == "br":
+        rect1.bottomright = rect2.bottomright
+    elif anchor == "center" or anchor == "c":
+        rect1.center = rect2.center
 
 def draw_outline_mask(surface, img, loc, thickness=1, color=(255, 255, 255)):
     mask = pygame.mask.from_surface(img)
