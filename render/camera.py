@@ -64,14 +64,14 @@ class Scene:
 
     def draw(self, surface):
         self.surface = pygame.Surface((self.sidelength, self.sidelength), pygame.SRCALPHA)
-        if globs.debug:
+        if globs.hard_debug:
             self.surface.blit(scene_test_tx, (0, 0))
 
         for i in self.objects_toblit:
             i.draw(surface=self.surface)
 
         self.rect = self.surface.get_rect()
-        if globs.debug:
+        if globs.hard_debug:
             self.rect.center = (0, 0)
             surf = pygame.transform.scale(self.surface, (surface.get_height(), surface.get_height()))
             surface.blit(surf, (0, 0))

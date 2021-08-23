@@ -10,7 +10,7 @@ from render import camera
 from utils import set_global_defaults, set_game_defaults
 from logic.gui.overlay import pause_screen
 from render.sprites import block
-from render.sprites.entity import player
+from render.sprites.entity import player, apprentice
 
 
 # Template for handling game logic in a single floor of a dungeon
@@ -24,12 +24,13 @@ class Floor:
         # self.name = name
 
         set_global_defaults()
-        #set_game_defaults()
+        # set_game_defaults()
         self.window = window
         self.surface = pygame.Surface(globs.SIZE, pygame.SRCALPHA)
         self.guisprite = gui.IngameGUI()
 
-        self.floorjson = QuickJSON.QJSON(path=f"./data/savegames/{get_setting('current_savegame')}/dungeons/{globs.dungeon_str}/{globs.floor_str}.json")
+        self.floorjson = QuickJSON.QJSON(
+            path=f"./data/savegames/{get_setting('current_savegame')}/dungeons/{globs.dungeon_str}/{globs.floor_str}.json")
         self.sidelength = 0
         self.blocks = []
         self.entitys = []
@@ -54,10 +55,10 @@ class Floor:
         self.sidelength = self.floorjson["size"] * 16 * 2
         self.player = player.Player(pos=(self.floorjson["player"][0], self.floorjson["player"][1]))
         test = list(self.floorjson["blocks"])
-        for i in range(self.floorjson["size"]*2):
-            for j in range(self.floorjson["size"]*2):
+        for i in range(self.floorjson["size"] * 2):
+            for j in range(self.floorjson["size"] * 2):
                 if test[i][j] != 0:
-                    x, y = j-self.floorjson["size"], i-self.floorjson["size"]
+                    x, y = j - self.floorjson["size"], i - self.floorjson["size"]
                     if x < 0 and y < 0:
                         pass
                     elif x > 0 and y < 0:
@@ -70,8 +71,12 @@ class Floor:
                     self.blocks.append(block.Block(block=test[i][j], pos=(x, y)))
 
         for i in self.floorjson["entitys"]:
-            pass
-        self.scene = camera.Scene(path=f"./data/savegames/{get_setting('current_savegame')}/dungeons/{globs.dungeon_str}/{globs.floor_str}.json", sidelength=self.sidelength)
+            if i[0] == "apprentice":
+                self.entitys.append(apprentice.Apprentice(pos=(i[1][0], i[1][1]), health=i[2], weapon=i[3]))
+                print("apprenticeeeee")
+        self.scene = camera.Scene(
+            path=f"./data/savegames/{get_setting('current_savegame')}/dungeons/{globs.dungeon_str}/{globs.floor_str}.json",
+            sidelength=self.sidelength)
         self.scene.camera.follow(target=self.player)
         print("[Floor] loaded floor json")
 
@@ -100,9 +105,11 @@ class Floor:
         self.click = False
         mp = mousepos()
 
-        self.player.update(blocks=self.blocks, webgroup=[], scene=self.scene.surface)
-
+        self.player.update(blocks=self.blocks, webs=[])
+        for i in self.entitys:
+            i.update(webs=[], blocks=self.blocks)
         self.scene.update(playerentity=self.player, blocks=self.blocks, entitys=self.entitys)
+        key = pygame.key.get_pressed()
 
         self.events = list(pygame.event.get())
         for event in self.events:
@@ -125,19 +132,22 @@ class Floor:
                 if event.key == pygame.K_ESCAPE:
                     pause_screen(window=self.window, background=self.surface)
                     self.resizeupdate = True
-                if event.key == pygame.K_e:
+                elif event.key == pygame.K_b:
+                    if key[pygame.K_F3]:
+                        globs.soft_debug = not globs.soft_debug
+                elif event.key == pygame.K_e:
                     pass
-                if event.key == pygame.K_1:
+                elif event.key == pygame.K_1:
                     self.guisprite.set_selectangle(0)
-                if event.key == pygame.K_2:
+                elif event.key == pygame.K_2:
                     self.guisprite.set_selectangle(1)
-                if event.key == pygame.K_3:
+                elif event.key == pygame.K_3:
                     self.guisprite.set_selectangle(2)
-                if event.key == pygame.K_4:
+                elif event.key == pygame.K_4:
                     self.guisprite.set_selectangle(3)
-                if event.key == pygame.K_5:
+                elif event.key == pygame.K_5:
                     self.guisprite.set_selectangle(4)
-                if event.key == pygame.K_6:
+                elif event.key == pygame.K_6:
                     self.guisprite.set_selectangle(5)
             # if event.type == pygame.VIDEORESIZE or self.resizeupdate:
             #     self.resizeupdate = False
@@ -164,7 +174,7 @@ class Floor:
         """
         renders the gui and game surface
         """
-        if globs.debug:
+        if globs.hard_debug:
             surface = pygame.Surface(self.window.get_size())
             surface.blit(pygame.transform.scale(bg_tx, self.window.get_size()), (0, 0))
             self.scene.draw(surface)
@@ -172,7 +182,8 @@ class Floor:
             self.surface.blit(bg_tx, (0, 0))
             self.scene.draw(self.surface)
             self.guisprite.draw(self.surface)
-            render_text(window=self.surface, text=str(round(self.clock.get_fps())) + "", pos=rta_dual(0.92, 0.02), color=globs.WHITE)
+            render_text(window=self.surface, text=str(round(self.clock.get_fps())) + "", pos=rta_dual(0.92, 0.02),
+                        color=globs.WHITE)
             surface = pygame.transform.scale(self.surface, globs.res_size)
         self.window.blit(surface, (0, 0))
         pygame.display.update()
