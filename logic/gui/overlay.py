@@ -4,7 +4,7 @@ import os
 import shutil
 
 from distutils.dir_util import copy_tree
-from utils import globs, play_sound, set_global_defaults, rta_dual, mousepos
+from utils import globs, play_sound, set_global_defaults, rta_dual, mp_screen
 from utils.images import overlay_tx, victory_tx, defeat_tx
 from render.elements import button, label
 from render import gui
@@ -23,7 +23,7 @@ def pause_screen(window, background):
     run = True
     while run:
         clock.tick(60)
-        mp = mousepos()
+        mp = mp_screen()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -185,7 +185,7 @@ def _show_settings(window, background):
     clock = pygame.time.Clock()
     while run:
         clock.tick(60)
-        mp = mousepos()
+        mp = mp_screen()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -285,7 +285,7 @@ def alert(window, background, message, color=(0, 0, 0), question=False, question
     run = True
     while run:
         clock.tick(60)
-        mp = mousepos()
+        mp = mp_screen()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False

@@ -1,8 +1,62 @@
-import json
+import random
 import pygame
 import pygame.freetype
 import QuickJSON
+import math
 from utils import globs
+
+# math utils
+
+def hypo(a, b):
+    """
+    right-angled triangle:
+    kathete a, kathete b --> hypothenuse c
+    """
+    c = math.sqrt(a ** 2 + b ** 2)
+    return c
+
+def angle_deg(p1, p2):
+    dx = p2[0] - p1[0]
+    dy = p2[1] - p1[1]
+    if dx == 0:
+        if dy == 0:
+            deg = 0
+        else:
+            deg = 0 if p1[1] > p2[1] else 180
+    elif dy == 0:
+        deg = 90 if p1[0] < p2[0] else 270
+    else:
+        deg = math.atan(dy / dx) / math.pi * 180
+        lowering = p1[1] < p2[1]
+        if (lowering and deg < 0) or (not lowering and deg > 0):
+            deg += 270
+        else:
+            deg += 90
+    return deg
+
+def conv_deg_rad(deg):
+    """
+    degrees --> radiants
+    """
+    rad = deg * math.pi / 180
+    return rad
+
+def sign(num):
+    """
+    positive value --> 1
+    negative value --> -1
+    zero --> 0
+    """
+    try:
+        return num / abs(num)
+    except ZeroDivisionError:
+        return 0
+
+def flip(num):
+    """
+    flips a values sign (+/-)
+    """
+    return 1 ^ num
 
 
 settings = QuickJSON.QJSON("./data/settings.json")
@@ -14,7 +68,6 @@ def set_setting(setting, value):
 def get_setting(setting):
     settings.load()
     return settings[setting]
-
 
 def set_resolution():
     aspect_ratio = get_setting('aspect_ratio')
@@ -159,6 +212,7 @@ def gradient_rect(width, height, colors):
 
 
 def play_sound(sound):
+    threshold = 10
     if sound == 'click':
         pygame.mixer.Channel(1).play(pygame.mixer.Sound("./resources/sounds/click.wav"))
     elif sound == 'hit':
@@ -175,9 +229,14 @@ def play_sound(sound):
         pygame.mixer.Channel(3).play(pygame.mixer.Sound("./resources/sounds/defeat.wav"))
     elif sound == 'alert':
         pygame.mixer.Channel(2).play(pygame.mixer.Sound("./resources/sounds/hurt.wav"))
-    pygame.mixer.Channel(1).set_volume(get_setting('volume') / 10)
-    pygame.mixer.Channel(2).set_volume(get_setting('volume') / 10)
-    pygame.mixer.Channel(3).set_volume(get_setting('volume') / 10)
+    elif sound == 'step':
+        if pygame.mixer.Channel(3).get_busy() == False:
+            num = random.randint(1, 5)
+            pygame.mixer.Channel(3).play(pygame.mixer.Sound("./resources/sounds/step" + str(num) + ".wav"))
+            threshold = 20
+    pygame.mixer.Channel(1).set_volume(get_setting('volume') / threshold)
+    pygame.mixer.Channel(2).set_volume(get_setting('volume') / threshold)
+    pygame.mixer.Channel(3).set_volume(get_setting('volume') / threshold)
 
 
 def play_music(music):
@@ -194,10 +253,21 @@ def check_collision(sprite1, sprite2):
         return False
 
 
-def mousepos():
+def mp_screen():
+    """
+    returns mouse position relative to the screen
+    (use for gui)
+    """
     return (pygame.mouse.get_pos()[0] / (globs.res_size[0] / globs.SIZE[0]),
             pygame.mouse.get_pos()[1] / (globs.res_size[1] / globs.SIZE[1]))
 
+def mp_scene(scene):
+    """
+    returns mouse position relative to the scene
+    (use for game mechanics)
+    """
+    mp = mp_screen()
+    return scene.camera.rect.centerx - globs.SIZE[0]/2 + mp[0], scene.camera.rect.centery - globs.SIZE[1]/2 + mp[1]
 
 def set_anchor_point(rect, pos, anchor):
     if anchor == "midtop" or anchor == "mt":

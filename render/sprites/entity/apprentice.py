@@ -8,7 +8,7 @@ class Apprentice(Entity):
 
     def __init__(self, pos, health=None, weapon=None):
         self.position = pos
-        Entity.__init__(self, auto_movement=True)
+        Entity.__init__(self, auto_movement=True, position=pos)
         if health is not None:
             self.health = health
         self.tex_up = Texture("resources/textures/apprentice_animation_up.png")
@@ -18,7 +18,6 @@ class Apprentice(Entity):
         self.tex_idle = Texture("resources/textures/apprentice_animation_idle.png")
         self.image = self.tex_idle.get()
         self.rect = self.image.get_rect()
-        self.rect.center = (0, 0)
         self.velocity = 5
 
     def update(self, webs, blocks):

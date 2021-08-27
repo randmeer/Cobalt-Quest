@@ -42,10 +42,18 @@ class Texture:
     
     "time" represents the timeout for this animation frame
     """
-    def __init__(self, path: str):
+    def __init__(self, path: str, single_run=False, set_height=False):
         self.init_time = time.time()
-
+        self.single_run = single_run
+        self.iterations = 0
         self.path = path
+        self.stop = False
+        self.seth_bool = False
+        if set_height == False:
+            pass
+        else:
+            self.seth_bool = True
+            self.seth_value = set_height
 
         try:
             self.image = pygame.image.load(self.path)
@@ -55,8 +63,14 @@ class Texture:
 
         try:
             self.script = json.load(open(self.path.replace('.png', '.json')))
+
             self.height, self.width = self.image.get_height(), self.image.get_width()
-            self.frame_count = self.height // self.width
+            if self.seth_bool:
+                #self.height, self.width = self.seth_value, self.image.get_width()
+                self.frame_count = self.height // self.seth_value
+                print(self.frame_count)
+            else:
+                self.frame_count = self.height // self.width
 
             try:
                 self.default_time = self.script['time']
@@ -75,8 +89,11 @@ class Texture:
 
             self.single_loop_time = self.frame_count * self.default_time
 
-            self.images = [self.image.subsurface((0, self.width * i, self.width, self.width)) for i in
-                           range(self.frame_count)]
+            if self.seth_bool:
+                self.images = [self.image.subsurface((0, self.seth_value * i, self.width, self.seth_value)) for i in range(self.frame_count)]
+            else:
+                self.images = [self.image.subsurface((0, self.width * i, self.width, self.width)) for i in range(self.frame_count)]
+
             try:
                 self.frame_list = self.script['frames']
                 print('made it here')
@@ -116,16 +133,24 @@ class Texture:
         get is used to get the image to display. it will automatically pick the right one based on the time it was initialized
         :return: 
         """
+        if self.stop: return False
         if self.has_json:
             now = time.time()
             delta_time = now - self.init_time
             delta_time %= self.single_loop_time
-            
-            for i in self.frame_list:
-                if delta_time - i['time'] <= 0:
-                    return self.images[i['index']]
-                delta_time -= i['time']
-        return self.image
+
+            for i in range(len(self.frame_list)):
+                if delta_time - self.frame_list[i]['time'] <= 0:
+                    if self.single_run:
+                        iters = self.iterations
+                        self.iterations = i
+                        if i < iters:
+                            self.stop = True
+                            return False
+                    return self.images[self.frame_list[i]['index']]
+                delta_time -= self.frame_list[i]['time']
+        else:
+            return self.image
 
 pygame.display.init()
 

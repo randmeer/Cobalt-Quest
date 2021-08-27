@@ -9,15 +9,13 @@ from utils.images import empty_tx, damage_tx
 class Entity(pygame.sprite.Sprite):
 
     def __init__(self, in_web_speed_multiplier=0.75, max_health=20, health=20, damage_overlay_on=True,
-                 immune_to_web=False, damage_cooldown=20, damage=1, reach=20, relposy=0, relposx=0, position=(0, 0),
+                 immune_to_web=False, damage_cooldown=20, damage=1, reach=20, position=(0, 0),
                  rotation=0, auto_rotation=True, hitboxsize=(16, 16), hitboxanchor="midbottom", auto_movement=False,
                  auto_distance_max=2000):
         pygame.sprite.Sprite.__init__(self)
         self.tex_down = self.tex_up = self.tex_left = self.tex_right = self.tex_idle = None
         self.offset = [0, 0]
         self.position = position
-        self.relposx = relposx
-        self.relposy = relposy
         self.reach = reach
         self.damage = damage
         self.damage_cooldown = damage_cooldown
@@ -36,6 +34,7 @@ class Entity(pygame.sprite.Sprite):
         self.hitbox = pygame.Rect((0, 0), hitboxsize)
         self.hitboxanchor = hitboxanchor
         self.auto_move = auto_movement
+        self.images = []
         if self.auto_move:
             self.auto_direction = 0
             self.auto_distance = 0
@@ -132,6 +131,7 @@ class Entity(pygame.sprite.Sprite):
             outlinesurf = get_outline_mask(surf, color=(255, 255, 255))
             image.blit(outlinesurf, (0, 0))
             image.blit(hitoutlinesurf, (self.rect.width / 2 - self.hitbox.width / 2, self.rect.height - self.hitbox.height))
-            print("hitbox")
         surface.blit(image, (self.rect.x + surface.get_width() / 2, self.rect.y + surface.get_height() / 2))
+        for i in self.images:
+            surface.blit(i[0], (i[1].x + surface.get_width() / 2, i[1].y + surface.get_height() / 2))
         # print(self.rect.x, self.rect.y)

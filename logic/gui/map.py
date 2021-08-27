@@ -1,6 +1,6 @@
 import pygame
 
-from utils import globs, mousepos, set_global_defaults, play_sound
+from utils import globs, mp_screen, set_global_defaults, play_sound
 from render.elements import button
 from render import gui
 from utils.images import bg_tx
@@ -28,7 +28,7 @@ def show_map(window):
     # main game loop
     while run:
         clock.tick(60)
-        mp = mousepos()
+        mp = mp_screen()
         # event iteration
         for event in pygame.event.get():
             # quit event

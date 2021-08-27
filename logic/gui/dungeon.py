@@ -1,7 +1,7 @@
 import pygame
 import QuickJSON
 
-from utils import globs, mousepos, set_global_defaults, play_sound, get_setting
+from utils import globs, mp_screen, set_global_defaults, play_sound, get_setting
 from render.elements import button, image, label
 from render import gui
 from utils.images import background_dungeon_tx, map_dungeon_tx
@@ -37,7 +37,7 @@ def show_dungeon(window, dungeon):
         clock.tick(60)
         if globs.quitgame:
             run = False
-        mp = mousepos()
+        mp = mp_screen()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False

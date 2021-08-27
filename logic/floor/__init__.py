@@ -3,13 +3,13 @@ import pygame
 import QuickJSON
 
 import utils
-from utils import globs, mousepos, get_setting, render_text, rta_dual
+from utils import globs, mp_screen, get_setting, render_text, rta_dual
 from utils.images import bg_tx
 from render.sprites import gui
 from render import camera
 from utils import set_global_defaults, set_game_defaults
 from logic.gui.overlay import pause_screen
-from render.sprites import block
+from render.sprites import block, particle_cloud
 from render.sprites.entity import player, apprentice
 
 
@@ -19,12 +19,8 @@ class Floor:
     def __init__(self, window):
         """
         level class. inherit in local levelsubclass and draw game on game_surface
-        :param name: level name or number
         """
-        # self.name = name
-
         set_global_defaults()
-        # set_game_defaults()
         self.window = window
         self.surface = pygame.Surface(globs.SIZE, pygame.SRCALPHA)
         self.guisprite = gui.IngameGUI()
@@ -34,6 +30,7 @@ class Floor:
         self.sidelength = 0
         self.blocks = []
         self.entitys = []
+        self.particles = []
         self.player = None
 
         self.now, self.prev_time, self.delta_time = 0, 0, 0
@@ -54,10 +51,11 @@ class Floor:
         self.floorjson.load()
         self.sidelength = self.floorjson["size"] * 16 * 2
         self.player = player.Player(pos=(self.floorjson["player"][0], self.floorjson["player"][1]))
-        test = list(self.floorjson["blocks"])
+
+        blocks = list(self.floorjson["blocks"])
         for i in range(self.floorjson["size"] * 2):
             for j in range(self.floorjson["size"] * 2):
-                if test[i][j] != 0:
+                if blocks[i][j] != 0:
                     x, y = j - self.floorjson["size"], i - self.floorjson["size"]
                     if x < 0 and y < 0:
                         pass
@@ -68,15 +66,13 @@ class Floor:
                         y += 1
                     elif x < 0 and y > 0:
                         y += 1
-                    self.blocks.append(block.Block(block=test[i][j], pos=(x, y)))
+                    self.blocks.append(block.Block(block=blocks[i][j], pos=(x, y)))
 
         for i in self.floorjson["entitys"]:
             if i[0] == "apprentice":
                 self.entitys.append(apprentice.Apprentice(pos=(i[1][0], i[1][1]), health=i[2], weapon=i[3]))
-                print("apprenticeeeee")
-        self.scene = camera.Scene(
-            path=f"./data/savegames/{get_setting('current_savegame')}/dungeons/{globs.dungeon_str}/{globs.floor_str}.json",
-            sidelength=self.sidelength)
+
+        self.scene = camera.Scene(path=f"./data/savegames/{get_setting('current_savegame')}/dungeons/{globs.dungeon_str}/{globs.floor_str}.json", sidelength=self.sidelength)
         self.scene.camera.follow(target=self.player)
         print("[Floor] loaded floor json")
 
@@ -103,12 +99,14 @@ class Floor:
         self.prev_time = self.now
 
         self.click = False
-        mp = mousepos()
+        mp = mp_screen()
 
-        self.player.update(blocks=self.blocks, webs=[])
+        self.player.update(blocks=self.blocks, webs=[], particles=self.particles, delta_time=self.delta_time)
         for i in self.entitys:
             i.update(webs=[], blocks=self.blocks)
-        self.scene.update(playerentity=self.player, blocks=self.blocks, entitys=self.entitys)
+        for i in self.particles:
+            i.update(delta_time=self.delta_time)
+        self.scene.update(playerentity=self.player, blocks=self.blocks, entitys=self.entitys, particles=self.particles)
         key = pygame.key.get_pressed()
 
         self.events = list(pygame.event.get())
@@ -120,7 +118,9 @@ class Floor:
             # buttonevents
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == pygame.BUTTON_LEFT:
-                    pass
+                    if self.guisprite.weapons[self.guisprite.weapon][0] == "dagger":
+                        self.player.start_swing(scene=self.scene)
+                        utils.play_sound('swing')
                 if event.button == pygame.BUTTON_RIGHT:
                     pass
                 if event.button == pygame.BUTTON_WHEELUP:

@@ -1,6 +1,6 @@
 import pygame
 
-from utils import globs, mousepos, set_global_defaults, play_sound, get_setting
+from utils import globs, mp_screen, set_global_defaults, play_sound, get_setting
 from render.elements import button, image, label
 from render import gui
 from utils.images import bg_gui_tx, logo_tx
@@ -30,7 +30,7 @@ def show_menu(window):
     run = True
     while run:
         clock.tick(60)
-        mp = mousepos()
+        mp = mp_screen()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False

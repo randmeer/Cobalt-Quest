@@ -27,7 +27,7 @@ class Block(pygame.sprite.Sprite):
             self.posy -= self.image.get_height()
 
         self.rect.x, self.rect.y = (self.posx, self.posy)
-        print(self.rect)
+        #print(self.rect)
 
     def draw(self, surface):
         surface.blit(self.image, (self.rect.x+surface.get_width()/2, self.rect.y+surface.get_height()/2))
