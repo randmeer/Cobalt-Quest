@@ -54,4 +54,3 @@ class Particle(pygame.sprite.Sprite):
     def draw(self, surface):
         if self.dead: return
         surface.blit(self.image, (self.rect.x+surface.get_width()/2, self.rect.y+surface.get_height()/2))
-        #print("particle")

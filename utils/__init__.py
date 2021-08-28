@@ -16,6 +16,9 @@ def hypo(a, b):
     return c
 
 def angle_deg(p1, p2):
+    """
+    point p1, point p2 --> angle in degrees
+    """
     dx = p2[0] - p1[0]
     dy = p2[1] - p1[1]
     if dx == 0:

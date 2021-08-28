@@ -1,64 +1,58 @@
 import math
-
 import pygame
 
-from utils.images import shuriken_texture
+from utils.images import shuriken_tx
 from render.sprites import particle_cloud
-from utils.__init__ import rta_dual, absToRel, atr_dual
 
 
 class Shuriken(pygame.sprite.Sprite):
-    def __init__(self, relpos, radians, velocity=6):
+    def __init__(self, pos, radians, velocity=3, exploding=False):
         pygame.sprite.Sprite.__init__(self)
-        self.relpos, self.radians, self.velocity = relpos, radians, velocity
-        self.reldx = absToRel(math.cos(self.radians))
-        self.reldy = absToRel(math.sin(self.radians))
-        self.reldxtotal, self.reldytotal = 0, 0
-        self.rotangle = 0
-        self.resize()
-        self.trigger_explosion, self.exploding, self.dead = False, False, False
-        self.explosiontimer = 1
-
-    def resize(self):
-        self.original_image = pygame.transform.scale(shuriken_texture, rta_dual(0.1, 0.1))
+        self.original_image = shuriken_tx
         self.image = self.original_image
+        self.pos, self.radians, self.velocity = pos, radians, velocity
+        self.dx = math.sin(self.radians)
+        self.dy = math.cos(self.radians)
+        self.dxtotal, self.dytotal = 0, 0
+        self.rotangle = 0
+        self.dead = False
+        self.explosiontimer = 1
+        self.update(0, blocks=[], particles=[])
 
-    def update(self, delta_time, window):
-        if self.trigger_explosion:
-            self.dead = True
-            self.smoke.update(window=window, delta_time=delta_time)
-            self.fire.update(window=window, delta_time=delta_time)
-            self.sparks.update(window=window, delta_time=delta_time)
-            self.explosiontimer -= delta_time
-            if self.explosiontimer < 0:
-                self.exploding = False
-            return
+    def update(self, delta_time, blocks, particles):
+        if self.dead: return
+        for i in blocks:
+            if self.rect.colliderect(i.rect):
+                self.explode(particles=particles)
         self.image = pygame.transform.rotate(self.original_image, self.rotangle)
         self.rotangle += 4
         if self.rotangle > 360:
             self.rotangle = 0
         self.rect = self.image.get_rect()
-        self.rect.center = rta_dual(self.relpos[0] + self.reldxtotal, self.relpos[1] + self.reldytotal)
-        self.reldxtotal += self.reldx * self.velocity * 50 * delta_time
-        self.reldytotal += self.reldy * self.velocity * 50 * delta_time
+        self.rect.center = (self.pos[0] + self.dxtotal, self.pos[1] + self.dytotal)
+        self.dxtotal += self.dx * self.velocity * 50 * delta_time
+        self.dytotal -= self.dy * self.velocity * 50 * delta_time
 
-        self.draw(window=window)
-
-    def explode(self):
+    def explode(self, particles):
         if self.dead: return
-        self.smoke = particle_cloud.ParticleCloud(relcenter=atr_dual(self.rect.centerx, self.rect.centery),
-                                                  relradius=0.09,
-                                                  relparticlesize=0.07, color=(70, 70, 70), density=10, relvelocity=1.5,
-                                                  distribution=0.7, colorvariation=5)
-        self.fire = particle_cloud.ParticleCloud(relcenter=atr_dual(self.rect.centerx, self.rect.centery),
-                                                 relradius=0.08,
-                                                 relparticlesize=0.04, color=(200, 70, 0), density=20, relvelocity=1.2,
-                                                 distribution=0.5, colorvariation=30)
-        self.sparks = particle_cloud.ParticleCloud(relcenter=atr_dual(self.rect.centerx, self.rect.centery),
-                                                   relradius=0.1,
-                                                   relparticlesize=0.01, color=(200, 100, 0), density=20, relvelocity=2,
-                                                   distribution=0.5, colorvariation=5)
-        self.trigger_explosion = True
+        particles.append(particle_cloud.ParticleCloud(center=(self.rect.centerx, self.rect.centery), radius=20,
+                                                 particlesize=(7, 7), color=(70, 70, 70), density=2, velocity=30,
+                                                 distribution=0.8, colorvariation=5))
+        particles.append(particle_cloud.ParticleCloud(center=(self.rect.centerx, self.rect.centery), radius=15,
+                                                particlesize=(3, 3), color=(200, 70, 0), density=3, velocity=40,
+                                                distribution=0.8, colorvariation=30))
+        particles.append(particle_cloud.ParticleCloud(center=(self.rect.centerx, self.rect.centery), radius=25,
+                                                  particlesize=(1, 1), color=(200, 100, 0), density=3, velocity=50,
+                                                  distribution=0.7, colorvariation=5))
+        #particles.append(particle_cloud.ParticleCloud(center=self.rect.center, radius=40, particlesize=(10, 10),
+        #                                              color=(40, 20, 20), density=10, velocity=100, colorvariation=10))
+        self.dead = True
 
-    def draw(self, window):
-        window.blit(self.image, self.rect)
+    def draw(self, surface):
+        if self.dead: return
+        surface.blit(self.image, (self.rect.x + surface.get_width() / 2, self.rect.y + surface.get_height() / 2))
+        # if self.exploding:
+            # self.smoke.draw(surface=surface)
+            # self.fire.draw(surface=surface)
+            # self.sparks.draw(surface=surface)
+            # self.test.draw(surface=surface)

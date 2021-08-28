@@ -1,7 +1,6 @@
 import pygame
 
 from render.sprites import particle
-#from utils import rta_dual, rta_height
 
 
 class ParticleCloud(pygame.sprite.Sprite):

@@ -1,5 +1,4 @@
 import math
-#from math import pi, atan2, sqrt
 import pygame
 
 import utils
@@ -82,7 +81,7 @@ class Player(Entity):
 
         self.move(webs=webs, blocks=blocks)
         if self.offset != [0, 0]:
-            particles.append(particle_cloud.ParticleCloud(center=self.hitbox.midbottom, radius=3, particlesize=(2, 2), color=(40, 20, 20), density=2, velocity=30, colorvariation=10))
+            particles.append(particle_cloud.ParticleCloud(center=self.hitbox.midbottom, radius=3, particlesize=(2, 2), color=(40, 20, 20), density=2, velocity=15, colorvariation=10))
             utils.play_sound('step')
         if self.swing:
             if self.swing_image.get() == False:

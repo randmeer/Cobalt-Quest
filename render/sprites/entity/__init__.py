@@ -134,4 +134,3 @@ class Entity(pygame.sprite.Sprite):
         surface.blit(image, (self.rect.x + surface.get_width() / 2, self.rect.y + surface.get_height() / 2))
         for i in self.images:
             surface.blit(i[0], (i[1].x + surface.get_width() / 2, i[1].y + surface.get_height() / 2))
-        # print(self.rect.x, self.rect.y)

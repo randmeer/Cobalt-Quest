@@ -46,18 +46,22 @@ class Scene:
         self.camera = Camera()
         print("[Scene] initialized Scene")
 
-    def update(self, playerentity, blocks=None, entitys=None, particles=None):
+    def update(self, playerentity, blocks=None, entitys=None, particles=None, othersprites=None):
         if entitys is None:
             entitys = []
         if blocks is None:
             blocks = []
         if particles is None:
             particles = []
+        if othersprites is None:
+            othersprites = []
         for i in blocks:
             self.objects.append(i)
         for i in entitys:
             self.objects.append(i)
         for i in particles:
+            self.objects.append(i)
+        for i in othersprites:
             self.objects.append(i)
         self.camera.update()
         #self.camera.follow(target=playerentity)

@@ -3,9 +3,9 @@ import pygame
 import QuickJSON
 
 import utils
-from utils import globs, mp_screen, get_setting, render_text, rta_dual
+from utils import globs, mp_scene, get_setting, render_text, rta_dual, angle_deg, conv_deg_rad
 from utils.images import bg_tx
-from render.sprites import gui
+from render.sprites import gui, shuriken
 from render import camera
 from utils import set_global_defaults, set_game_defaults
 from logic.gui.overlay import pause_screen
@@ -13,12 +13,22 @@ from render.sprites import block, particle_cloud
 from render.sprites.entity import player, apprentice
 
 
-# Template for handling game logic in a single floor of a dungeon
 class Floor:
 
     def __init__(self, window):
         """
-        level class. inherit in local levelsubclass and draw game on game_surface
+        game logic for a single floor of a dungeon
+
+        main functions:
+        load() --> loads floor json
+        save() --> saves floor json
+        start_loop() --> starts game loop
+        end_loop() --> ends game loop
+
+        local functions:
+        single_loop() --> runs update and render functions
+        update() --> updates objects, handles input
+        render() --> renders objects
         """
         set_global_defaults()
         self.window = window
@@ -31,6 +41,7 @@ class Floor:
         self.blocks = []
         self.entitys = []
         self.particles = []
+        self.othersprites = []
         self.player = None
 
         self.now, self.prev_time, self.delta_time = 0, 0, 0
@@ -41,17 +52,19 @@ class Floor:
         self.auto_render = True
         self.events = []
         self.scene = None
-        print("[Floor] initialized Floor")
 
     def load(self):
         """
         loads the json of the respective floor and creates all the specified
         block & entity classes and the player class
         """
+
+        # load floor json
         self.floorjson.load()
         self.sidelength = self.floorjson["size"] * 16 * 2
         self.player = player.Player(pos=(self.floorjson["player"][0], self.floorjson["player"][1]))
 
+        # read and convert blocks to Block()'s in list
         blocks = list(self.floorjson["blocks"])
         for i in range(self.floorjson["size"] * 2):
             for j in range(self.floorjson["size"] * 2):
@@ -68,13 +81,14 @@ class Floor:
                         y += 1
                     self.blocks.append(block.Block(block=blocks[i][j], pos=(x, y)))
 
+        # read and convert entitys to Entity()'s in list
         for i in self.floorjson["entitys"]:
             if i[0] == "apprentice":
                 self.entitys.append(apprentice.Apprentice(pos=(i[1][0], i[1][1]), health=i[2], weapon=i[3]))
 
+        # create scene and set camera target
         self.scene = camera.Scene(path=f"./data/savegames/{get_setting('current_savegame')}/dungeons/{globs.dungeon_str}/{globs.floor_str}.json", sidelength=self.sidelength)
         self.scene.camera.follow(target=self.player)
-        print("[Floor] loaded floor json")
 
     def save(self):
         self.floorjson.save()
@@ -84,31 +98,40 @@ class Floor:
         method performs a single iteration of the game loop. This can be overridden to add extra functionality before and
         after the game loop and render. call update() to perform a raw iteration and and render() to render stuff out
         """
+
         self.update()
         self.render()
 
     def update(self):
         """
-        updates the game surface
+        updates the game surface and handles user input
         """
+
+        # calculate delta time
         self.clock.tick(60)
         self.now = time.time()
-        delta_time = self.now - self.prev_time
-        if delta_time > 1:
-            self.delta_time = 0.01
+        self.delta_time = self.now - self.prev_time
         self.prev_time = self.now
 
+        # update objects
         self.click = False
-        mp = mp_screen()
-
+        mp = mp_scene(scene=self.scene)
         self.player.update(blocks=self.blocks, webs=[], particles=self.particles, delta_time=self.delta_time)
         for i in self.entitys:
             i.update(webs=[], blocks=self.blocks)
         for i in self.particles:
             i.update(delta_time=self.delta_time)
-        self.scene.update(playerentity=self.player, blocks=self.blocks, entitys=self.entitys, particles=self.particles)
-        key = pygame.key.get_pressed()
+            for j in i.particles:
+                if j.dead:
+                    self.particles.remove(i)
+                    break
+        for i in self.othersprites:
+            i.update(delta_time=self.delta_time, blocks=self.blocks, particles=self.particles)
+        self.scene.update(playerentity=self.player, blocks=self.blocks, entitys=self.entitys, particles=self.particles, othersprites=self.othersprites)
+        self.guisprite.update()
 
+        # handle events
+        key = pygame.key.get_pressed()
         self.events = list(pygame.event.get())
         for event in self.events:
             # quitevent
@@ -121,6 +144,8 @@ class Floor:
                     if self.guisprite.weapons[self.guisprite.weapon][0] == "dagger":
                         self.player.start_swing(scene=self.scene)
                         utils.play_sound('swing')
+                    if self.guisprite.weapons[self.guisprite.weapon][0] == "shuriken":
+                        self.othersprites.append(shuriken.Shuriken(pos=self.player.hitbox.center, radians=conv_deg_rad(angle_deg(self.player.hitbox.center, mp))))
                 if event.button == pygame.BUTTON_RIGHT:
                     pass
                 if event.button == pygame.BUTTON_WHEELUP:
@@ -149,15 +174,8 @@ class Floor:
                     self.guisprite.set_selectangle(4)
                 elif event.key == pygame.K_6:
                     self.guisprite.set_selectangle(5)
-            # if event.type == pygame.VIDEORESIZE or self.resizeupdate:
-            #     self.resizeupdate = False
-            #     w, h = pygame.display.get_surface().get_size()
-            #     resizeWindow(w, h)
-            #     self.game_surface = pygame.Surface(pygame.display.get_window_size(), pygame.SRCALPHA, 32)
-            #     self.background = pygame.transform.scale(background_texture, (relToAbsDual(1, 1)))
-            #     self.guisprite.resize()
-        self.guisprite.update()
 
+        # end loop if exittomenu order is detected
         if globs.exittomenu:
             self.end_loop()
             globs.menu = True
@@ -174,6 +192,7 @@ class Floor:
         """
         renders the gui and game surface
         """
+
         if globs.hard_debug:
             surface = pygame.Surface(self.window.get_size())
             surface.blit(pygame.transform.scale(bg_tx, self.window.get_size()), (0, 0))
