@@ -61,6 +61,11 @@ def flip(num):
     """
     return 1 ^ num
 
+def sin(num):
+    return math.sin(num)
+
+def cos(num):
+    return math.cos(num)
 
 settings = QuickJSON.QJSON("./data/settings.json")
 
@@ -237,6 +242,8 @@ def play_sound(sound):
             num = random.randint(1, 5)
             pygame.mixer.Channel(3).play(pygame.mixer.Sound("./resources/sounds/step" + str(num) + ".wav"))
             threshold = 20
+    elif sound == 'explosion':
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound("./resources/sounds/explosion.wav"))
     pygame.mixer.Channel(1).set_volume(get_setting('volume') / threshold)
     pygame.mixer.Channel(2).set_volume(get_setting('volume') / threshold)
     pygame.mixer.Channel(3).set_volume(get_setting('volume') / threshold)

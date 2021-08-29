@@ -3,10 +3,11 @@ import random
 import pygame
 
 class Particle(pygame.sprite.Sprite):
-    def __init__(self, pos, size, color, maxdistance, velocity, distribution, colorvariation):
+    def __init__(self, pos, size, color, maxdistance, velocity, distribution, colorvariation, spawnregion):
         pygame.sprite.Sprite.__init__(self)
         self.pos = pos
         self.size = size
+        self.spawnregion = spawnregion
         self.originalcolor = color
         self.colorvariation = colorvariation
         self.maxdistance = maxdistance
@@ -18,6 +19,11 @@ class Particle(pygame.sprite.Sprite):
         self.borderdistance = 0
 
     def generate_randoms(self):
+        #random.seed()
+       #self.pos[0] = self.pos[0] + random.randint(-self.spawnradius, self.spawnradius)
+       #self.pos[1] = self.pos[1] + random.randint(-self.spawnradius, self.spawnradius)
+        #print("after generating: " + str(int(self.pos[0])))
+        self.pos = [self.pos[0] + random.randint(-self.spawnregion[0], self.spawnregion[0]), self.pos[1] + random.randint(-self.spawnregion[1], self.spawnregion[1])]
         self.color = [self.originalcolor[0] + random.randint(-self.colorvariation, self.colorvariation),
                       self.originalcolor[1] + random.randint(-self.colorvariation, self.colorvariation),
                       self.originalcolor[2] + random.randint(-self.colorvariation, self.colorvariation)]
@@ -53,4 +59,5 @@ class Particle(pygame.sprite.Sprite):
 
     def draw(self, surface):
         if self.dead: return
+        print("while drawing: " + str(int(self.pos[0])))
         surface.blit(self.image, (self.rect.x+surface.get_width()/2, self.rect.y+surface.get_height()/2))

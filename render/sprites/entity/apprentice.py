@@ -7,6 +7,7 @@ from render.sprites.entity import Entity
 class Apprentice(Entity):
 
     def __init__(self, pos, health=None, weapon=None):
+        self.priority = 2
         self.position = pos
         Entity.__init__(self, auto_movement=True, position=pos)
         if health is not None:
@@ -20,8 +21,8 @@ class Apprentice(Entity):
         self.rect = self.image.get_rect()
         self.velocity = 5
 
-    def update(self, webs, blocks):
+    def update(self, webs, blocks, particles):
         self.image = self.tex_idle.get()
         self.rect = self.image.get_rect()
 
-        self.move(webs=webs, blocks=blocks)
+        self.move(webs=webs, blocks=blocks, particles=particles)

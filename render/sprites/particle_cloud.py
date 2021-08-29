@@ -1,14 +1,20 @@
 import pygame
 
 from render.sprites import particle
-
+from utils import globs, get_outline_mask
 
 class ParticleCloud(pygame.sprite.Sprite):
     def __init__(self, center, radius, particlesize, color, density, velocity, distribution=0.3,
-                 colorvariation=50):
+                 colorvariation=50, priority=2, no_debug=False, spawnradius=0, spawnregion=(0, 0)):
         pygame.sprite.Sprite.__init__(self)
-        self.center = center
+        self.priority = priority
+        self.no_debug = no_debug
+        self.center = list(center)
         self.radius = radius
+        self.spawnradius = spawnradius
+        self.spawnregion = spawnregion
+        if spawnradius != 0:
+            self.spawnregion = (spawnradius, spawnradius)
         self.velocity = velocity
         self.particlesize = particlesize
         self.distribution = distribution
@@ -17,11 +23,12 @@ class ParticleCloud(pygame.sprite.Sprite):
         self.density = density
         self.particles = []
         for i in range(self.density):
-            particlesprite = particle.Particle(pos=self.center, size=self.particlesize,
-                                               color=self.color, maxdistance=self.radius, velocity=self.velocity,
-                                               distribution=self.distribution, colorvariation=self.colorvariation)
-            self.particles.append(particlesprite)
-        self.reposition(center=center)
+            self.particles.append(particle.Particle(pos=self.center, size=self.particlesize, spawnregion=self.spawnregion,
+                                                    color=self.color, maxdistance=self.radius, velocity=self.velocity,
+                                                    distribution=self.distribution, colorvariation=self.colorvariation))
+        self.rect = pygame.Rect(self.center[0] - self.radius, self.center[1] - self.radius,
+                                self.radius * 2, self.radius * 2)
+        self.rect.center = self.center[0], self.center[1]
 
     def update(self, delta_time):
         for i in self.particles:
@@ -30,17 +37,14 @@ class ParticleCloud(pygame.sprite.Sprite):
     def draw(self, surface):
         for i in self.particles:
             i.draw(surface=surface)
+        if globs.soft_debug and not self.no_debug:
+            surf = pygame.Surface((self.rect.width, self.rect.height))
+            surf.fill((0, 0, 0))
+            outlinesurf = get_outline_mask(surf, color=(255, 255, 255))
+            surface.blit(outlinesurf, (self.rect.x + surface.get_width() / 2, self.rect.y + surface.get_height() / 2))
 
-    def reposition(self, center):
-        self.center = center
-        for i in self.particles:
-            i.pos = center
-        self.rect = pygame.Rect(self.center[0] - self.radius, self.center[1] - self.radius,
-                                self.radius * 2, self.radius * 2)
-        self.rect.center = self.center[0], self.center[1]
-
-    def reset(self):
-        for i in self.particles:
-            i.dxtotal, i.dytotal = 0, 0
-            i.generate_randoms()
-            i.dead = False
+    # def reset(self):
+    #     for i in self.particles:
+    #         i.dxtotal, i.dytotal = 0, 0
+    #         i.generate_randoms()
+    #         i.dead = False

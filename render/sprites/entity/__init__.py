@@ -2,9 +2,8 @@ import time
 import random
 import pygame
 
-from utils import globs, rta_height, dual_rect_anchor, get_outline_mask
-from utils.images import empty_tx, damage_tx
-
+from utils import globs, dual_rect_anchor, get_outline_mask, play_sound
+from render.sprites import particle_cloud
 
 class Entity(pygame.sprite.Sprite):
 
@@ -34,7 +33,6 @@ class Entity(pygame.sprite.Sprite):
         self.hitbox = pygame.Rect((0, 0), hitboxsize)
         self.hitboxanchor = hitboxanchor
         self.auto_move = auto_movement
-        self.images = []
         if self.auto_move:
             self.auto_direction = 0
             self.auto_distance = 0
@@ -67,7 +65,7 @@ class Entity(pygame.sprite.Sprite):
         self.hitbox.center = pos
         dual_rect_anchor(self.rect, self.hitbox, self.hitboxanchor)
 
-    def move(self, webs, blocks):
+    def move(self, webs, blocks, particles):
         deltatime = time.time() - self.last_move_time
         self.last_move_time = time.time()
         self.speed_multiplier = 1 * deltatime
@@ -109,6 +107,8 @@ class Entity(pygame.sprite.Sprite):
                 self._undo_move("y")
 
         dual_rect_anchor(self.hitbox, self.rect, self.hitboxanchor)
+        if self.offset != [0, 0]:
+            particles.append(particle_cloud.ParticleCloud(center=(self.hitbox.midbottom[0], self.hitbox.midbottom[1]-2), radius=3, particlesize=(2, 2), color=(40, 20, 20), density=1, velocity=20, colorvariation=10, priority=self.priority+1))
 
     # def render_image(self):
     #    if self.damage_overlay_on and self.hurt_animation_cooldown > 0:
@@ -132,5 +132,3 @@ class Entity(pygame.sprite.Sprite):
             image.blit(outlinesurf, (0, 0))
             image.blit(hitoutlinesurf, (self.rect.width / 2 - self.hitbox.width / 2, self.rect.height - self.hitbox.height))
         surface.blit(image, (self.rect.x + surface.get_width() / 2, self.rect.y + surface.get_height() / 2))
-        for i in self.images:
-            surface.blit(i[0], (i[1].x + surface.get_width() / 2, i[1].y + surface.get_height() / 2))

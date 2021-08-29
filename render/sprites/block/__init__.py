@@ -9,6 +9,7 @@ from utils.images import block_tx
 class Block(pygame.sprite.Sprite):
     def __init__(self, block, pos):
         pygame.sprite.Sprite.__init__(self)
+        self.priority = 3
         self.block = block
         self.pos = pos
         self.posx, self.posy = pos[0]*16, pos[1]*16

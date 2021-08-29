@@ -5,7 +5,7 @@ import QuickJSON
 import utils
 from utils import globs, mp_scene, get_setting, render_text, rta_dual, angle_deg, conv_deg_rad
 from utils.images import bg_tx
-from render.sprites import gui, shuriken
+from render.sprites import gui, shuriken, dagger
 from render import camera
 from utils import set_global_defaults, set_game_defaults
 from logic.gui.overlay import pause_screen
@@ -52,6 +52,8 @@ class Floor:
         self.auto_render = True
         self.events = []
         self.scene = None
+
+        self.cooldown = 0.5
 
     def load(self):
         """
@@ -112,23 +114,30 @@ class Floor:
         self.now = time.time()
         self.delta_time = self.now - self.prev_time
         self.prev_time = self.now
+        self.cooldown -= self.delta_time
 
         # update objects
         self.click = False
         mp = mp_scene(scene=self.scene)
         self.player.update(blocks=self.blocks, webs=[], particles=self.particles, delta_time=self.delta_time)
         for i in self.entitys:
-            i.update(webs=[], blocks=self.blocks)
+            i.update(webs=[], blocks=self.blocks, particles=self.particles)
         for i in self.particles:
             i.update(delta_time=self.delta_time)
+            x = 0
             for j in i.particles:
                 if j.dead:
+                    x += 1
+                if x == len(i.particles):
                     self.particles.remove(i)
                     break
         for i in self.othersprites:
-            i.update(delta_time=self.delta_time, blocks=self.blocks, particles=self.particles)
+            i.update(delta_time=self.delta_time, blocks=self.blocks, entitys=self.entitys, particles=self.particles)
         self.scene.update(playerentity=self.player, blocks=self.blocks, entitys=self.entitys, particles=self.particles, othersprites=self.othersprites)
         self.guisprite.update()
+        self.particles.append(particle_cloud.ParticleCloud(center=(self.scene.surface.get_width()/2, 0), radius=self.scene.surface.get_width(),
+                                                           particlesize=(1, 1), color=(255, 0, 0), density=1, spawnregion=(2, self.scene.surface.get_height()/2),
+                                                           velocity=100, priority=0, no_debug=True, distribution=0.5, colorvariation=100))
 
         # handle events
         key = pygame.key.get_pressed()
@@ -140,12 +149,17 @@ class Floor:
                 globs.quitgame = True
             # buttonevents
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == pygame.BUTTON_LEFT:
+                if event.button == pygame.BUTTON_LEFT and self.cooldown <= 0:
                     if self.guisprite.weapons[self.guisprite.weapon][0] == "dagger":
-                        self.player.start_swing(scene=self.scene)
                         utils.play_sound('swing')
-                    if self.guisprite.weapons[self.guisprite.weapon][0] == "shuriken":
-                        self.othersprites.append(shuriken.Shuriken(pos=self.player.hitbox.center, radians=conv_deg_rad(angle_deg(self.player.hitbox.center, mp))))
+                        self.othersprites.append(dagger.Dagger(playerpos=self.player.hitbox.center, mousepos=mp))
+                        self.cooldown = 0.25
+                    if self.guisprite.weapons[self.guisprite.weapon][1] > 0:
+                        if self.guisprite.weapons[self.guisprite.weapon][0] == "shuriken":
+                            utils.play_sound('swing')
+                            self.othersprites.append(shuriken.Shuriken(exploding=True, pos=self.player.hitbox.center, radians=conv_deg_rad(angle_deg(self.player.hitbox.center, mp))))
+                        self.guisprite.weapons[self.guisprite.weapon][1] -= 1
+                        self.cooldown = 0.1
                 if event.button == pygame.BUTTON_RIGHT:
                     pass
                 if event.button == pygame.BUTTON_WHEELUP:
