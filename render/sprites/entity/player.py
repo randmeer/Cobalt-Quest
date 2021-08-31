@@ -20,14 +20,13 @@ class Player(Entity):
         self.rect.center = (0, 0)
 
     def update(self, webs, blocks, particles, delta_time):
+        if self.dead: return
+
         self.offset = [0, 0]
         velocity = self.velocity
         key = pygame.key.get_pressed()
         if key[pygame.K_LSHIFT]:
             velocity /= 2
-
-        self.image = self.tex_idle.get()
-        self.rect = self.image.get_rect()
 
         # following code would move the player the same distance even with 2 keys pressed at the same time
         # but it feels kinda weird so commented it for now
@@ -43,6 +42,7 @@ class Player(Entity):
         #     keys += 1
         # if keys >= 2:
         #     velocity = self.velocity/math.sqrt(self.velocity)
+        self.image = self.tex_idle.get()
 
         if key[pygame.K_s]:
             self.offset[1] += velocity
@@ -56,7 +56,9 @@ class Player(Entity):
         if key[pygame.K_a]:
             self.offset[0] -= velocity
             self.image = self.tex_left.get()
+        self.entity_update(webs=webs, blocks=blocks, particles=particles, delta_time=delta_time)
 
-        self.move(webs=webs, blocks=blocks, particles=particles)
         if self.offset != [0, 0]:
             play_sound('step')
+
+

@@ -4,9 +4,9 @@ import os
 import shutil
 
 from distutils.dir_util import copy_tree
-from utils import globs, play_sound, set_global_defaults, rta_dual, mp_screen
-from utils.images import overlay_tx, victory_tx, defeat_tx
-from render.elements import button, label
+from utils import globs, play_sound, set_global_defaults, rta_dual, mp_screen, rta_dual_height, get_setting
+from utils.images import overlay_tx, victory_tx, defeat_tx, item_tx
+from render.elements import button, label, image
 from render import gui
 
 
@@ -303,3 +303,161 @@ def alert(window, background, message, color=(0, 0, 0), question=False, question
                             return False
         alert_gui.draw(window=window)
     play_sound('click')
+
+
+def show_inventory(window, background):
+    """
+    background should be the current view of the window, not scaled,
+    in order for the inventory gui to look like it lays on top of the window
+    """
+    s = True
+    while s:
+        s = _show_inventory(window=window, background=background)
+
+def _show_inventory(window, background):
+    """
+    local function of show_inventory
+    to re-run this function, call 'return True'
+    to exit this function, call 'return False'
+    """
+    set_global_defaults()
+    play_sound('click')
+
+    # load inventory json
+    inventory = QuickJSON.QJSON(f"./data/savegames/{get_setting('current_savegame')}/inventory.json")
+    inventory.load()
+
+    # create variables
+    labels = []
+    images = []
+    overlay = pygame.Surface(rta_dual_height(0.1, 0.1), pygame.SRCALPHA)
+    overlay.fill((255, 255, 255))
+    overlay.set_alpha(75)
+    overlay_2 = overlay.copy()
+    overlay_2.set_alpha(125)
+
+    # tags
+    # overlay hotbar ["overlay", "hotbar", slot]
+    # overlay tab    ["overlay,  "tab",    slot]
+    # item hotbar    ["hotbar",  category, slot, name]
+    # item tab       ["tab",     category, slot, name]
+
+    # add overlays
+    slots = []
+    for i in range(5):
+        for j in range(6):
+            slots.append([0.605+j/14.25, 0.25+i/8])
+            images.append(image.Image(tags=["overlay", "tab", i*6+j], image=overlay, relpos=(0.605+j/14.25, 0.25+i/8), h_event=True, h_image=overlay_2))
+    for i in range(len(inventory["hotbar"])):
+        images.append(image.Image(tags=["overlay", "hotbar", i], image=overlay, relpos=(0.605+i/14.25, 0.925), h_event=True, h_image=overlay_2))
+
+    # add items
+    for i in range(len(inventory["inventory"])):
+        for j in range(len(inventory["inventory"][i][1])):
+            if item_tx[inventory["inventory"][i][1][j][1]] is not None:
+                images.append(image.Image(tags=["tab", inventory["inventory"][i][0], j, inventory["inventory"][i][1][j][1], inventory["inventory"][i][1][j][2], inventory["inventory"][i][1][j][3]], image=item_tx[inventory["inventory"][i][1][j][1]], relpos=(slots[j])))
+    for i in range(len(inventory["hotbar"])):
+        if item_tx[inventory["hotbar"][i][1]] is not None:
+            images.append(image.Image(tags=["hotbar", inventory["hotbar"][i][0], i, inventory["hotbar"][i][1], inventory["hotbar"][i][2], inventory["hotbar"][i][3]], image=item_tx[inventory["hotbar"][i][1]], relpos=(0.605+i/14.25, 0.925)))
+
+    # create gui
+    inventory_gui = gui.GUI(background=background, overlay=200, labels=labels, images=images, buttons=[
+        button.Button(tags=["weapon", ""], anchor="center", relsize=(0.17, 0.1), text="WEAPON", relpos=(0.1, 0.1)),
+        button.Button(tags=["armor", ""], anchor="center", relsize=(0.17, 0.1), text="ARMOR", relpos=(0.3, 0.1)),
+        button.Button(tags=["tool", ""], anchor="center", relsize=(0.17, 0.1), text="TOOL", relpos=(0.5, 0.1)),
+        button.Button(tags=["food", ""], anchor="center", relsize=(0.17, 0.1), text="FOOD", relpos=(0.7, 0.1)),
+        button.Button(tags=["orb", ""], anchor="center", relsize=(0.17, 0.1), text="ORBS", relpos=(0.9, 0.1)),
+        button.Button(tags=["", ""], anchor="bottomleft", relsize=(0.4, 0.1), text="SAVE AND RETURN", relpos=(0.05, 0.95))])
+    inventory_gui.buttongroup[0].set_pressed(press=True)
+    current_tab = "weapon"
+
+    def set_current_tab():
+        for i in inventory_gui.imagegroup:
+            i.set_visible(visible=True)
+            if i.tags[0] == "tab" and i.tags[1] != current_tab:
+                i.set_visible(visible=False)
+    set_current_tab()
+
+    target = None
+    run = True
+    clock = pygame.time.Clock()
+    while run:
+        clock.tick(60)
+        mp = mp_screen()
+        if target is not None:
+            target.rect.center = mp
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                globs.exittomenu = True
+                globs.quitgame = True
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == globs.LEFT:
+                    if inventory_gui.buttongroup[5].rect.collidepoint(mp):
+                        run = False
+                    for i in range(5):
+                        if inventory_gui.buttongroup[i].rect.collidepoint(mp):  # a tab button is pressed
+                            for j in range(5):
+                                inventory_gui.buttongroup[j].set_pressed(press=False)  # set all tab buttons not pressed
+                            inventory_gui.buttongroup[i].set_pressed(press=True)  # set clicked tab button pressed
+                            current_tab = inventory_gui.buttongroup[i].tags[0]  # update current tab
+                            set_current_tab()
+                            play_sound('click')
+
+                    for i in inventory_gui.imagegroup:
+                        if i.rect.collidepoint(mp):  # some image is clicked
+                            if i.tags[0] == "overlay":  # an overlay image [i] is clicked
+                                unsuccessful = True
+                                for j in inventory_gui.imagegroup:
+                                    if j.tags[0] == i.tags[1] and j.tags[2] == i.tags[2]:  # there is an item [j] on the clicked slot
+                                        if target is None:  # no item is held
+                                            target = j  # pick up the clicked item
+                                        else:  # an item is already being held
+                                            target.rect.center = j.rect.center  # the item in hand gets the clicked item's attributes
+                                            target.tags[2] = j.tags[2]
+                                            target.tags[0] = j.tags[0]
+                                            target = j  # the clicked item gets picked up, the previously held item takes its place
+                                        unsuccessful = False
+                                        break
+
+                                if unsuccessful:  # there is no item on the clicked slot
+                                    if target is not None:  # there is an item being held
+                                        target.rect.center = i.rect.center  # the item in hand gets the clicked slot's attributes
+                                        target.tags[2] = i.tags[2]
+                                        target.tags[0] = i.tags[1]
+                                        target = None  # the held item gets put in the empty slot, now there is no item held
+                                    break
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    run = False
+                elif event.key == pygame.K_e:
+                    run = False
+        if globs.quitgame:
+            run = False
+        if run:
+            inventory_gui.draw(window=window)
+
+    # change & save inventory json
+    for i in range(len(inventory["inventory"])):
+        for j in range(len(inventory["inventory"][i][1])):
+            inventory["inventory"][i][1][j][0] = inventory["inventory"][i][0]
+            inventory["inventory"][i][1][j][1] = "unset"
+            inventory["inventory"][i][1][j][2] = 0
+            inventory["inventory"][i][1][j][3] = 0
+    for i in range(len(inventory["hotbar"])):
+        inventory["hotbar"][i][0] = "unset"
+        inventory["hotbar"][i][1] = "unset"
+        inventory["hotbar"][i][2] = 0
+        inventory["hotbar"][i][3] = 0
+
+    for i in inventory_gui.imagegroup:
+        if i.tags[0] == "tab":  # the image is an item inside the tab area
+            for j in range(5):
+                if i.tags[1] == inventory["inventory"][j][0]:  # the images belongs to the the category inv["inv"][j][0]
+                    inventory["inventory"][j][1][i.tags[2]] = [i.tags[1], i.tags[3], i.tags[4], i.tags[5]]  # set item in inventory json
+        elif i.tags[0] == "hotbar":
+            inventory["hotbar"][i.tags[2]] = [i.tags[1], i.tags[3], i.tags[4], i.tags[5]]
+    inventory.save()
+    play_sound('click')
+    return False

@@ -4,10 +4,11 @@ from render.sprites import particle
 from utils import globs, get_outline_mask
 
 class ParticleCloud(pygame.sprite.Sprite):
-    def __init__(self, center, radius, particlesize, color, density, velocity, distribution=0.3,
+    def __init__(self, center, radius, particlesize, color, density, velocity, distribution=0.3, hit=0, damage=0,
                  colorvariation=50, priority=2, no_debug=False, spawnradius=0, spawnregion=(0, 0)):
         pygame.sprite.Sprite.__init__(self)
         self.priority = priority
+        self.damage = damage
         self.no_debug = no_debug
         self.center = list(center)
         self.radius = radius

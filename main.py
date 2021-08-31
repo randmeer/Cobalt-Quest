@@ -65,6 +65,7 @@ if __name__ == '__main__':
             floor = Floor(window=window)
             floor.load()
             floor.start_loop()
+            floor.save()
         else:
             print("yeah so there is no current state u f**ked up")
             run = False

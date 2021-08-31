@@ -4,7 +4,7 @@ from utils import globs, mp_screen, set_global_defaults, play_sound, get_setting
 from render.elements import button, image, label
 from render import gui
 from utils.images import bg_gui_tx, logo_tx
-from logic.gui.overlay import show_settings, alert
+from logic.gui.overlay import show_settings, alert, show_inventory
 
 
 def show_menu(window):
@@ -48,7 +48,10 @@ def show_menu(window):
                             if i.tags[0] == "shop":
                                 alert(window, menu_gui.get_surface(), ["THE SHOP IS NOT AVAILABLE YET"])
                             if i.tags[0] == "inventory":
-                                alert(window, menu_gui.get_surface(), ["THE INVENTORY IS NOT AVAILABLE YET"])
+                                if get_setting("current_savegame") == "":
+                                    alert(window, menu_gui.get_surface(), ["PLEASE SELECT A SAVEGAME FIRST"])
+                                else:
+                                    show_inventory(window=window, background=bg_gui_tx)
                             if i.tags[0] == "settings":
                                 show_settings(window=window, background=bg_gui_tx)
             if event.type == pygame.KEYDOWN:

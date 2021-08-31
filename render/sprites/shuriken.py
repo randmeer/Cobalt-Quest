@@ -2,7 +2,7 @@ import math
 import pygame
 
 from utils import play_sound, globs, get_outline_mask
-from utils.images import shuriken_tx
+from utils.images import item_tx
 from render.sprites import particle_cloud
 
 
@@ -10,7 +10,7 @@ class Shuriken(pygame.sprite.Sprite):
     def __init__(self, pos, radians, velocity=3, exploding=False):
         pygame.sprite.Sprite.__init__(self)
         self.priority = 2
-        self.original_image = shuriken_tx
+        self.original_image = item_tx["shuriken"]
         self.image = self.original_image
         self.pos, self.radians, self.velocity = pos, radians, velocity
         self.dx = math.sin(self.radians)
@@ -76,7 +76,7 @@ class Shuriken(pygame.sprite.Sprite):
                                                       distribution=0.8, colorvariation=5))
         particles.append(particle_cloud.ParticleCloud(center=(self.rect.centerx, self.rect.centery), radius=15,
                                                       particlesize=(3, 3), color=(200, 70, 0), density=10, velocity=40,
-                                                      distribution=0.8, colorvariation=30))
+                                                      distribution=0.8, colorvariation=30, damage=20))
         particles.append(particle_cloud.ParticleCloud(center=(self.rect.centerx, self.rect.centery), radius=25,
                                                       particlesize=(1, 1), color=(200, 100, 0), density=20, velocity=50,
                                                       distribution=0.7, colorvariation=5))

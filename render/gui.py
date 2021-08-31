@@ -52,6 +52,7 @@ class GUI:
                 i.draw(surface=og_surf)
         if self.hasimages:
             for i in self.imagegroup:
+                i.update()
                 i.draw(surface=og_surf)
         return og_surf
 

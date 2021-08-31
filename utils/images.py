@@ -225,19 +225,27 @@ block_tx = {
     2: pygame.image.load(tex_dir + "stone_bricks.png").convert_alpha(),
 }
 
+item_tx = {
+    "dagger": pygame.image.load(tex_dir + "dagger.png").convert_alpha(),
+    "katana": pygame.image.load(tex_dir + "cross.png").convert_alpha(),             # X
+    "bow": pygame.image.load(tex_dir + "bow.png").convert_alpha(),
+    "shuriken": pygame.image.load(tex_dir + "shuriken.png").convert_alpha(),
+    "unset": None,
+    "rande": pygame.image.load(tex_dir + "rande.png").convert_alpha()
+}
+
+
 scene_test_tx = pygame.image.load(tex_dir + "debug_scene.png").convert_alpha()
 
 bg_gui_tx = pygame.image.load(tex_dir + "background_menu.png").convert_alpha()
 bg_tx = pygame.image.load(tex_dir + "background.png").convert_alpha()
 
 Elia03_tx = pygame.image.load(tex_dir + "3lia03.png").convert_alpha()
-bow_tx = pygame.image.load(tex_dir + "bow.png").convert_alpha()
 brick_tx = pygame.image.load(tex_dir + "brick.png").convert_alpha()
 broken_heart_tx = pygame.image.load(tex_dir + "broken_heart.png").convert_alpha()
 chest_tx = pygame.image.load(tex_dir + "chest.png").convert_alpha()
 cross_tx = pygame.image.load(tex_dir + "cross.png").convert_alpha()
 crosshair_tx = pygame.image.load(tex_dir + "crosshair.png").convert_alpha()
-dagger_tx = pygame.image.load(tex_dir + "dagger.png").convert_alpha()
 damage_tx = pygame.image.load(tex_dir + "damage.png").convert_alpha()
 damage_player_tx = pygame.image.load(tex_dir + "damage_player.png").convert_alpha()
 defeat_tx = pygame.image.load(tex_dir + "defeat.png").convert_alpha()
@@ -263,7 +271,6 @@ rande_tx = pygame.image.load(tex_dir + "rande.png").convert_alpha()
 sandstone_tx = pygame.image.load(tex_dir + "sandstone.png").convert_alpha()
 selection_tx = pygame.image.load(tex_dir + "selection.png").convert_alpha()
 settings_menu_tx = pygame.image.load(tex_dir + "settings_menu.png").convert_alpha()
-shuriken_tx = pygame.image.load(tex_dir + "shuriken.png").convert_alpha()
 tick_tx = pygame.image.load(tex_dir + "tick.png").convert_alpha()
 title_screen_tx = pygame.image.load(tex_dir + "title_screen.png").convert_alpha()
 victory_tx = pygame.image.load(tex_dir + "victory.png").convert_alpha()

@@ -3,12 +3,11 @@ import pygame
 import QuickJSON
 
 import utils
-from utils import globs, mp_scene, get_setting, render_text, rta_dual, angle_deg, conv_deg_rad
+from utils import globs, mp_scene, get_setting, render_text, rta_dual, angle_deg, conv_deg_rad, set_global_defaults, set_game_defaults
 from utils.images import bg_tx
 from render.sprites import gui, shuriken, dagger
 from render import camera
-from utils import set_global_defaults, set_game_defaults
-from logic.gui.overlay import pause_screen
+from logic.gui.overlay import pause_screen, show_inventory
 from render.sprites import block, particle_cloud
 from render.sprites.entity import player, apprentice
 
@@ -45,14 +44,12 @@ class Floor:
         self.player = None
 
         self.now, self.prev_time, self.delta_time = 0, 0, 0
-        self.resizeupdate = False
         self.click = False
         self.clock = pygame.time.Clock()
         self.run = True
         self.auto_render = True
         self.events = []
         self.scene = None
-
         self.cooldown = 0.5
 
     def load(self):
@@ -87,13 +84,20 @@ class Floor:
         for i in self.floorjson["entitys"]:
             if i[0] == "apprentice":
                 self.entitys.append(apprentice.Apprentice(pos=(i[1][0], i[1][1]), health=i[2], weapon=i[3]))
+                # print(i)
+                # print("test")
 
         # create scene and set camera target
         self.scene = camera.Scene(path=f"./data/savegames/{get_setting('current_savegame')}/dungeons/{globs.dungeon_str}/{globs.floor_str}.json", sidelength=self.sidelength)
         self.scene.camera.follow(target=self.player)
 
     def save(self):
+        self.floorjson["entitys"] = []
+        for i in self.entitys:
+            self.floorjson["entitys"].append(["apprentice", [i.position[0], i.position[1]], i.health, i.weapon])
+        self.floorjson["player"] = self.player.position
         self.floorjson.save()
+        self.guisprite.save_hotbar()
 
     def single_loop(self):
         """
@@ -121,7 +125,9 @@ class Floor:
         mp = mp_scene(scene=self.scene)
         self.player.update(blocks=self.blocks, webs=[], particles=self.particles, delta_time=self.delta_time)
         for i in self.entitys:
-            i.update(webs=[], blocks=self.blocks, particles=self.particles)
+            i.update(webs=[], blocks=self.blocks, particles=self.particles, delta_time=self.delta_time)
+            if i.dead:
+                self.entitys.remove(i)
         for i in self.particles:
             i.update(delta_time=self.delta_time)
             x = 0
@@ -135,6 +141,17 @@ class Floor:
             i.update(delta_time=self.delta_time, blocks=self.blocks, entitys=self.entitys, particles=self.particles)
         self.scene.update(playerentity=self.player, blocks=self.blocks, entitys=self.entitys, particles=self.particles, othersprites=self.othersprites)
         self.guisprite.update()
+
+        # handle object interactions
+        for i in self.entitys:
+            if i.hc < 0:
+                for j in self.particles:
+                    if i.hitbox.colliderect(j.rect) and j.damage > 0:
+                        i.health -= j.damage
+                        i.hc = i.hc_max
+                        print("ouch")
+                        break
+
         self.particles.append(particle_cloud.ParticleCloud(center=(self.scene.surface.get_width()/2, 0), radius=self.scene.surface.get_width(),
                                                            particlesize=(1, 1), color=(255, 0, 0), density=1, spawnregion=(2, self.scene.surface.get_height()/2),
                                                            velocity=100, priority=0, no_debug=True, distribution=0.5, colorvariation=100))
@@ -150,27 +167,35 @@ class Floor:
             # buttonevents
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == pygame.BUTTON_LEFT and self.cooldown <= 0:
-                    if self.guisprite.weapons[self.guisprite.weapon][0] == "dagger":
+                    if self.guisprite.hotbar[self.guisprite.slot][1] == "dagger":
                         utils.play_sound('swing')
                         self.othersprites.append(dagger.Dagger(playerpos=self.player.hitbox.center, mousepos=mp))
                         self.cooldown = 0.25
-                    if self.guisprite.weapons[self.guisprite.weapon][1] > 0:
-                        if self.guisprite.weapons[self.guisprite.weapon][0] == "shuriken":
+                    if self.guisprite.hotbar[self.guisprite.slot][2] > 0:
+                        if self.guisprite.hotbar[self.guisprite.slot][1] == "shuriken":
                             utils.play_sound('swing')
                             self.othersprites.append(shuriken.Shuriken(exploding=True, pos=self.player.hitbox.center, radians=conv_deg_rad(angle_deg(self.player.hitbox.center, mp))))
-                        self.guisprite.weapons[self.guisprite.weapon][1] -= 1
+                        self.guisprite.hotbar[self.guisprite.slot][2] -= 1
                         self.cooldown = 0.1
                 if event.button == pygame.BUTTON_RIGHT:
                     pass
                 if event.button == pygame.BUTTON_WHEELUP:
-                    self.guisprite.set_selectangle(self.guisprite.weapon - 1)
+                    self.guisprite.set_selectangle(self.guisprite.slot - 1)
                 if event.button == pygame.BUTTON_WHEELDOWN:
-                    self.guisprite.set_selectangle(self.guisprite.weapon + 1)
+                    self.guisprite.set_selectangle(self.guisprite.slot + 1)
             # keyevents
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     pause_screen(window=self.window, background=self.surface)
-                    self.resizeupdate = True
+                    self.prev_time = time.time()
+                elif event.key == pygame.K_e:
+                    self.surface.blit(bg_tx, (0, 0))
+                    self.scene.draw(self.surface)
+                    self.guisprite.save_hotbar()
+                    show_inventory(window=self.window, background=self.surface)
+                    self.guisprite.load_hotbar()
+                    self.guisprite.update()
+                    self.prev_time = time.time()
                 elif event.key == pygame.K_b:
                     if key[pygame.K_F3]:
                         globs.soft_debug = not globs.soft_debug
@@ -195,6 +220,7 @@ class Floor:
             globs.menu = True
 
     def start_loop(self):
+        self.prev_time = time.time()
         self.run = True
         while self.run:
             self.single_loop()

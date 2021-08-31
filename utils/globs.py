@@ -1,4 +1,4 @@
-VERSION = "0.9.3"
+VERSION = "0.9.4"
 
 # VIDEO SETTINGS:
 SIZE = (256, 144)
