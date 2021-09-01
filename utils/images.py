@@ -225,6 +225,10 @@ block_tx = {
     2: pygame.image.load(tex_dir + "stone_bricks.png").convert_alpha(),
 }
 
+item_ol = {
+    "weapon": pygame.image.load(tex_dir + "weapon.png").convert_alpha(),
+}
+
 item_tx = {
     "dagger": pygame.image.load(tex_dir + "dagger.png").convert_alpha(),
     "katana": pygame.image.load(tex_dir + "cross.png").convert_alpha(),             # X
@@ -233,7 +237,6 @@ item_tx = {
     "unset": None,
     "rande": pygame.image.load(tex_dir + "rande.png").convert_alpha()
 }
-
 
 scene_test_tx = pygame.image.load(tex_dir + "debug_scene.png").convert_alpha()
 

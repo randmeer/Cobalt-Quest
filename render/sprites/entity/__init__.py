@@ -27,7 +27,6 @@ class Entity(pygame.sprite.Sprite):
         self.rotation = rotation
         self.auto_rotation = auto_rotation
         self.velocity = 25
-        #self.last_move_time = time.time()
         self.hitbox = pygame.Rect((0, 0), hitboxsize)
         self.hitboxanchor = hitboxanchor
         self.auto_move = auto_movement
@@ -45,6 +44,8 @@ class Entity(pygame.sprite.Sprite):
         self.move(webs=webs, blocks=blocks, particles=particles, delta_time=delta_time)
         if self.health <= 0:
             self.dead = True
+            particles.append(particle_cloud.ParticleCloud(center=self.hitbox.center, spawnregion=(self.hitbox.width/2, self.hitbox.height/2), radius=self.hitbox.height, particlesize=(1, 1), color=(255, 50, 0), density=40, velocity=50, colorvariation=20, priority=3, distribution=0.5))
+            particles.append(particle_cloud.ParticleCloud(center=self.hitbox.center, radius=self.hitbox.height/1.5, particlesize=(2, 2), color=(100, 10, 0), density=30, velocity=30, colorvariation=20, priority=3, distribution=0.5))
         if self.hc >= 0:
             self.hc -= delta_time
 

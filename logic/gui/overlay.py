@@ -220,7 +220,6 @@ def _show_settings(window, background):
                                     settings["current_savegame"] = ""
                                     settings.save()
                                     return True
-
                                 # clicked label is saves.create
                                 if i.tags[0] == "saves" and i.tags[1] == "create":
                                     for j in settings_gui.labelgroup:
@@ -341,6 +340,8 @@ def _show_inventory(window, background):
     # overlay tab    ["overlay,  "tab",    slot]
     # item hotbar    ["hotbar",  category, slot, name]
     # item tab       ["tab",     category, slot, name]
+    # label hotbar   ["hotbar",  category, slot]
+    # label tab      ["tab",     category, slot]
 
     # add overlays
     slots = []
@@ -356,9 +357,13 @@ def _show_inventory(window, background):
         for j in range(len(inventory["inventory"][i][1])):
             if item_tx[inventory["inventory"][i][1][j][1]] is not None:
                 images.append(image.Image(tags=["tab", inventory["inventory"][i][0], j, inventory["inventory"][i][1][j][1], inventory["inventory"][i][1][j][2], inventory["inventory"][i][1][j][3]], image=item_tx[inventory["inventory"][i][1][j][1]], relpos=(slots[j])))
+                if inventory["inventory"][i][1][j][2] > 0:
+                    labels.append(label.Label(tags=["tab", inventory["inventory"][i][0], j], text=str(inventory["inventory"][i][1][j][2]), anchor="topleft", relpos=(slots[j][0]-0.022, slots[j][1]+0.01), color=(255, 255, 255)))
     for i in range(len(inventory["hotbar"])):
         if item_tx[inventory["hotbar"][i][1]] is not None:
             images.append(image.Image(tags=["hotbar", inventory["hotbar"][i][0], i, inventory["hotbar"][i][1], inventory["hotbar"][i][2], inventory["hotbar"][i][3]], image=item_tx[inventory["hotbar"][i][1]], relpos=(0.605+i/14.25, 0.925)))
+            if inventory["hotbar"][i][2] > 0:
+                labels.append(label.Label(tags=["hotbar", inventory["hotbar"][i][0], i], text=str(inventory["hotbar"][i][2]), anchor="topleft", relpos=(0.605+i/14.25-0.022, 0.925+0.005), color=(255, 255, 255)))
 
     # create gui
     inventory_gui = gui.GUI(background=background, overlay=200, labels=labels, images=images, buttons=[
@@ -370,15 +375,20 @@ def _show_inventory(window, background):
         button.Button(tags=["", ""], anchor="bottomleft", relsize=(0.4, 0.1), text="SAVE AND RETURN", relpos=(0.05, 0.95))])
     inventory_gui.buttongroup[0].set_pressed(press=True)
     current_tab = "weapon"
+    target = None
+    target_label = None
 
     def set_current_tab():
         for i in inventory_gui.imagegroup:
             i.set_visible(visible=True)
             if i.tags[0] == "tab" and i.tags[1] != current_tab:
                 i.set_visible(visible=False)
+        for i in inventory_gui.labelgroup:
+            i.set_visible(visible=True)
+            if i.tags[0] == "tab" and i.tags[1] != current_tab:
+                i.set_visible(visible=False)
     set_current_tab()
 
-    target = None
     run = True
     clock = pygame.time.Clock()
     while run:
@@ -386,6 +396,8 @@ def _show_inventory(window, background):
         mp = mp_screen()
         if target is not None:
             target.rect.center = mp
+            if target_label is not None:
+                target_label.rect.topleft = (target.rect.centerx-6, target.rect.centery+1)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -397,7 +409,7 @@ def _show_inventory(window, background):
                     if inventory_gui.buttongroup[5].rect.collidepoint(mp):
                         run = False
                     for i in range(5):
-                        if inventory_gui.buttongroup[i].rect.collidepoint(mp):  # a tab button is pressed
+                        if inventory_gui.buttongroup[i].rect.collidepoint(mp) and target is None:  # a tab button is pressed and no item is held
                             for j in range(5):
                                 inventory_gui.buttongroup[j].set_pressed(press=False)  # set all tab buttons not pressed
                             inventory_gui.buttongroup[i].set_pressed(press=True)  # set clicked tab button pressed
@@ -405,29 +417,119 @@ def _show_inventory(window, background):
                             set_current_tab()
                             play_sound('click')
 
-                    for i in inventory_gui.imagegroup:
-                        if i.rect.collidepoint(mp):  # some image is clicked
-                            if i.tags[0] == "overlay":  # an overlay image [i] is clicked
-                                unsuccessful = True
-                                for j in inventory_gui.imagegroup:
-                                    if j.tags[0] == i.tags[1] and j.tags[2] == i.tags[2]:  # there is an item [j] on the clicked slot
-                                        if target is None:  # no item is held
-                                            target = j  # pick up the clicked item
-                                        else:  # an item is already being held
-                                            target.rect.center = j.rect.center  # the item in hand gets the clicked item's attributes
-                                            target.tags[2] = j.tags[2]
-                                            target.tags[0] = j.tags[0]
-                                            target = j  # the clicked item gets picked up, the previously held item takes its place
-                                        unsuccessful = False
-                                        break
+                    for ovlay in inventory_gui.imagegroup:
+                        if ovlay.rect.collidepoint(mp):
+                            if ovlay.tags[0] == "overlay":
+                                # THE CLICKED SLOT IS INSIDE THE TAB
+                                if ovlay.tags[1] == "tab":
+                                    unsuccessful = True
+                                    # THERE IS AN ITEM ON THE CLICKED SLOT
+                                    for item in inventory_gui.imagegroup:
+                                        if item.tags[0] == "tab" and item.tags[1] == current_tab and item.tags[2] == ovlay.tags[2] and item.rect.center == ovlay.rect.center:
+                                            # THERE IS NO ITEM HELD
+                                            if target is None:
+                                                # pick up item
+                                                target = item
+                                                for labl in inventory_gui.labelgroup:
+                                                    if labl.tags[0] == "tab" and labl.tags[1] == current_tab and labl.tags[2] == ovlay.tags[2]:
+                                                        target_label = labl
+                                            # THERE IS AN ITEM HELD
+                                            else:
+                                                # THE ITEM HELD IS FROM THIS TAB
+                                                if target.tags[1] == current_tab:
+                                                    # switch places
+                                                    potential_label = None
+                                                    for labl in inventory_gui.labelgroup:
+                                                        if labl.tags[0] == "tab" and labl.tags[1] == current_tab and labl.tags[2] == ovlay.tags[2] and labl.rect.topleft == (ovlay.rect.centerx-6, ovlay.rect.centery+1):
+                                                            potential_label = labl
+                                                    if target_label is not None:
+                                                        target_label.rect.topleft = (ovlay.rect.centerx-6, ovlay.rect.centery+1)
+                                                        target_label.tags[2] = ovlay.tags[2]
+                                                        target_label.tags[0] = ovlay.tags[1]
+                                                    target.rect.center = item.rect.center
+                                                    target.tags[2] = item.tags[2]
+                                                    target.tags[0] = item.tags[0]
+                                                    target_label = potential_label
+                                                    target = item
+                                                # THE ITEM HELD IS NOT FROM THIS TAB
+                                                else:
+                                                    pass
+                                            unsuccessful = False
+                                            break
+                                    # THERE IS NO ITEM ON THE CLICKED SLOT
+                                    if unsuccessful:
+                                        # THERE IS NO ITEM HELD
+                                        if target is None:
+                                            # do nothing
+                                            pass
+                                        # THERE IS AN ITEM HELD
+                                        else:
+                                            # THE ITEM HELD IS FROM THIS TAB
+                                            if target.tags[1] == current_tab:
+                                                # put down item
+                                                if target_label is not None:
+                                                    target_label.rect.topleft = (ovlay.rect.centerx-6, ovlay.rect.centery+1)
+                                                    target_label.tags[2] = ovlay.tags[2]
+                                                    target_label.tags[0] = ovlay.tags[1]
+                                                target.rect.center = ovlay.rect.center
+                                                target.tags[2] = ovlay.tags[2]
+                                                target.tags[0] = ovlay.tags[1]
+                                                target_label = None
+                                                target = None
+                                            # THE ITEM HELD IS NOT FROM THIS TAB
+                                            else:
+                                                # do nothing
+                                                pass
+                                # THE CLICKED SLOT IS INSIDE THE HOTBAR
+                                elif ovlay.tags[1] == "hotbar":
+                                    unsuccessful = True
+                                    # THERE IS AN ITEM ON THE CLICKED SLOT
+                                    for item in inventory_gui.imagegroup:
+                                        if item.tags[0] == "hotbar" and item.tags[2] == ovlay.tags[2] and item.rect.center == ovlay.rect.center:
+                                            # THERE IS NO ITEM HELD
+                                            if target is None:
+                                                # pick up item
+                                                target = item
+                                                for labl in inventory_gui.labelgroup:
+                                                    if labl.tags[0] == "hotbar" and labl.tags[2] == ovlay.tags[2]:
+                                                        target_label = labl
+                                            # THERE IS AN ITEM HELD
+                                            else:
+                                                # switch places
+                                                potential_label = None
+                                                for labl in inventory_gui.labelgroup:
+                                                    if labl.tags[0] == "hotbar" and labl.tags[2] == ovlay.tags[2] and labl.rect.topleft == (ovlay.rect.centerx-6, ovlay.rect.centery+1):
+                                                        potential_label = labl
+                                                if target_label is not None:
+                                                    target_label.rect.topleft = (ovlay.rect.centerx-6, ovlay.rect.centery+1)
+                                                    target_label.tags[2] = ovlay.tags[2]
+                                                    target_label.tags[0] = ovlay.tags[1]
+                                                target.rect.center = item.rect.center
+                                                target.tags[2] = item.tags[2]
+                                                target.tags[0] = item.tags[0]
+                                                target_label = potential_label
+                                                target = item
+                                            unsuccessful = False
+                                            break
+                                    # THERE IS NO ITEM ON THE CLICKED SLOT
+                                    if unsuccessful:
+                                        # THERE IS NO ITEM HELD
+                                        if target is None:
+                                            # do nothing
+                                            pass
+                                        # THERE IS AN ITEM HELD
+                                        else:
+                                            # put down item
+                                            if target_label is not None:
+                                                target_label.rect.topleft = (ovlay.rect.centerx-6, ovlay.rect.centery+1)
+                                                target_label.tags[2] = ovlay.tags[2]
+                                                target_label.tags[0] = ovlay.tags[1]
+                                            target.rect.center = ovlay.rect.center
+                                            target.tags[2] = ovlay.tags[2]
+                                            target.tags[0] = ovlay.tags[1]
+                                            target_label = None
+                                            target = None
 
-                                if unsuccessful:  # there is no item on the clicked slot
-                                    if target is not None:  # there is an item being held
-                                        target.rect.center = i.rect.center  # the item in hand gets the clicked slot's attributes
-                                        target.tags[2] = i.tags[2]
-                                        target.tags[0] = i.tags[1]
-                                        target = None  # the held item gets put in the empty slot, now there is no item held
-                                    break
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False

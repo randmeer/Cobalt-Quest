@@ -41,17 +41,16 @@ class GUI:
             overlay.fill(self.overlaycolor)
             overlay.set_alpha(self.overlay_alpha)
             og_surf.blit(overlay, (0, 0))
-        # og_surf.blit(logo_texture, (og_surf.get_width()/4-logo_texture.get_width()/2, og_surf.get_height()/4-logo_texture.get_height()/2))
         if self.hasbuttons:
             for i in self.buttongroup:
                 i.update()
                 i.draw(surface=og_surf)
-        if self.haslabels:
-            for i in self.labelgroup:
-                i.update()
-                i.draw(surface=og_surf)
         if self.hasimages:
             for i in self.imagegroup:
+                i.update()
+                i.draw(surface=og_surf)
+        if self.haslabels:
+            for i in self.labelgroup:
                 i.update()
                 i.draw(surface=og_surf)
         return og_surf
