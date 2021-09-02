@@ -4,10 +4,12 @@ from render.sprites import particle
 from utils import globs, get_outline_mask
 
 class ParticleCloud(pygame.sprite.Sprite):
-    def __init__(self, center, radius, particlesize, color, density, velocity, distribution=0.3, hit=0, damage=0,
+    def __init__(self, center, radius, particlesize, color, density, velocity, distribution=0.3, damagecooldown=0.5, damage=0,
                  colorvariation=50, priority=2, no_debug=False, spawnradius=0, spawnregion=(0, 0)):
         pygame.sprite.Sprite.__init__(self)
         self.priority = priority
+        self.dc = 0
+        self.dc_max = damagecooldown
         self.damage = damage
         self.no_debug = no_debug
         self.center = list(center)
@@ -31,9 +33,17 @@ class ParticleCloud(pygame.sprite.Sprite):
                                 self.radius * 2, self.radius * 2)
         self.rect.center = self.center[0], self.center[1]
 
-    def update(self, delta_time):
+    def update(self, delta_time, entitys, player, particles):
         for i in self.particles:
             i.update(delta_time=delta_time)
+
+        if self.damage > 0:
+            self.dc -= delta_time
+            if self.dc < 0:
+                for i in entitys:
+                    if self.rect.colliderect(i.hitbox):
+                        i.damage(damage=self.damage, particles=particles)
+                        self.dc = self.dc_max
 
     def draw(self, surface):
         for i in self.particles:

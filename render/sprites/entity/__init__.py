@@ -1,14 +1,13 @@
-import time
 import random
 import pygame
 
-from utils import globs, dual_rect_anchor, get_outline_mask, play_sound
+from utils import globs, dual_rect_anchor, debug_outlines, mask_overlay
 from render.sprites import particle_cloud
 
 class Entity(pygame.sprite.Sprite):
 
     def __init__(self, in_web_speed_multiplier=0.75, max_health=20, health=20, damage_overlay_on=True,
-                 immune_to_web=False, hurt_cooldown=1, position=(0, 0), rotation=0, auto_rotation=True,
+                 immune_to_web=False, hurt_cooldown=0.5, position=(0, 0), rotation=0, auto_rotation=True,
                  hitboxsize=(16, 16), hitboxanchor="midbottom", auto_movement=False, auto_distance_max=2000):
         pygame.sprite.Sprite.__init__(self)
         self.dead = False
@@ -49,9 +48,16 @@ class Entity(pygame.sprite.Sprite):
         if self.hc >= 0:
             self.hc -= delta_time
 
-        if self.hc >= self.hc_max - self.hc_ani:
-            self.image = self.image.copy()
-            self.image.fill((255, 0, 0))
+        if self.hc > self.hc_max - self.hc_ani:
+            self.image = mask_overlay(image=self.image)
+
+    def damage(self, damage, particles, pos=None):
+        if pos is None:
+            pos = self.hitbox.center
+        if self.hc < 0:
+            self.health -= damage
+            self.hc = self.hc_max
+        particles.append(particle_cloud.ParticleCloud(center=pos, radius=6, particlesize=(1, 1), color=(200, 20, 0), density=30, velocity=20, priority=1, distribution=0.5))
 
     def check_block_collision(self, blocks):
         # return pygame.sprite.spritecollideany(self, blocks)
@@ -121,25 +127,9 @@ class Entity(pygame.sprite.Sprite):
         if self.offset != [0, 0]:
             particles.append(particle_cloud.ParticleCloud(center=(self.hitbox.midbottom[0], self.hitbox.midbottom[1]-2), radius=3, particlesize=(2, 2), color=(40, 20, 20), density=1, velocity=20, colorvariation=10, priority=self.priority+1))
 
-    # def render_image(self):
-    #    if self.damage_overlay_on and self.hurt_animation_cooldown > 0:
-    #        self.original_image = damage_tx
-    #    if self.auto_rotation:
-    #        self.image = pygame.transform.rotate(self.original_image, int(self.rotation))
-    #    else:
-    #        self.image = self.original_image
-    #    self.rect = self.image.get_rect(center=self.position)
-
     def draw(self, surface):
-        image = self.image.copy()
-
+        if self.dead: return
+        image = self.image
         if globs.soft_debug:
-            surf = pygame.Surface((self.hitbox.width, self.hitbox.height))
-            surf.fill((0, 0, 0))
-            hitoutlinesurf = get_outline_mask(surf, color=(255, 0, 0))
-            surf = pygame.Surface((image.get_width(), image.get_height()))
-            surf.fill((0, 0, 0))
-            outlinesurf = get_outline_mask(surf, color=(255, 255, 255))
-            image.blit(outlinesurf, (0, 0))
-            image.blit(hitoutlinesurf, (self.rect.width / 2 - self.hitbox.width / 2, self.rect.height - self.hitbox.height))
+            image = debug_outlines(self.image, self.hitbox, self.rect, anchor="midbottom")
         surface.blit(image, (self.rect.x + surface.get_width() / 2, self.rect.y + surface.get_height() / 2))

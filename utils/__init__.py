@@ -44,6 +44,13 @@ def conv_deg_rad(deg):
     rad = deg * math.pi / 180
     return rad
 
+def conv_rad_deg(rad):
+    """
+    radiants --> degrees
+    """
+    deg = rad * 180 / math.pi
+    return deg
+
 def sign(num):
     """
     positive value --> 1
@@ -359,3 +366,28 @@ def perfect_outline_2(surface, img, loc):
     surface.blit(mask_surf, (loc[0] + 1, loc[1]))
     surface.blit(mask_surf, (loc[0], loc[1] - 1))
     surface.blit(mask_surf, (loc[0], loc[1] + 1))
+
+def debug_outlines(image, hitbox, rect, anchor="center"):
+    rectcopy = pygame.Rect((0, 0), rect.size)
+    hitboxcopy = pygame.Rect((0, 0), hitbox.size)
+    dual_rect_anchor(hitboxcopy, rectcopy, anchor)
+    img = image.copy()
+    surf = pygame.Surface((hitbox.width, hitbox.height))
+    surf.fill((0, 0, 0))
+    hitoutlinesurf = get_outline_mask(surf, color=(255, 0, 0))
+    surf = pygame.Surface((img.get_width(), img.get_height()))
+    surf.fill((0, 0, 0))
+    outlinesurf = get_outline_mask(surf, color=(255, 255, 255))
+    img.blit(outlinesurf, (0, 0))
+    #img.blit(hitoutlinesurf, (rect.width / 2 - hitbox.width / 2, rect.height / 2 - hitbox.height / 2))
+    img.blit(hitoutlinesurf, hitboxcopy)
+
+    return img
+
+def mask_overlay(image, color=(255, 0, 0), opacity=64):
+    image = image.copy()
+    mask = pygame.mask.from_surface(image)
+    surf = mask.to_surface(setcolor=color, unsetcolor=None)
+    surf.set_alpha(opacity)
+    image.blit(surf, (0, 0))
+    return image

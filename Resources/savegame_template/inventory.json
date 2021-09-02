@@ -3,13 +3,13 @@
   "mana": 99,
   "inventory": [
   ["weapon", [
+    ["weapon", "rande", 20, -1],
+    ["weapon", "rande", -1, -1],
+    ["weapon", "rande", 99, -1],
     ["weapon", "rande", -1, -1],
     ["weapon", "rande", -1, -1],
     ["weapon", "rande", -1, -1],
-    ["weapon", "rande", -1, -1],
-    ["weapon", "rande", -1, -1],
-    ["weapon", "rande", -1, -1],
-    ["weapon", "unset", -1, -1],
+    ["weapon", "unset", 5, -1],
     ["weapon", "unset", -1, -1],
     ["weapon", "rande", -1, -1],
     ["weapon", "unset", -1, -1],
@@ -34,9 +34,9 @@
     ["weapon", "unset", -1, -1],
     ["weapon", "unset", -1, -1]]],
   ["armor", [
-    ["armor", "unset", -1, -1],
-    ["armor", "unset", -1, -1],
-    ["armor", "unset", -1, -1],
+    ["armor", "katana", -1, -1],
+    ["armor", "rande", -1, -1],
+    ["armor", "katana", -1, -1],
     ["armor", "unset", -1, -1],
     ["armor", "unset", -1, -1],
     ["armor", "unset", -1, -1],
@@ -65,9 +65,9 @@
     ["armor", "unset", -1, -1],
     ["armor", "unset", -1, -1]]],
   ["tool", [
-    ["tool", "unset", -1, -1],
-    ["tool", "unset", -1, -1],
-    ["tool", "unset", -1, -1],
+    ["tool", "dagger", -1, -1],
+    ["tool", "dagger", -1, -1],
+    ["tool", "dagger", -1, -1],
     ["tool", "unset", -1, -1],
     ["tool", "unset", -1, -1],
     ["tool", "unset", -1, -1],
@@ -160,9 +160,9 @@
   "hotbar": [
     ["weapon", "dagger", -1, 0.25],
     ["weapon", "katana", -1, 1.00],
-    ["weapon", "shuriken", 25, 0.25],
-    ["weapon", "bow", 10, 0.50],
-    ["weapon", "shuriken", -1, 0.00],
+    ["weapon", "shuriken", 100000, 0.25],
+    ["weapon", "bow", 10000, 1.00],
+    ["weapon", "unset", -1, 0.00],
     ["weapon", "unset", -1, 0.00]
   ]
 }

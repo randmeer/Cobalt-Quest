@@ -29,3 +29,5 @@ class Dagger(pygame.sprite.Sprite):
     def draw(self, surface):
         if self.dead: return
         surface.blit(self.image, (self.rect.x + surface.get_width() / 2, self.rect.y + surface.get_height() / 2))
+
+# TODO: get the mask of the swing and use collidemask to damage enemies

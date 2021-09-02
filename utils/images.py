@@ -234,6 +234,7 @@ item_tx = {
     "katana": pygame.image.load(tex_dir + "cross.png").convert_alpha(),             # X
     "bow": pygame.image.load(tex_dir + "bow.png").convert_alpha(),
     "shuriken": pygame.image.load(tex_dir + "shuriken.png").convert_alpha(),
+    "arrow": pygame.image.load(tex_dir + "arrow.png").convert_alpha(),
     "unset": None,
     "rande": pygame.image.load(tex_dir + "rande.png").convert_alpha()
 }

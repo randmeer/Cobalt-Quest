@@ -5,12 +5,12 @@ import QuickJSON
 import utils
 from utils import globs, mp_scene, get_setting, render_text, rta_dual, angle_deg, conv_deg_rad, set_global_defaults, set_game_defaults
 from utils.images import bg_tx
-from render.sprites import gui, shuriken, dagger
+from render.sprites import gui, dagger
 from render import camera
 from logic.gui.overlay import pause_screen, show_inventory
 from render.sprites import block, particle_cloud
 from render.sprites.entity import player, apprentice
-
+from render.sprites.projectile import shuriken, arrow
 
 class Floor:
 
@@ -84,8 +84,6 @@ class Floor:
         for i in self.floorjson["entitys"]:
             if i[0] == "apprentice":
                 self.entitys.append(apprentice.Apprentice(pos=(i[1][0], i[1][1]), health=i[2], weapon=i[3]))
-                # print(i)
-                # print("test")
 
         # create scene and set camera target
         self.scene = camera.Scene(path=f"./data/savegames/{get_setting('current_savegame')}/dungeons/{globs.dungeon_str}/{globs.floor_str}.json", sidelength=self.sidelength)
@@ -129,7 +127,7 @@ class Floor:
             if i.dead:
                 self.entitys.remove(i)
         for i in self.particles:
-            i.update(delta_time=self.delta_time)
+            i.update(delta_time=self.delta_time, entitys=self.entitys, player=self.player, particles=self.particles)
             x = 0
             for j in i.particles:
                 if j.dead:
@@ -139,18 +137,10 @@ class Floor:
                     break
         for i in self.othersprites:
             i.update(delta_time=self.delta_time, blocks=self.blocks, entitys=self.entitys, particles=self.particles)
+            if i.dead:
+                self.othersprites.remove(i)
         self.scene.update(playerentity=self.player, blocks=self.blocks, entitys=self.entitys, particles=self.particles, othersprites=self.othersprites)
         self.guisprite.update()
-
-        # handle object interactions
-        for i in self.entitys:
-            if i.hc < 0:
-                for j in self.particles:
-                    if i.hitbox.colliderect(j.rect) and j.damage > 0:
-                        i.health -= j.damage
-                        i.hc = i.hc_max
-                        print("ouch")
-                        break
 
         self.particles.append(particle_cloud.ParticleCloud(center=(self.scene.surface.get_width()/2, 0), radius=self.scene.surface.get_width(),
                                                            particlesize=(1, 1), color=(255, 0, 0), density=1, spawnregion=(2, self.scene.surface.get_height()/2),
@@ -175,6 +165,9 @@ class Floor:
                         if self.guisprite.hotbar[self.guisprite.slot][1] == "shuriken":
                             utils.play_sound('swing')
                             self.othersprites.append(shuriken.Shuriken(exploding=True, pos=self.player.hitbox.center, radians=conv_deg_rad(angle_deg(self.player.hitbox.center, mp))))
+                        elif self.guisprite.hotbar[self.guisprite.slot][1] == "bow":
+                            utils.play_sound('swing')
+                            self.othersprites.append(arrow.Arrow(pos=self.player.hitbox.center, radians=conv_deg_rad(angle_deg(self.player.hitbox.center, mp))))
                         self.guisprite.hotbar[self.guisprite.slot][2] -= 1
                         self.cooldown = 0.1
                 if event.button == pygame.BUTTON_RIGHT:
