@@ -1,7 +1,7 @@
 import pygame
 
 from utils import play_sound
-from utils.images import Texture
+from utils.texture import Texture
 from render.sprites.entity import Entity
 
 class Player(Entity):

@@ -104,6 +104,7 @@ class DefaultError(Exception):
     def __init__(self, errmsg='unknown error has occured'):
         self.errmsg = errmsg
         Exception.__init__(self, errmsg)
+
     def __reduce__(self):
         return self.__class__, self.errmsg
 

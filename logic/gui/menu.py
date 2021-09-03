@@ -3,7 +3,7 @@ import pygame
 from utils import globs, mp_screen, set_global_defaults, play_sound, get_setting
 from render.elements import button, image, label
 from render import gui
-from utils.images import bg_gui_tx, logo_tx
+from utils.images import images
 from logic.gui.overlay import show_settings, alert, show_inventory
 
 
@@ -12,7 +12,7 @@ def show_menu(window):
     set_global_defaults()
 
     menu_gui = gui.GUI(
-        background=bg_gui_tx, overlay=128,
+        background=images["background_menu"], overlay=128,
         buttons=[
             button.Button(tags=["map"], anchor="topleft", relsize=(0.264, 0.1), text="MAP", relpos=(0.225, 0.40)),
             button.Button(tags=["shop"], anchor="topright", relsize=(0.264, 0.1), text="SHOP", relpos=(0.775, 0.40)),
@@ -21,7 +21,7 @@ def show_menu(window):
             button.Button(tags=["settings"], anchor="topleft", relsize=(0.413, 0.1), text="SETTINGS", relpos=(0.225, 0.65)),
             button.Button(tags=["unset2"], anchor="topright", relsize=(0.116, 0.1), text="?", relpos=(0.775, 0.65))],
         images=[
-            image.Image(relpos=(0.5, 0.2), anchor="center", image=logo_tx)],
+            image.Image(relpos=(0.5, 0.2), anchor="center", image=images["logo"])],
         labels=[
             label.Label(text=f"VERSION {globs.VERSION}", relpos=(0.01, 0.98), anchor="bottomleft", color=(12, 18, 26)),
             label.Label(text="RANDE STUDIOS", relpos=(0.01, 0.94), anchor="bottomleft", color=(12, 18, 26))])
@@ -51,9 +51,9 @@ def show_menu(window):
                                 if get_setting("current_savegame") == "":
                                     alert(window, menu_gui.get_surface(), ["PLEASE SELECT A SAVEGAME FIRST"])
                                 else:
-                                    show_inventory(window=window, background=bg_gui_tx)
+                                    show_inventory(window=window, background=images["background_menu"])
                             if i.tags[0] == "settings":
-                                show_settings(window=window, background=bg_gui_tx)
+                                show_settings(window=window, background=images["background_menu"])
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False

@@ -1,7 +1,7 @@
 import pygame
 
 from utils import globs, set_global_defaults, play_sound
-from utils.images import bg_gui_tx
+from utils.images import images
 from render import gui
 from render.elements import label
 
@@ -11,7 +11,7 @@ def show_title_screen(window):
     set_global_defaults()
 
     title_screen_gui = gui.GUI(
-        background=bg_gui_tx, overlay=192,
+        background=images["background_menu"], overlay=192,
         labels=[
             label.Label(text="PRESS ANY KEY TO START", relpos=(0.5, 0.5), anchor="center", color=(255, 255, 255))])
     title_screen_gui.draw(window=window)

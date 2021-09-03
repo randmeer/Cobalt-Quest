@@ -3,7 +3,7 @@ import pygame
 from utils import globs, mp_screen, set_global_defaults, play_sound
 from render.elements import button
 from render import gui
-from utils.images import bg_tx
+from utils.images import images
 
 def show_map(window):
     print("    LEVEL SELECTION START")
@@ -20,7 +20,7 @@ def show_map(window):
         levelbutton = button.Button(relsize=(0.28, 0.22), text=f"LVL {i}", relpos=(lvlrelposx, lvlrelposy))
         levelbuttons.append(levelbutton)
 
-    map_gui = gui.GUI(background=bg_tx, overlay=128, buttons=[
+    map_gui = gui.GUI(background=images["background_menu"], overlay=128, buttons=[
         button.Button(anchor="topleft", relsize=(0.4, 0.1), text="BACK TO MENU", relpos=(0.05, 0.05)), levelbuttons[0]])
 
     clock = pygame.time.Clock()

@@ -4,7 +4,7 @@ import QuickJSON
 
 import utils
 from utils import globs, mp_scene, get_setting, render_text, rta_dual, angle_deg, conv_deg_rad, set_global_defaults, set_game_defaults
-from utils.images import bg_tx
+from utils.images import images
 from render.sprites import gui, dagger
 from render import camera
 from logic.gui.overlay import pause_screen, show_inventory
@@ -42,7 +42,6 @@ class Floor:
         self.particles = []
         self.othersprites = []
         self.player = None
-
         self.now, self.prev_time, self.delta_time = 0, 0, 0
         self.click = False
         self.clock = pygame.time.Clock()
@@ -160,16 +159,17 @@ class Floor:
                     if self.guisprite.hotbar[self.guisprite.slot][1] == "dagger":
                         utils.play_sound('swing')
                         self.othersprites.append(dagger.Dagger(playerpos=self.player.hitbox.center, mousepos=mp))
-                        self.cooldown = 0.25
+                        self.cooldown += 0.25
                     if self.guisprite.hotbar[self.guisprite.slot][2] > 0:
                         if self.guisprite.hotbar[self.guisprite.slot][1] == "shuriken":
                             utils.play_sound('swing')
                             self.othersprites.append(shuriken.Shuriken(exploding=True, pos=self.player.hitbox.center, radians=conv_deg_rad(angle_deg(self.player.hitbox.center, mp))))
+                            self.cooldown += 0.25
                         elif self.guisprite.hotbar[self.guisprite.slot][1] == "bow":
                             utils.play_sound('swing')
                             self.othersprites.append(arrow.Arrow(pos=self.player.hitbox.center, radians=conv_deg_rad(angle_deg(self.player.hitbox.center, mp))))
+                            self.cooldown += 1
                         self.guisprite.hotbar[self.guisprite.slot][2] -= 1
-                        self.cooldown = 0.1
                 if event.button == pygame.BUTTON_RIGHT:
                     pass
                 if event.button == pygame.BUTTON_WHEELUP:
@@ -182,7 +182,7 @@ class Floor:
                     pause_screen(window=self.window, background=self.surface)
                     self.prev_time = time.time()
                 elif event.key == pygame.K_e:
-                    self.surface.blit(bg_tx, (0, 0))
+                    self.surface.blit(images["background"], (0, 0))
                     self.scene.draw(self.surface)
                     self.guisprite.save_hotbar()
                     show_inventory(window=self.window, background=self.surface)
@@ -228,10 +228,10 @@ class Floor:
 
         if globs.hard_debug:
             surface = pygame.Surface(self.window.get_size())
-            surface.blit(pygame.transform.scale(bg_tx, self.window.get_size()), (0, 0))
+            surface.blit(pygame.transform.scale(images["background"], self.window.get_size()), (0, 0))
             self.scene.draw(surface)
         else:
-            self.surface.blit(bg_tx, (0, 0))
+            self.surface.blit(images["background"], (0, 0))
             self.scene.draw(self.surface)
             self.guisprite.draw(self.surface)
             render_text(window=self.surface, text=str(round(self.clock.get_fps())) + "", pos=rta_dual(0.92, 0.02),

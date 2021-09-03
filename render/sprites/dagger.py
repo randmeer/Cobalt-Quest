@@ -1,6 +1,6 @@
 import pygame
 from utils import angle_deg, conv_deg_rad, sin, cos
-from utils.images import Texture
+from utils.texture import Texture
 
 class Dagger(pygame.sprite.Sprite):
     def __init__(self, mousepos, playerpos):

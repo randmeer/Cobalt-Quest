@@ -1,7 +1,7 @@
 import pygame
 import QuickJSON
 
-from utils.images import selection_tx, item_tx, heart_tx, cross_tx
+from utils.images import item_tx, overlays, images
 from render.sprites import progress_bar
 from render.elements import label
 from utils import globs, rta_height, rta_dual_height, get_setting
@@ -40,16 +40,16 @@ class IngameGUI(pygame.sprite.Sprite):
         self.itemtextures = []
         for i in self.hotbar:
             self.itemtextures.append(item_tx[i[1]])
-        self.selectangle = selection_tx
+        self.selectangle = images["selection"]
         self.overlangle = pygame.Surface(rta_dual_height(0.1, 0.1), pygame.SRCALPHA)
         self.overlangle.fill((255, 255, 255))
         self.overlangle.set_alpha(75)
         for i in range(len(self.rects)):
             self.rects[i].size = rta_dual_height(0.1, 0.1)
             self.rects[i].center = (i * rta_height(0.1) + rta_height(0.05) + i * rta_height(0.025), rta_height(0.05))
-        self.bars = [progress_bar.ProgressBar(icon=heart_tx, maxvalue=100, colors=((255, 0, 0), (75, 75, 75)), relsize=(0.3, 0.0347), relpos=(0.02, 0.944)),  # health
-                     progress_bar.ProgressBar(icon=cross_tx, maxvalue=100, colors=((0, 0, 255), (75, 75, 75)), relsize=(0.3, 0.0347), relpos=(0.02, 0.903)),  # mana
-                     progress_bar.ProgressBar(icon=cross_tx, maxvalue=100, colors=((0, 255, 0), (75, 75, 75)), relsize=(0.3, 0.0347), relpos=(0.02, 0.861))]  # progress
+        self.bars = [progress_bar.ProgressBar(icon=images["heart"], maxvalue=100, colors=((255, 0, 0), (75, 75, 75)), relsize=(0.3, 0.0347), relpos=(0.02, 0.944)),  # health
+                     progress_bar.ProgressBar(icon=images["cross"], maxvalue=100, colors=((0, 0, 255), (75, 75, 75)), relsize=(0.3, 0.0347), relpos=(0.02, 0.903)),  # mana
+                     progress_bar.ProgressBar(icon=images["cross"], maxvalue=100, colors=((0, 255, 0), (75, 75, 75)), relsize=(0.3, 0.0347), relpos=(0.02, 0.861))]  # progress
 
     def update(self):
         self.surf_selection = pygame.Surface(rta_dual_height(0.72, 0.1), pygame.SRCALPHA)
@@ -57,7 +57,6 @@ class IngameGUI(pygame.sprite.Sprite):
         self.itemlabels = []
         for i in self.hotbar:
             if i[2] == 0:
-                #print("ITEM ZERO AAA")
                 i[0] = i[1] = "unset"
                 i[2] = i[3] = -1
                 self.resize()
@@ -75,7 +74,7 @@ class IngameGUI(pygame.sprite.Sprite):
 
     def draw(self, surface):
         for i in range(len(self.rects)):
-            self.surf_selection.blit(self.overlangle, self.rects[i])
+            self.surf_selection.blit(overlays[self.hotbar[i][0]][0], self.rects[i])
             if self.itemtextures[i] is not None:
                 self.surf_selection.blit(self.itemtextures[i], (self.rects[i].x + 2, self.rects[i].y + 2))
         for i in self.itemlabels:

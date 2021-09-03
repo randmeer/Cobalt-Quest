@@ -1,4 +1,4 @@
-from utils.images import Texture
+from utils.texture import Texture
 from render.sprites.entity import Entity
 
 class Apprentice(Entity):
