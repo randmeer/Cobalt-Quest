@@ -29,34 +29,35 @@ class Camera:
 
 
 class Scene:
-    # def __init__(self, path, flags=None, depth=None, masks=None):
-    def __init__(self, path, sidelength):
+    def __init__(self, sidelength):
         self.surface = None
         self.rect = None
         self.sidelength = sidelength
         self.objects = []
         self.objects_toblit = []
         self.surface = pygame.Surface((self.sidelength, self.sidelength), pygame.SRCALPHA)
-        # Surface.__init__(self.sidelength, flags, depth, masks)
         self.camera = Camera()
-        print("[Scene] initialized Scene")
 
-    def update(self, playerentity, blocks=None, entitys=None, particles=None, othersprites=None):
+    def update(self, playerentity, blocks=None, entitys=None, particles=None, projectiles=None, melee=None):
         if entitys is None:
             entitys = []
         if blocks is None:
             blocks = []
         if particles is None:
             particles = []
-        if othersprites is None:
-            othersprites = []
+        if projectiles is None:
+            projectiles = []
+        if melee is None:
+            melee = []
         for i in blocks:
             self.objects.append(i)
         for i in entitys:
             self.objects.append(i)
         for i in particles:
             self.objects.append(i)
-        for i in othersprites:
+        for i in projectiles:
+            self.objects.append(i)
+        for i in melee:
             self.objects.append(i)
         self.camera.update()
         self.objects_toblit = self.camera.get_objects(objects=self.objects)

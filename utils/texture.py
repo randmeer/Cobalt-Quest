@@ -71,7 +71,6 @@ class Texture:
             if self.seth_bool:
                 # self.height, self.width = self.seth_value, self.image.get_width()
                 self.frame_count = self.height // self.seth_value
-                print(self.frame_count)
             else:
                 self.frame_count = self.height // self.width
 

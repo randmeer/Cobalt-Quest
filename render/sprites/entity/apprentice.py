@@ -1,5 +1,8 @@
 from utils.texture import Texture
 from render.sprites.entity import Entity
+from render.sprites.projectile.fireball import Fireball
+
+from utils import conv_deg_rad, angle_deg
 
 class Apprentice(Entity):
 
@@ -19,7 +22,12 @@ class Apprentice(Entity):
         self.image = self.tex_idle.get()
         self.rect = self.image.get_rect()
         self.velocity = 5
+        self.attackcooldown = 1
 
-    def update(self, webs, blocks, particles, delta_time):
+    def update(self, webs, blocks, particles, projectiles, player, delta_time):
         if self.dead: return
         self.entity_update(webs=webs, blocks=blocks, particles=particles, delta_time=delta_time)
+        if self.attackcooldown < 0:
+            projectiles.append(Fireball(pos=self.hitbox.center, radians=conv_deg_rad(angle_deg(self.hitbox.center, player.hitbox.center))))
+            self.attackcooldown = 10
+        self.attackcooldown -= delta_time

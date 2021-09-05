@@ -40,7 +40,8 @@ class Floor:
         self.blocks = []
         self.entitys = []
         self.particles = []
-        self.othersprites = []
+        self.projectiles = []
+        self.melee = []
         self.player = None
         self.now, self.prev_time, self.delta_time = 0, 0, 0
         self.click = False
@@ -85,7 +86,7 @@ class Floor:
                 self.entitys.append(apprentice.Apprentice(pos=(i[1][0], i[1][1]), health=i[2], weapon=i[3]))
 
         # create scene and set camera target
-        self.scene = camera.Scene(path=f"./data/savegames/{get_setting('current_savegame')}/dungeons/{globs.dungeon_str}/{globs.floor_str}.json", sidelength=self.sidelength)
+        self.scene = camera.Scene(sidelength=self.sidelength)
         self.scene.camera.follow(target=self.player)
 
     def save(self):
@@ -115,14 +116,15 @@ class Floor:
         self.now = time.time()
         self.delta_time = self.now - self.prev_time
         self.prev_time = self.now
-        self.cooldown -= self.delta_time
+        if self.cooldown > 0:
+            self.cooldown -= self.delta_time
 
         # update objects
         self.click = False
         mp = mp_scene(scene=self.scene)
         self.player.update(blocks=self.blocks, webs=[], particles=self.particles, delta_time=self.delta_time)
         for i in self.entitys:
-            i.update(webs=[], blocks=self.blocks, particles=self.particles, delta_time=self.delta_time)
+            i.update(webs=[], blocks=self.blocks, particles=self.particles, projectiles=self.projectiles, player=self.player, delta_time=self.delta_time)
             if i.dead:
                 self.entitys.remove(i)
         for i in self.particles:
@@ -134,11 +136,15 @@ class Floor:
                 if x == len(i.particles):
                     self.particles.remove(i)
                     break
-        for i in self.othersprites:
-            i.update(delta_time=self.delta_time, blocks=self.blocks, entitys=self.entitys, particles=self.particles)
+        for i in self.projectiles:
+            i.update(delta_time=self.delta_time, blocks=self.blocks, entitys=self.entitys, particles=self.particles, player=self.player, projectiles=self.projectiles)
             if i.dead:
-                self.othersprites.remove(i)
-        self.scene.update(playerentity=self.player, blocks=self.blocks, entitys=self.entitys, particles=self.particles, othersprites=self.othersprites)
+                self.projectiles.remove(i)
+        for i in self.melee:
+            i.update(delta_time=self.delta_time, blocks=self.blocks, entitys=self.entitys, particles=self.particles, player=self.player, projectiles=self.projectiles)
+            if i.dead:
+                self.melee.remove(i)
+        self.scene.update(playerentity=self.player, blocks=self.blocks, entitys=self.entitys, particles=self.particles, projectiles=self.projectiles, melee=self.melee)
         self.guisprite.update()
 
         self.particles.append(particle_cloud.ParticleCloud(center=(self.scene.surface.get_width()/2, 0), radius=self.scene.surface.get_width(),
@@ -158,16 +164,16 @@ class Floor:
                 if event.button == pygame.BUTTON_LEFT and self.cooldown <= 0:
                     if self.guisprite.hotbar[self.guisprite.slot][1] == "dagger":
                         utils.play_sound('swing')
-                        self.othersprites.append(dagger.Dagger(playerpos=self.player.hitbox.center, mousepos=mp))
-                        self.cooldown += 0.25
+                        self.melee.append(dagger.Dagger(playerpos=self.player.hitbox.center, mousepos=mp))
+                        self.cooldown += 0.5
                     if self.guisprite.hotbar[self.guisprite.slot][2] > 0:
                         if self.guisprite.hotbar[self.guisprite.slot][1] == "shuriken":
                             utils.play_sound('swing')
-                            self.othersprites.append(shuriken.Shuriken(exploding=True, pos=self.player.hitbox.center, radians=conv_deg_rad(angle_deg(self.player.hitbox.center, mp))))
+                            self.projectiles.append(shuriken.Shuriken(exploding=True, pos=self.player.hitbox.center, radians=conv_deg_rad(angle_deg(self.player.hitbox.center, mp))))
                             self.cooldown += 0.25
                         elif self.guisprite.hotbar[self.guisprite.slot][1] == "bow":
                             utils.play_sound('swing')
-                            self.othersprites.append(arrow.Arrow(pos=self.player.hitbox.center, radians=conv_deg_rad(angle_deg(self.player.hitbox.center, mp))))
+                            self.projectiles.append(arrow.Arrow(pos=self.player.hitbox.center, radians=conv_deg_rad(angle_deg(self.player.hitbox.center, mp))))
                             self.cooldown += 1
                         self.guisprite.hotbar[self.guisprite.slot][2] -= 1
                 if event.button == pygame.BUTTON_RIGHT:

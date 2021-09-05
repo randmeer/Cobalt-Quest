@@ -23,7 +23,7 @@ class IngameGUI(pygame.sprite.Sprite):
     def load_hotbar(self):
         self.inventory.load()
         self.hotbar = self.inventory["hotbar"]
-        print(self.hotbar)
+
     def save_hotbar(self):
         self.inventory.save()
 
