@@ -17,8 +17,8 @@ class IngameGUI(pygame.sprite.Sprite):
         for i in range(len(self.hotbar)):
             self.rects.append(pygame.Rect(0, 0, 0, 0))
         self.slot = 0
+        self.last_health = 0
         self.resize()
-        self.update()
 
     def load_hotbar(self):
         self.inventory.load()
@@ -47,11 +47,11 @@ class IngameGUI(pygame.sprite.Sprite):
         for i in range(len(self.rects)):
             self.rects[i].size = rta_dual_height(0.1, 0.1)
             self.rects[i].center = (i * rta_height(0.1) + rta_height(0.05) + i * rta_height(0.025), rta_height(0.05))
-        self.bars = [progress_bar.ProgressBar(icon=images["heart"], maxvalue=100, colors=((255, 0, 0), (75, 75, 75)), relsize=(0.3, 0.0347), relpos=(0.02, 0.944)),  # health
-                     progress_bar.ProgressBar(icon=images["cross"], maxvalue=100, colors=((0, 0, 255), (75, 75, 75)), relsize=(0.3, 0.0347), relpos=(0.02, 0.903)),  # mana
-                     progress_bar.ProgressBar(icon=images["cross"], maxvalue=100, colors=((0, 255, 0), (75, 75, 75)), relsize=(0.3, 0.0347), relpos=(0.02, 0.861))]  # progress
+        self.bars = [progress_bar.ProgressBar(icon=images["heart"], maxvalue=100, colors=((255, 0, 0), (75, 75, 75)), relsize=(0.3, 0.0347), relpos=(0.02, 0.944), has_image=True, image_str="bar_health"),  # health
+                     progress_bar.ProgressBar(icon=images["cross"], maxvalue=100, colors=((0, 0, 255), (75, 75, 75)), relsize=(0.3, 0.0347), relpos=(0.02, 0.903), has_image=True, image_str="bar_mana"),  # mana
+                     progress_bar.ProgressBar(icon=images["cross"], maxvalue=100, colors=((0, 255, 0), (75, 75, 75)), relsize=(0.3, 0.0347), relpos=(0.02, 0.861), has_image=True, image_str="bar_progress")]  # progress
 
-    def update(self):
+    def update(self, player):
         self.surf_selection = pygame.Surface(rta_dual_height(0.72, 0.1), pygame.SRCALPHA)
         self.surf_selection_2 = pygame.Surface(rta_dual_height(0.74, 0.12), pygame.SRCALPHA)
         self.itemlabels = []
@@ -64,6 +64,9 @@ class IngameGUI(pygame.sprite.Sprite):
         for i in range(len(self.hotbar)):
             if self.hotbar[i][2] != -1:
                 self.itemlabels.append(label.Label(text=str(self.hotbar[i][2]), anchor="topleft", relpos=(i * 0.045 + i * 0.025 + 0.005, 0.055), color=(255, 255, 255)))
+        if self.last_health != player.health:
+            self.bars[0].set(player.health, player.max_health)
+        self.last_health = player.health
 
     def set_selectangle(self, pos: int):
         self.slot = pos

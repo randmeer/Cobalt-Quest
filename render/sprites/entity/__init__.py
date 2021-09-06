@@ -6,7 +6,7 @@ from render.sprites import particle_cloud
 
 class Entity(pygame.sprite.Sprite):
 
-    def __init__(self, in_web_speed_multiplier=0.75, max_health=20, health=20, damage_overlay_on=True,
+    def __init__(self, in_web_speed_multiplier=0.75, max_health=100, health=100, damage_overlay_on=True,
                  immune_to_web=False, hurt_cooldown=0.5, position=(0, 0), rotation=0, auto_rotation=True,
                  hitboxsize=(16, 16), hitboxanchor="midbottom", auto_movement=False, auto_distance_max=2000):
         pygame.sprite.Sprite.__init__(self)

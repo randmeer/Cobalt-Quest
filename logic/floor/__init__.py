@@ -145,7 +145,7 @@ class Floor:
             if i.dead:
                 self.melee.remove(i)
         self.scene.update(playerentity=self.player, blocks=self.blocks, entitys=self.entitys, particles=self.particles, projectiles=self.projectiles, melee=self.melee)
-        self.guisprite.update()
+        self.guisprite.update(player=self.player)
 
         self.particles.append(particle_cloud.ParticleCloud(center=(self.scene.surface.get_width()/2, 0), radius=self.scene.surface.get_width(),
                                                            particlesize=(1, 1), color=(255, 0, 0), density=1, spawnregion=(2, self.scene.surface.get_height()/2),
