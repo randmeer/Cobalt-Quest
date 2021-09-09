@@ -104,7 +104,7 @@ class Projectile(pygame.sprite.Sprite):
                                                       distribution=0.8, colorvariation=5))
         particles.append(particle_cloud.ParticleCloud(center=(self.rect.centerx, self.rect.centery), radius=15,
                                                       particlesize=(3, 3), color=(200, 70, 0), density=10, velocity=40,
-                                                      distribution=0.8, colorvariation=30, damage=20))
+                                                      distribution=0.8, colorvariation=30, damage=5))
         particles.append(particle_cloud.ParticleCloud(center=(self.rect.centerx, self.rect.centery), radius=25,
                                                       particlesize=(1, 1), color=(200, 100, 0), density=20, velocity=50,
                                                       distribution=0.7, colorvariation=5))

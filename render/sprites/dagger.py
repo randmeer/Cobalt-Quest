@@ -2,21 +2,23 @@ import pygame
 from utils import angle_deg, conv_deg_rad, sin, cos, get_outline_mask, globs
 from utils.texture import Texture
 
-class Dagger(pygame.sprite.Sprite):
-    def __init__(self, mousepos, playerpos):
+class Attack(pygame.sprite.Sprite):
+    def __init__(self, mousepos, playerpos, image, offset=0):
         pygame.sprite.Sprite.__init__(self)
         self.priority = 2
         self.collided = False
         self.dead = False
         self.mp = mousepos
         self.pp = playerpos
+        self.offset = offset
+        self.damage = 10
         self.swing_deg = angle_deg(self.pp, self.mp)
         self.swing_rad = conv_deg_rad(self.swing_deg)
         dx = sin(self.swing_rad)
         dy = cos(self.swing_rad)
         self.swing_target = (self.pp[0] + dx * 20, self.pp[1] - dy * 20)
-        self.swing_image = Texture("resources/textures/swing.png", single_run=True, set_height=16)
-        self.image = pygame.transform.rotate(self.swing_image.get(), -self.swing_deg)
+        self.swing_image = image
+        self.image = pygame.transform.rotate(self.swing_image.get(), -self.swing_deg+self.offset)
         self.rect = self.image.get_rect()
         self.rect.center = self.swing_target
 
@@ -28,7 +30,7 @@ class Dagger(pygame.sprite.Sprite):
             self.dead = True
             return
         else:
-            self.image = pygame.transform.rotate(self.swing_image.get(), -self.swing_deg)
+            self.image = pygame.transform.rotate(self.swing_image.get(), -self.swing_deg+self.offset)
         if self.collided: return
 
         self.mask = pygame.mask.from_surface(self.image)
@@ -39,7 +41,7 @@ class Dagger(pygame.sprite.Sprite):
                 return
         for i in entitys:
             if pygame.sprite.collide_mask(self, i):
-                i.damage(damage=10, particles=particles, pos=(self.rect[0]+pygame.sprite.collide_mask(self, i)[0], self.rect[1]+pygame.sprite.collide_mask(self, i)[1], ))
+                i.damage(damage=self.damage, particles=particles, pos=(self.rect[0]+pygame.sprite.collide_mask(self, i)[0], self.rect[1]+pygame.sprite.collide_mask(self, i)[1], ))
                 self.collided
                 return
         # TODO: get the collision between the swing mask and the entity rect, not the entity mask
@@ -56,6 +58,12 @@ class Dagger(pygame.sprite.Sprite):
             image.blit(mask1, (0, 0))
             image.blit(mask2, (0, 0))
         surface.blit(image, (self.rect.x + surface.get_width() / 2, self.rect.y + surface.get_height() / 2))
-        #surface.blit(self.surf, (self.rect.x + surface.get_width() / 2, self.rect.y + surface.get_height() / 2))
 
-# TODO: get the mask of the swing and use collidemask to damage enemies
+class Swing(Attack):
+    def __init__(self, mousepos, playerpos):
+        Attack.__init__(self, mousepos=mousepos, playerpos=playerpos, image=Texture("resources/textures/swing.png", single_run=True, set_height=16))
+        self.damage = 10
+class Stab(Attack):
+    def __init__(self, mousepos, playerpos):
+        Attack.__init__(self, mousepos=mousepos, playerpos=playerpos, offset=90, image=Texture("resources/textures/stab.png", single_run=True, set_height=8))
+        self.damage = 5

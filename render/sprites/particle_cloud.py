@@ -44,6 +44,8 @@ class ParticleCloud(pygame.sprite.Sprite):
                     if self.rect.colliderect(i.hitbox):
                         i.damage(damage=self.damage, particles=particles)
                         self.dc = self.dc_max
+                if self.rect.colliderect(player.hitbox):
+                    player.damage(damage=self.damage, particles=particles)
 
     def draw(self, surface):
         for i in self.particles:

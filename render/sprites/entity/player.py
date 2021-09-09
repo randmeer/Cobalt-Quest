@@ -6,10 +6,10 @@ from render.sprites.entity import Entity
 
 class Player(Entity):
 
-    def __init__(self, pos):
+    def __init__(self, pos, health=100):
         self.priority = 1
         self.position = pos
-        Entity.__init__(self, position=pos)
+        Entity.__init__(self, position=pos, health=health)
         self.tex_up = Texture("resources/textures/player_animation_up.png")
         self.tex_down = Texture("resources/textures/player_animation_down.png")
         self.tex_right = Texture("resources/textures/player_animation_right.png")

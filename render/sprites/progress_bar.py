@@ -12,7 +12,7 @@ class ProgressBar:
         self.relsize = relsize
         self.relpos = relpos
         self.rect = pygame.Rect
-        self.value = 50
+        self.value = maxvalue
         self.resize()
         self.set(value=self.value)
 

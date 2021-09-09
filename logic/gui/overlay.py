@@ -9,6 +9,9 @@ from utils.images import images, item_tx, overlays
 from render.elements import button, label, image
 from render import gui
 
+victory = pygame.transform.scale(images["victory"], globs.SIZE)
+defeat = pygame.transform.scale(images["defeat"], globs.SIZE)
+
 
 def pause_screen(window, background):
     play_sound('click')
@@ -47,68 +50,37 @@ def pause_screen(window, background):
     play_sound('click')
 
 
-def end_screen(window, mainsurf, end):
-    # THIS IS OUTDATED WATCH OUT AAAAAAAAA
+def end_screen(window, background, end):
+    # TODO: end screen textures
     set_global_defaults()
+    img = []
     if end == "victory":
         play_sound('victory')
+        img.append(image.Image(image=images["victory"], anchor="center", relpos=(0.5, 0.25)))
     if end == "defeat":
         play_sound('defeat')
-    victory = pygame.transform.scale(images["victory_tx"], (rta_dual(1, 1)))
-    defeat = pygame.transform.scale(images["defeat_tx"], (rta_dual(1, 1)))
-    overlay = pygame.transform.scale(images["overlay_tx"], (rta_dual(1, 1)))
-    buttongroup = pygame.sprite.Group()
-    backtomenu_button = button.Button(relsize=(0.9, 0.15), text="Back to Menu", relpos=(0.05, 0.44))
-    replay_button = button.Button(relsize=(0.9, 0.15), text="Replay", relpos=(0.05, 0.62))
-    buttongroup.add(backtomenu_button, replay_button)
-    overlay.set_alpha(2)
-    window.blit(overlay, (0, 0))
-    main_surface = pygame.Surface(rta_dual(1, 1))
-    if end == "victory":
-        main_surface.blit(victory, (0, 0))
-    elif end == "defeat":
-        main_surface.blit(defeat, (0, 0))
-    main_surface.set_alpha(20)
+        img.append(image.Image(image=images["defeat"], anchor="center", relpos=(0.5, 0.25)))
+    end_gui = gui.GUI(background=background, overlay=128, images=img, buttons=[
+        button.Button(relsize=(0.413, 0.1), anchor="midtop", text="Back to Menu", relpos=(0.5, 0.525)),
+        button.Button(relsize=(0.413, 0.1), anchor="midtop", text="Replay", relpos=(0.5, 0.65))])
+
     clock = pygame.time.Clock()
-    i = 0
     run = True
     while run:
         clock.tick(60)
-        mousepos = pygame.mouse.get_pos()
-        i += 1
-        if i < 32:
-            window.blit(main_surface, (0, 0))
-            pygame.display.update()
-        elif i == 32:
-            main_surface.set_alpha(255)
-            window.blit(main_surface, (0, 0))
-            for x in buttongroup:
-                x.update()
-                x.draw(window=window)
-            pygame.display.update()
+        print("tewt")
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 globs.exittomenu = True
                 globs.quitgame = True
-            if event.type == pygame.MOUSEBUTTONDOWN and i > 64:
-                if event.button == globs.LEFT:
-                    if backtomenu_button.rect.collidepoint(mousepos):
-                        run = False
-                        globs.exittomenu = True
-                        globs.exittomenu = True
-                    if replay_button.rect.collidepoint(mousepos):
-                        run = False
-                        globs.dungeon = True
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False
                     globs.exittomenu = True
-        for x in buttongroup:
-            x.update()
-            x.draw(window=window)
-        pygame.display.update()
+        end_gui.draw(window=window)
     play_sound('click')
+
 
 def show_settings(window, background):
     """

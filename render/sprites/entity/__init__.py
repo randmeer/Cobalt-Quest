@@ -57,7 +57,7 @@ class Entity(pygame.sprite.Sprite):
         if self.hc < 0:
             self.health -= damage
             self.hc = self.hc_max
-        particles.append(particle_cloud.ParticleCloud(center=pos, radius=6, particlesize=(1, 1), color=(200, 20, 0), density=30, velocity=20, priority=1, distribution=0.5))
+            particles.append(particle_cloud.ParticleCloud(center=pos, radius=6, particlesize=(1, 1), color=(200, 20, 0), density=30, velocity=20, priority=0, distribution=0.5))
 
     def check_block_collision(self, blocks):
         # return pygame.sprite.spritecollideany(self, blocks)
