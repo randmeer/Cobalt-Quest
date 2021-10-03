@@ -13,8 +13,7 @@ class Projectile(pygame.sprite.Sprite):
     def __init__(self, image, pos, radians=None, homing=False, homing_target=None, hitbox=(3, 3), rotating=False,
                  rotation_increment=0, velocity=3, exploding=False, damage=10, sender="player"):
         pygame.sprite.Sprite.__init__(self)
-        self.priority = 3
-        self.dead = False
+        self.priority = 2
         self.collided = False
         self.damage = damage
         self.homing = homing
@@ -36,33 +35,32 @@ class Projectile(pygame.sprite.Sprite):
         self.dxtotal, self.dytotal = 0, 0
         self.hitbox = pygame.Rect(pos, hitbox)
 
-    def projectile_update(self, delta_time, blocks, entitys, player, particles, projectiles):
-        if self.dead: return
+    def projectile_update(self, delta_time, blocks, entitys, player, particles, projectiles, melee):
         if self.collided:
-            self.post_collision_update(delta_time=delta_time)
+            self.post_collision_update(delta_time=delta_time, projectiles=projectiles)
             return
 
         for i in blocks:
             if self.hitbox.colliderect(i.rect):
-                self.collide(particles=particles, sound="blockplace", despawn_seconds=4)
+                self.collide(particles=particles, projectiles=projectiles, sound="blockplace", despawn_seconds=4)
                 return
         for i in projectiles:
             if i != self and i.sender != self.sender:
                 if not i.collided:
                     if self.hitbox.colliderect(i.rect):
-                        self.collide(particles=particles, sound="hit", despawn_seconds=0)
-                        i.collide(particles=particles, despawn_seconds=0)
+                        self.collide(particles=particles, projectiles=projectiles, sound="hit", despawn_seconds=0)
+                        i.collide(particles=particles, projectiles=projectiles, despawn_seconds=0)
                         return
 
         if self.sender == "player":
             for i in entitys:
                 if self.hitbox.colliderect(i.hitbox):
-                    self.collide(particles=particles, sound="hit", despawn_seconds=1)
+                    self.collide(particles=particles, projectiles=projectiles, sound="hit", despawn_seconds=1)
                     i.damage(damage=self.damage, particles=particles, pos=self.hitbox.center)
                     return
         elif self.sender == "entity":
             if self.hitbox.colliderect(player.hitbox):
-                self.collide(particles=particles, sound="hit", despawn_seconds=0)
+                self.collide(particles=particles, projectiles=projectiles, sound="hit", despawn_seconds=0)
                 player.damage(damage=self.damage, particles=particles, pos=self.hitbox.center)
                 return
         if self.rotating:
@@ -82,21 +80,21 @@ class Projectile(pygame.sprite.Sprite):
         self.rect.center = (self.pos[0] + self.dxtotal, self.pos[1] + self.dytotal)
         self.hitbox.center = self.rect.center
 
-    def collide(self, particles, sound=None, despawn_seconds=4):
+    def collide(self, particles, projectiles, sound=None, despawn_seconds=4, ):
         if self.exploding:
             play_sound('explosion')
             self.explode(particles=particles)
-            self.dead = True
+            projectiles.remove(self)
         else:
             self.despawn_seconds = despawn_seconds
             if sound is not None:
                 play_sound(sound)
             self.collided = True
 
-    def post_collision_update(self, delta_time):
+    def post_collision_update(self, delta_time, projectiles):
         self.despawn_seconds -= delta_time
         if self.despawn_seconds < 0:
-            self.dead = True
+            projectiles.remove(self)
 
     def explode(self, particles):
         particles.append(particle_cloud.ParticleCloud(center=(self.rect.centerx, self.rect.centery), radius=20,
@@ -110,7 +108,6 @@ class Projectile(pygame.sprite.Sprite):
                                                       distribution=0.7, colorvariation=5))
 
     def draw(self, surface):
-        if self.dead: return
         image = self.image
         if globs.soft_debug:
             image = debug_outlines(self.image, self.hitbox, self.rect)

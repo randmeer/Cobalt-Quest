@@ -1,9 +1,4 @@
-import json
-import random
 import os
-import time
-from json import JSONDecodeError
-
 import pygame
 
 tex_dir = './resources/textures/'
@@ -17,7 +12,6 @@ for i in os.listdir(tex_dir):
     if splitup[1] == ".png":
         img = pygame.image.load(tex_dir + i).convert_alpha()
         images[splitup[0]] = img
-    #print(i)
 
 for i in images:
     print(i)

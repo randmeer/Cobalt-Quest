@@ -3,12 +3,12 @@ import pygame
 import QuickJSON
 
 import utils
-from utils import globs, mp_scene, get_setting, render_text, rta_dual, angle_deg, conv_deg_rad, set_global_defaults, set_game_defaults
+from utils import globs, mp_scene, get_setting, render_text, rta_dual, angle_deg, conv_deg_rad, set_global_defaults
 from utils.images import images
 from render.sprites import gui, dagger
 from render import camera
 from logic.gui.overlay import pause_screen, show_inventory, end_screen
-from render.sprites import block, particle_cloud
+from render.sprites import block
 from render.sprites.entity import player, apprentice
 from render.sprites.projectile import shuriken, arrow
 
@@ -32,37 +32,28 @@ class Floor:
         set_global_defaults()
         self.window = window
         self.surface = pygame.Surface(globs.SIZE, pygame.SRCALPHA)
-        self.guisprite = gui.IngameGUI()
-
         self.floorjson = QuickJSON.QJSON(path=f"./data/savegames/{get_setting('current_savegame')}/dungeons/{globs.dungeon_str}/{globs.floor_str}.json")
         self.invjson = QuickJSON.QJSON(f"./data/savegames/{get_setting('current_savegame')}/inventory.json")
-        self.sidelength = 0
-        self.blocks = []
-        self.entitys = []
-        self.particles = []
-        self.projectiles = []
-        self.melee = []
-        self.player = None
-        self.now, self.prev_time, self.delta_time = 0, 0, 0
-        self.click = False
+        self.guisprite = gui.IngameGUI(invjson=self.invjson)
         self.clock = pygame.time.Clock()
-        self.run = True
-        self.auto_render = True
-        self.events = []
-        self.scene = None
-        self.cooldown = 0.5
 
     def load(self):
         """
         loads the json of the respective floor and creates all the specified
         block & entity classes and the player class
         """
+        self.blocks, self.entitys, self.particles, self.projectiles, self.melee, self.events = [], [], [], [], [], []
+        self.now, self.prev_time, self.delta_time = 0, 0, 0
+        self.cooldown, self.sidelength = 0.5, 0
+        self.player, self.scene = None, None
+        self.run = True
+        self.click = False
 
         # load floor json
         self.floorjson.load()
         self.invjson.load()
         self.sidelength = self.floorjson["size"] * 16 * 2
-        self.player = player.Player(pos=(self.floorjson["player"][0], self.floorjson["player"][1]), health=self.invjson["health"])
+        self.player = player.Player(pos=(self.floorjson["player"][0], self.floorjson["player"][1]), health=self.invjson["health"], mana=self.invjson["mana"])
         # read and convert blocks to Block()'s in list
         blocks = list(self.floorjson["blocks"])
         for i in range(self.floorjson["size"] * 2):
@@ -97,24 +88,17 @@ class Floor:
         self.floorjson.save()
         self.guisprite.save_hotbar()
         self.invjson["health"] = self.player.health
+        self.invjson["mana"] = self.player.mana
         self.invjson.save()
 
-    def single_loop(self):
-        """
-        method performs a single iteration of the game loop. This can be overridden to add extra functionality before and
-        after the game loop and render. call update() to perform a raw iteration and and render() to render stuff out
-        """
-
-        self.update()
-        self.render()
+    def end_loop(self):
+        self.run = False
 
     def update(self):
         """
         updates the game surface and handles user input
         """
-
         # calculate delta time
-        self.clock.tick(60)
         self.now = time.time()
         self.delta_time = self.now - self.prev_time
         self.prev_time = self.now
@@ -124,37 +108,15 @@ class Floor:
         # update objects
         self.click = False
         mp = mp_scene(scene=self.scene)
-        self.player.update(blocks=self.blocks, webs=[], particles=self.particles, delta_time=self.delta_time)
-        for i in self.entitys:
-            i.update(webs=[], blocks=self.blocks, particles=self.particles, projectiles=self.projectiles, player=self.player, delta_time=self.delta_time)
-            if i.dead:
-                self.entitys.remove(i)
-        for i in self.particles:
-            i.update(delta_time=self.delta_time, entitys=self.entitys, player=self.player, particles=self.particles)
-            x = 0
-            for j in i.particles:
-                if j.dead:
-                    x += 1
-                if x == len(i.particles):
-                    self.particles.remove(i)
-                    break
-        for i in self.projectiles:
-            i.update(delta_time=self.delta_time, blocks=self.blocks, entitys=self.entitys, particles=self.particles, player=self.player, projectiles=self.projectiles)
-            if i.dead:
-                self.projectiles.remove(i)
-        for i in self.melee:
-            i.update(delta_time=self.delta_time, blocks=self.blocks, entitys=self.entitys, particles=self.particles, player=self.player, projectiles=self.projectiles)
-            if i.dead:
-                self.melee.remove(i)
-        self.scene.update(playerentity=self.player, blocks=self.blocks, entitys=self.entitys, particles=self.particles, projectiles=self.projectiles, melee=self.melee)
+        self.scene.update(playerentity=self.player, delta_time=self.delta_time, blocks=self.blocks, entitys=self.entitys, particles=self.particles, projectiles=self.projectiles, melee=self.melee)
         self.guisprite.update(player=self.player)
 
-        self.particles.append(particle_cloud.ParticleCloud(center=(self.scene.surface.get_width()/2, 0), radius=self.scene.surface.get_width(),
-                                                           particlesize=(1, 1), color=(255, 0, 0), density=1, spawnregion=(2, self.scene.surface.get_height()/2),
-                                                           velocity=100, priority=0, no_debug=True, distribution=0.5, colorvariation=100))
-
         if self.player.health <= 0:
+            self.invjson["health"] = 100
+            self.invjson["deaths"] += 1
+            self.invjson.save()
             end_screen(window=self.window, background=self.surface.copy(), end="defeat")
+            self.end_loop()
 
         # handle events
         key = pygame.key.get_pressed()
@@ -203,6 +165,8 @@ class Floor:
                     self.guisprite.load_hotbar()
                     self.guisprite.update(player=self.player)
                     self.prev_time = time.time()
+                elif event.key == pygame.K_SPACE and self.player.mana > 0:
+                    self.player.dash()
                 elif event.key == pygame.K_b:
                     if key[pygame.K_F3]:
                         globs.soft_debug = not globs.soft_debug
@@ -220,20 +184,14 @@ class Floor:
                     self.guisprite.set_selectangle(4)
                 elif event.key == pygame.K_6:
                     self.guisprite.set_selectangle(5)
+                elif event.key == pygame.K_x:
+                    self.save()
+                    print("SAVED")
 
         # end loop if exittomenu order is detected
         if globs.exittomenu:
             self.end_loop()
             globs.menu = True
-
-    def start_loop(self):
-        self.prev_time = time.time()
-        self.run = True
-        while self.run:
-            self.single_loop()
-
-    def end_loop(self):
-        self.run = False
 
     def render(self):
         """
@@ -253,3 +211,25 @@ class Floor:
             surface = pygame.transform.scale(self.surface, globs.res_size)
         self.window.blit(surface, (0, 0))
         pygame.display.update()
+
+    def single_loop(self):
+        """
+        method performs a single iteration of the game loop. This can be overridden to add extra functionality before and
+        after the game loop and render. call update() to perform a raw iteration and and render() to render stuff out
+        """
+        self.render()
+        self.update()
+
+    def start_loop(self):
+        self.prev_time = time.time()
+        self.run = True
+        while self.run:
+            self.clock.tick(60)
+            self.single_loop()
+            #print("")
+            #print(len(self.particles))
+            #print(len(self.blocks))
+            #print(len(self.entitys))
+            #print(len(self.melee))
+            #print(len(self.projectiles))
+            #print(self.delta_time)

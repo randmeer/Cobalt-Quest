@@ -84,6 +84,12 @@ def get_setting(setting):
     settings.load()
     return settings[setting]
 
+inventory = QuickJSON.QJSON(f"./data/savegames/{get_setting('current_savegame')}/inventory.json")
+
+def get_inventory(value):
+    inventory.load()
+    return inventory[value]
+
 def set_resolution():
     aspect_ratio = get_setting('aspect_ratio')
     resolution = get_setting('resolution')
@@ -154,36 +160,6 @@ def atr_dual_width(input_x, input_y):
 
 def set_global_defaults():
     globs.quitgame = globs.exittomenu = globs.titlescreen = globs.menu = globs.map = globs.rndebug = globs.dungeon = False
-
-
-def set_game_defaults():
-    pass
-    # globs.victimbreakcooldownmax = 500 - 100 * globs.difficulty
-    #
-    # globs.victimsmissed = 0
-    # globs.victimskilled = 0
-    #
-    # globs.victimbreakcooldownmax = 500 - 100 * globs.difficulty
-    # globs.victimsmissed = globs.victimskilled = 0
-    # # globs.victimspawns = (15 * globs.difficulty + globs.difficulty - 1)
-    # globs.victimspawns = 0
-    # globs.playerhealthpoints = (32 / globs.difficulty + globs.difficulty - 1)
-    # globs.maxcooldown = (60 / globs.difficulty)
-    #
-    # globs.damagecooldown = globs.maxcooldown
-    # globs.damageoverlaycooldown = 0
-    # globs.damagesum = 0
-    #
-    # globs.webs_left = 3
-    # globs.webcounter = 0
-    # globs.victimspawns = 0
-    # globs.playerhealthpoints = (32 / globs.difficulty + globs.difficulty - 1)
-    # globs.maxcooldown = (60 / globs.difficulty)
-    # globs.damagecooldown = globs.maxcooldown
-    # globs.damageoverlaycooldown = 0
-    # globs.damagesum = 0
-    # globs.webs_left = 3
-    # globs.webcounter = 0
 
 
 def setup_window():

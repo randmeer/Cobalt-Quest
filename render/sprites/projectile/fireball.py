@@ -7,8 +7,8 @@ class Fireball(Projectile):
         Projectile.__init__(self, pos=pos, radians=radians, rotating=True, velocity=velocity, image=images["fireball"],
                             homing=homing, homing_target=homing_target, sender=sender, exploding=True)
 
-    def update(self, delta_time, blocks, entitys, player, particles, projectiles):
-        self.projectile_update(delta_time=delta_time, blocks=blocks, entitys=entitys, particles=particles, player=player, projectiles=projectiles)
+    def update(self, blocks, particles, projectiles, player, delta_time, entitys, melee):
+        self.projectile_update(delta_time=delta_time, blocks=blocks, entitys=entitys, particles=particles, player=player, projectiles=projectiles, melee=melee)
         particles.append(particle_cloud.ParticleCloud(center=(self.rect.centerx, self.rect.centery), radius=5,
                                                       particlesize=(1, 1), color=(200, 100, 0), density=1,
                                                       velocity=30,

@@ -2,6 +2,7 @@ import pygame
 
 from utils import globs
 from utils.images import images
+from render.sprites import particle_cloud
 
 class Camera:
     def __init__(self):
@@ -30,35 +31,21 @@ class Camera:
 
 class Scene:
     def __init__(self, sidelength):
-        self.surface = None
-        self.rect = None
+        self.surface, rect = None, None
         self.sidelength = sidelength
-        self.objects = []
-        self.objects_toblit = []
+        self.objects, self.objects_toblit = [], []
         self.surface = pygame.Surface((self.sidelength, self.sidelength), pygame.SRCALPHA)
         self.camera = Camera()
 
-    def update(self, playerentity, blocks=None, entitys=None, particles=None, projectiles=None, melee=None):
-        if entitys is None:
-            entitys = []
-        if blocks is None:
-            blocks = []
-        if particles is None:
-            particles = []
-        if projectiles is None:
-            projectiles = []
-        if melee is None:
-            melee = []
-        for i in blocks:
-            self.objects.append(i)
-        for i in entitys:
-            self.objects.append(i)
-        for i in particles:
-            self.objects.append(i)
-        for i in projectiles:
-            self.objects.append(i)
-        for i in melee:
-            self.objects.append(i)
+    def update(self, playerentity, delta_time, blocks, entitys, particles, projectiles, melee):
+        if not globs.soft_debug:particles.append(particle_cloud.ParticleCloud(center=(self.surface.get_width() / 2, 0), radius=self.surface.get_width(),
+                                                          particlesize=(1, 1), color=(255, 0, 0), density=1, spawnregion=(2, self.surface.get_height() / 2),
+                                                          velocity=100, priority=0, no_debug=True, distribution=0.5, colorvariation=100))
+        self.objects = entitys + projectiles + melee + particles
+        self.objects.append(playerentity)
+        for i in self.objects:
+            i.update(delta_time=delta_time, blocks=blocks, particles=particles, projectiles=projectiles, player=playerentity, entitys=entitys, melee=melee)
+        self.objects += blocks
         self.camera.update()
         self.objects_toblit = self.camera.get_objects(objects=self.objects)
         self.objects_toblit.append(playerentity)

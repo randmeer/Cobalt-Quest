@@ -6,11 +6,10 @@ from render.sprites import particle_cloud
 
 class Entity(pygame.sprite.Sprite):
 
-    def __init__(self, in_web_speed_multiplier=0.75, max_health=100, health=100, damage_overlay_on=True,
-                 immune_to_web=False, hurt_cooldown=0.5, position=(0, 0), rotation=0, auto_rotation=True,
-                 hitboxsize=(16, 16), hitboxanchor="midbottom", auto_movement=False, auto_distance_max=2000):
+    def __init__(self, max_health=100, health=100, damage_overlay_on=True, immune_to_web=False, hurt_cooldown=0.5,
+                 position=(0, 0), rotation=0, auto_rotation=True, hitboxsize=(16, 16), hitboxanchor="midbottom",
+                 auto_movement=False, auto_distance_max=2000):
         pygame.sprite.Sprite.__init__(self)
-        self.dead = False
         self.tex_down = self.tex_up = self.tex_left = self.tex_right = self.tex_idle = None
         self.offset = [0, 0]
         self.position = position
@@ -21,7 +20,6 @@ class Entity(pygame.sprite.Sprite):
         self.damage_overlay_on = damage_overlay_on
         self.health = health
         self.max_health = max_health
-        self.in_web_speed_multiplier = in_web_speed_multiplier
         self.speed_multiplier = None
         self.rotation = rotation
         self.auto_rotation = auto_rotation
@@ -38,13 +36,13 @@ class Entity(pygame.sprite.Sprite):
         if self.damage_overlay_on:
             pass
 
-    def entity_update(self, webs, blocks, particles, delta_time):
+    def entity_update(self, blocks, particles, delta_time, entitys, melee):
         self.rect = self.image.get_rect()
-        self.move(webs=webs, blocks=blocks, particles=particles, delta_time=delta_time)
+        self.move(blocks=blocks, particles=particles, delta_time=delta_time)
         if self.health <= 0:
-            self.dead = True
             particles.append(particle_cloud.ParticleCloud(center=self.hitbox.center, spawnregion=(self.hitbox.width/2, self.hitbox.height/2), radius=self.hitbox.height, particlesize=(1, 1), color=(255, 50, 0), density=40, velocity=50, colorvariation=20, priority=3, distribution=0.5))
             particles.append(particle_cloud.ParticleCloud(center=self.hitbox.center, radius=self.hitbox.height/1.5, particlesize=(2, 2), color=(100, 10, 0), density=30, velocity=30, colorvariation=20, priority=3, distribution=0.5))
+            entitys.remove(self)
         if self.hc >= 0:
             self.hc -= delta_time
 
@@ -83,12 +81,8 @@ class Entity(pygame.sprite.Sprite):
         self.hitbox.center = pos
         dual_rect_anchor(self.rect, self.hitbox, self.hitboxanchor)
 
-    def move(self, webs, blocks, particles, delta_time):
+    def move(self, blocks, particles, delta_time):
         self.speed_multiplier = delta_time
-        collideweb = pygame.sprite.spritecollideany(self, webs)
-
-        if not self.immune_to_web and collideweb:
-            self.speed_multiplier *= self.in_web_speed_multiplier
 
         if self.auto_move:
             self.image = self.tex_idle.get()
@@ -128,7 +122,6 @@ class Entity(pygame.sprite.Sprite):
             particles.append(particle_cloud.ParticleCloud(center=(self.hitbox.midbottom[0], self.hitbox.midbottom[1]-2), radius=3, particlesize=(2, 2), color=(40, 20, 20), density=1, velocity=20, colorvariation=10, priority=self.priority+1))
 
     def draw(self, surface):
-        if self.dead: return
         image = self.image
         if globs.soft_debug:
             image = debug_outlines(self.image, self.hitbox, self.rect, anchor="midbottom")

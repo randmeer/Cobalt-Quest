@@ -7,7 +7,6 @@ class Attack(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.priority = 2
         self.collided = False
-        self.dead = False
         self.mp = mousepos
         self.pp = playerpos
         self.offset = offset
@@ -24,10 +23,9 @@ class Attack(pygame.sprite.Sprite):
 
         self.mask = pygame.mask.from_surface(self.image)
 
-    def update(self, delta_time, blocks, entitys, particles, player, projectiles):
-        if self.dead: return
+    def update(self, delta_time, blocks, entitys, particles, player, projectiles, melee):
         if self.swing_image.get() == False:
-            self.dead = True
+            melee.remove(self)
             return
         else:
             self.image = pygame.transform.rotate(self.swing_image.get(), -self.swing_deg+self.offset)
@@ -37,7 +35,7 @@ class Attack(pygame.sprite.Sprite):
 
         for i in projectiles:
             if pygame.sprite.collide_mask(self, i):
-                i.collide(particles=particles, despawn_seconds=0)
+                i.collide(particles=particles, projectiles=projectiles, despawn_seconds=0)
                 return
         for i in entitys:
             if pygame.sprite.collide_mask(self, i):
@@ -47,7 +45,6 @@ class Attack(pygame.sprite.Sprite):
         # TODO: get the collision between the swing mask and the entity rect, not the entity mask
 
     def draw(self, surface):
-        if self.dead: return
         image = self.image
         if globs.soft_debug:
             image = self.image.copy()

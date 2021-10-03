@@ -1,6 +1,7 @@
 {
-  "health": 99,
-  "mana": 99,
+  "deaths": 0,
+  "health": 100,
+  "mana": 100,
   "inventory": [
   ["weapon", [
     ["weapon", "rande", 20, -1],

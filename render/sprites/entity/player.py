@@ -3,12 +3,17 @@ import pygame
 from utils import play_sound
 from utils.texture import Texture
 from render.sprites.entity import Entity
+from render.sprites import particle_cloud
 
 class Player(Entity):
 
-    def __init__(self, pos, health=100):
+    def __init__(self, pos, health=100, mana=100):
         self.priority = 1
+        self.mana = mana
+        self.max_mana = 100
         self.position = pos
+        self.velocity = 25
+        self.dashing = 0
         Entity.__init__(self, position=pos, health=health)
         self.tex_up = Texture("resources/textures/player_animation_up.png")
         self.tex_down = Texture("resources/textures/player_animation_down.png")
@@ -19,11 +24,19 @@ class Player(Entity):
         self.rect = self.image.get_rect()
         self.rect.center = (0, 0)
 
-    def update(self, webs, blocks, particles, delta_time):
-        if self.dead: return
-
+    def update(self, blocks, particles, projectiles, player, delta_time, entitys, melee):
+        if self.health <= 0: return
         self.offset = [0, 0]
-        velocity = self.velocity
+        if self.dashing > 0:
+            velocity = 200
+            self.dashing -= delta_time
+            particles.append(
+                particle_cloud.ParticleCloud(center=(self.hitbox.center[0], self.hitbox.center[1]), radius=7,
+                                             particlesize=(1, 1), color=(100, 100, 255), density=10, velocity=20,
+                                             colorvariation=20, priority=self.priority + 1))
+
+        else:
+            velocity = self.velocity
         key = pygame.key.get_pressed()
         if key[pygame.K_LSHIFT]:
             velocity /= 2
@@ -56,9 +69,11 @@ class Player(Entity):
         if key[pygame.K_a]:
             self.offset[0] -= velocity
             self.image = self.tex_left.get()
-        self.entity_update(webs=webs, blocks=blocks, particles=particles, delta_time=delta_time)
-
+        self.entity_update(blocks=blocks, particles=particles, delta_time=delta_time, entitys=[], melee=[])
         if self.offset != [0, 0]:
             play_sound('step')
 
-
+    def dash(self):
+        play_sound('swing')
+        self.dashing = 0.1
+        self.mana -= 20

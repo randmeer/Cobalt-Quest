@@ -4,7 +4,7 @@ import os
 import shutil
 
 from distutils.dir_util import copy_tree
-from utils import globs, play_sound, set_global_defaults, rta_dual, mp_screen, rta_dual_height, get_setting
+from utils import globs, play_sound, set_global_defaults, rta_dual, mp_screen, rta_dual_height, get_setting, get_inventory
 from utils.images import images, item_tx, overlays
 from render.elements import button, label, image
 from render import gui
@@ -68,12 +68,19 @@ def end_screen(window, background, end):
     run = True
     while run:
         clock.tick(60)
-        print("tewt")
+        mp = mp_screen()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 globs.exittomenu = True
                 globs.quitgame = True
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == globs.LEFT:
+                    if end_gui.buttongroup[0].rect.collidepoint(mp):
+                        run = False
+                        globs.exittomenu = True
+                    if end_gui.buttongroup[1].rect.collidepoint(mp):
+                        run = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False
@@ -301,8 +308,6 @@ def _show_inventory(window, background):
     # create variables
     labels = []
     images = []
-
-
 
     # tags
     # overlay hotbar ["overlay", "hotbar", slot]
@@ -541,3 +546,33 @@ def _show_inventory(window, background):
     inventory.save()
     play_sound('click')
     return False
+
+
+def stats(window, background):
+    set_global_defaults()
+    play_sound('click')
+    stats_gui = gui.GUI(background=background, overlay=192, buttons=[
+        button.Button(tags=["return"], anchor="bottomleft", relsize=(0.4, 0.1), text="SAVE AND RETURN", relpos=(0.05, 0.95))], labels=[
+        label.Label(tags=["title"], text=f"STATISTICS FOR SAVEGAME [{get_setting('current_savegame')}]:", relpos=(0.05, 0.05), anchor="topleft"),
+        label.Label(tags=["deaths"], text=f"DEATHS: {get_inventory('deaths')}", relpos=(0.05, 0.15), anchor="topleft")
+    ])
+    clock = pygame.time.Clock()
+    run = True
+    while run:
+        clock.tick(60)
+        mp = mp_screen()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                globs.quitgame = True
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == globs.LEFT:
+                    for i in stats_gui.buttongroup:
+                        if i.rect.collidepoint(mp):
+                            if i.tags[0] == "return":
+                                run = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    run = False
+        stats_gui.draw(window=window)
+    play_sound('click')

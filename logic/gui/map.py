@@ -1,16 +1,17 @@
 import pygame
 
 from utils import globs, mp_screen, set_global_defaults, play_sound
-from render.elements import button
+from render.elements import button, image
 from render import gui
 from utils.images import images
+from utils.texture import Texture
 
 def show_map(window):
     print("    LEVEL SELECTION START")
     set_global_defaults()
 
-    # TODO: replace this shit with a real map
-    # create the lvl buttons and use a uneccessary compicated alorithm to align them in a 3x3 grid
+    # TODO: make the map's dungeons clickable
+    # create the lvl buttons and use a uneccessary complicated alorithm to align them in a 3x3 grid
     levelbuttons = []
     lvlrelposy = 0.23
     for i in range(9):
@@ -20,15 +21,20 @@ def show_map(window):
         levelbutton = button.Button(relsize=(0.28, 0.22), text=f"LVL {i}", relpos=(lvlrelposx, lvlrelposy))
         levelbuttons.append(levelbutton)
 
-    map_gui = gui.GUI(background=images["background_menu"], overlay=128, buttons=[
-        button.Button(anchor="topleft", relsize=(0.4, 0.1), text="BACK TO MENU", relpos=(0.05, 0.05)), levelbuttons[0]])
+    map = Texture("resources/textures/map.png")
+    map_gui = gui.GUI(background=images["bg_dg_northern_plains"], overlay=160, buttons=[
+        button.Button(anchor="topleft", relsize=(0.4, 0.1), text="BACK TO MENU", relpos=(0.05, 0.05)), levelbuttons[0]], images=[
+        image.Image(image=map.get(), anchor="center", relpos=(0.5, 0.5))])
 
     clock = pygame.time.Clock()
     run = True
+    selected_rect = None
+
     # main game loop
     while run:
         clock.tick(60)
         mp = mp_screen()
+        map_gui.imagegroup[0].image = map.get()
         # event iteration
         for event in pygame.event.get():
             # quit event
@@ -36,8 +42,12 @@ def show_map(window):
                 run = False
                 globs.quitgame = True
             # mouse event
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == globs.LEFT:
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    if map_gui.imagegroup[0].rect.collidepoint(mp):
+                        selected_rect = map_gui.imagegroup[0].rect
+                        offset = (mp_screen()[0] - selected_rect.topleft[0],
+                                  mp_screen()[1] - selected_rect.topleft[1])
                     if map_gui.buttongroup[0].rect.collidepoint(mp):
                         run = False
                         globs.menu = True
@@ -45,6 +55,12 @@ def show_map(window):
                         run = False
                         globs.dungeon = True
                         globs.dungeon_str = "northern_plains"
+            elif event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    selected_rect = None
+            elif event.type == pygame.MOUSEMOTION:
+                if selected_rect:
+                    selected_rect.topleft = (mp_screen()[0] - offset[0], mp_screen()[1] - offset[1])
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False

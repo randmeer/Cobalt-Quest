@@ -13,9 +13,8 @@ class Particle(pygame.sprite.Sprite):
         self.maxdistance = maxdistance
         self.distribution = distribution
         self.original_velocity = velocity
-        self.dead = False
         self.generate_randoms()
-        self.update(0)
+        self.update(1/60, [])
         self.borderdistance = 0
 
     def generate_randoms(self):
@@ -35,8 +34,7 @@ class Particle(pygame.sprite.Sprite):
         self.dy = math.sin(self.radians)
         self.dxtotal, self.dytotal = 0, 0
 
-    def update(self, delta_time):
-        if self.dead: return
+    def update(self, delta_time, particles):
         self.image = pygame.Surface((self.size[0], self.size[1]))
         self.image.fill(self.color)
         self.image = pygame.transform.rotate(self.image, self.rotangle)
@@ -51,8 +49,7 @@ class Particle(pygame.sprite.Sprite):
         self.dytotal += self.dy * self.velocity * delta_time
         self.borderdistance = self.maxdistance - math.sqrt((self.rect.centerx - self.pos[0])**2 + (self.rect.centery - self.pos[1])**2)
         if self.borderdistance < 0:
-            self.dead = True
+            particles.remove(self)
 
     def draw(self, surface):
-        if self.dead: return
         surface.blit(self.image, (self.rect.x+surface.get_width()/2, self.rect.y+surface.get_height()/2))

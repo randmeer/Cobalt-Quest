@@ -33,9 +33,11 @@ class ParticleCloud(pygame.sprite.Sprite):
                                 self.radius * 2, self.radius * 2)
         self.rect.center = self.center[0], self.center[1]
 
-    def update(self, delta_time, entitys, player, particles):
+    def update(self, delta_time, entitys, player, particles, blocks, projectiles, melee):
         for i in self.particles:
-            i.update(delta_time=delta_time)
+            i.update(delta_time=delta_time, particles=self.particles)
+        if len(self.particles) == 0:
+            particles.remove(self)
 
         if self.damage > 0:
             self.dc -= delta_time
@@ -55,9 +57,3 @@ class ParticleCloud(pygame.sprite.Sprite):
             surf.fill((0, 0, 0))
             outlinesurf = get_outline_mask(surf, color=(255, 255, 255))
             surface.blit(outlinesurf, (self.rect.x + surface.get_width() / 2, self.rect.y + surface.get_height() / 2))
-
-    # def reset(self):
-    #     for i in self.particles:
-    #         i.dxtotal, i.dytotal = 0, 0
-    #         i.generate_randoms()
-    #         i.dead = False

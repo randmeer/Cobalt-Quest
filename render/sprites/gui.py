@@ -1,5 +1,4 @@
 import pygame
-import QuickJSON
 
 from utils.images import item_tx, overlays, images
 from render.sprites import progress_bar
@@ -10,10 +9,10 @@ damage_overlay = pygame.transform.scale(images["damage_overlay"], globs.SIZE)
 mana_overlay = pygame.transform.scale(images["mana_overlay"], globs.SIZE)
 
 class IngameGUI(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, invjson):
         pygame.sprite.Sprite.__init__(self)
         # [string item_name, int item_count (-1 for infinite), float item_cooldown (in seconds)]
-        self.inventory = QuickJSON.QJSON(f"./data/savegames/{get_setting('current_savegame')}/inventory.json")
+        self.inventory = invjson
         self.hotbar = []
         self.load_hotbar()
         self.rects, self.itemlabels = [], []
@@ -21,6 +20,7 @@ class IngameGUI(pygame.sprite.Sprite):
             self.rects.append(pygame.Rect(0, 0, 0, 0))
         self.slot = 0
         self.last_health = self.inventory["health"]
+        self.last_mana = self.inventory["mana"]
         self.overlay = None
         self.resize()
 
@@ -55,6 +55,7 @@ class IngameGUI(pygame.sprite.Sprite):
                      progress_bar.ProgressBar(icon=images["cross"], maxvalue=100, colors=((0, 0, 255), (75, 75, 75)), relsize=(0.3, 0.0347), relpos=(0.02, 0.903), has_image=True, image_str="bar_mana"),  # mana
                      progress_bar.ProgressBar(icon=images["cross"], maxvalue=100, colors=((0, 255, 0), (75, 75, 75)), relsize=(0.3, 0.0347), relpos=(0.02, 0.861), has_image=True, image_str="bar_progress")]  # progress
         self.bars[0].set(self.inventory["health"])
+        self.bars[1].set(self.inventory["mana"])
 
     def update(self, player):
         self.surf_selection = pygame.Surface(rta_dual_height(0.72, 0.1), pygame.SRCALPHA)
@@ -65,20 +66,31 @@ class IngameGUI(pygame.sprite.Sprite):
                 i[0] = i[1] = "unset"
                 i[2] = i[3] = -1
                 self.resize()
-
         for i in range(len(self.hotbar)):
             if self.hotbar[i][2] != -1:
                 self.itemlabels.append(label.Label(text=str(self.hotbar[i][2]), anchor="topleft", relpos=(i * 0.045 + i * 0.025 + 0.005, 0.055), color=(255, 255, 255)))
+
         if self.last_health != player.health:
+            if self.overlay is not None:
+                self.overlay.set_alpha(255)
+                self.overlay = None
             self.bars[0].set(player.health, player.max_health)
             self.overlay = damage_overlay
-        self.last_health = player.health
+            self.last_health = player.health
+        if self.last_mana != player.mana:
+            if self.overlay is not None:
+                self.overlay.set_alpha(255)
+                self.overlay = None
+            self.bars[1].set(player.mana, player.max_mana)
+            self.overlay = mana_overlay
+            self.last_mana = player.mana
+
         if self.overlay is not None:
             self.overlay.set_alpha(self.overlay.get_alpha()-5)
             if self.overlay.get_alpha() <= 0:
                 self.overlay.set_alpha(255)
                 self.overlay = None
-                print("overlay set none")
+                print("overlay is none")
 
     def set_selectangle(self, pos: int):
         self.slot = pos

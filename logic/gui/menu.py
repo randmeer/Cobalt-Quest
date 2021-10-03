@@ -4,7 +4,7 @@ from utils import globs, mp_screen, set_global_defaults, play_sound, get_setting
 from render.elements import button, image, label
 from render import gui
 from utils.images import images
-from logic.gui.overlay import show_settings, alert, show_inventory
+from logic.gui.overlay import show_settings, alert, show_inventory, stats
 
 
 def show_menu(window):
@@ -12,12 +12,12 @@ def show_menu(window):
     set_global_defaults()
 
     menu_gui = gui.GUI(
-        background=images["background_menu"], overlay=128,
+        background=images["background_menu"], overlay=160,
         buttons=[
             button.Button(tags=["map"], anchor="topleft", relsize=(0.264, 0.1), text="MAP", relpos=(0.225, 0.40)),
             button.Button(tags=["shop"], anchor="topright", relsize=(0.264, 0.1), text="SHOP", relpos=(0.775, 0.40)),
-            button.Button(tags=["inventory"], anchor="topleft", relsize=(0.413, 0.1), text="INVENTORY", relpos=(0.225, 0.525)),
-            button.Button(tags=["unset1"], anchor="topright", relsize=(0.116, 0.1), text="?", relpos=(0.775, 0.525)),
+            button.Button(tags=["inventory"], anchor="topleft", relsize=(0.34, 0.1), text="INVENTORY", relpos=(0.225, 0.525)),
+            button.Button(tags=["stats"], anchor="topright", relsize=(0.19, 0.1), text="STATS", relpos=(0.775, 0.525)),
             button.Button(tags=["settings"], anchor="topleft", relsize=(0.413, 0.1), text="SETTINGS", relpos=(0.225, 0.65)),
             button.Button(tags=["unset2"], anchor="topright", relsize=(0.116, 0.1), text="?", relpos=(0.775, 0.65))],
         images=[
@@ -54,6 +54,8 @@ def show_menu(window):
                                     show_inventory(window=window, background=images["background_menu"])
                             if i.tags[0] == "settings":
                                 show_settings(window=window, background=images["background_menu"])
+                            if i.tags[0] == "stats":
+                                stats(window=window, background=images["background_menu"])
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False
