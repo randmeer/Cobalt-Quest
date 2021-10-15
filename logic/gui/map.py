@@ -21,7 +21,7 @@ def show_map(window):
         levelbutton = button.Button(relsize=(0.28, 0.22), text=f"LVL {i}", relpos=(lvlrelposx, lvlrelposy))
         levelbuttons.append(levelbutton)
 
-    map = Texture("resources/textures/map.png")
+    map = Texture("map")
     map_gui = gui.GUI(background=images["bg_dg_northern_plains"], overlay=160, buttons=[
         button.Button(anchor="topleft", relsize=(0.4, 0.1), text="BACK TO MENU", relpos=(0.05, 0.05)), levelbuttons[0]], images=[
         image.Image(image=map.get(), anchor="center", relpos=(0.5, 0.5))])

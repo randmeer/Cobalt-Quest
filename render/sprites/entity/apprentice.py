@@ -14,11 +14,11 @@ class Apprentice(Entity):
             self.health = health
         else:
             self.health = 100
-        self.tex_up = Texture("resources/textures/apprentice_animation_up.png")
-        self.tex_down = Texture("resources/textures/apprentice_animation_down.png")
-        self.tex_right = Texture("resources/textures/apprentice_animation_right.png")
-        self.tex_left = Texture("resources/textures/apprentice_animation_left.png")
-        self.tex_idle = Texture("resources/textures/apprentice_animation_idle.png")
+        self.tex_up = Texture("apprentice_animation_up")
+        self.tex_down = Texture("apprentice_animation_down")
+        self.tex_right = Texture("apprentice_animation_right")
+        self.tex_left = Texture("apprentice_animation_left")
+        self.tex_idle = Texture("apprentice_animation_idle")
         self.image = self.tex_idle.get()
         self.rect = self.image.get_rect()
         self.velocity = 5

@@ -15,11 +15,11 @@ class Player(Entity):
         self.velocity = 25
         self.dashing = 0
         Entity.__init__(self, position=pos, health=health)
-        self.tex_up = Texture("resources/textures/player_animation_up.png")
-        self.tex_down = Texture("resources/textures/player_animation_down.png")
-        self.tex_right = Texture("resources/textures/player_animation_right.png")
-        self.tex_left = Texture("resources/textures/player_animation_left.png")
-        self.tex_idle = Texture("resources/textures/player_animation_idle.png")
+        self.tex_up = Texture("player_animation_up")
+        self.tex_down = Texture("player_animation_down")
+        self.tex_right = Texture("player_animation_right")
+        self.tex_left = Texture("player_animation_left")
+        self.tex_idle = Texture("player_animation_idle")
         self.image = self.tex_idle.get()
         self.rect = self.image.get_rect()
         self.rect.center = (0, 0)

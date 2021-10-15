@@ -58,9 +58,9 @@ class Attack(pygame.sprite.Sprite):
 
 class Swing(Attack):
     def __init__(self, mousepos, playerpos):
-        Attack.__init__(self, mousepos=mousepos, playerpos=playerpos, image=Texture("resources/textures/swing.png", single_run=True, set_height=16))
+        Attack.__init__(self, mousepos=mousepos, playerpos=playerpos, image=Texture("swing", single_run=True, set_height=16))
         self.damage = 10
 class Stab(Attack):
     def __init__(self, mousepos, playerpos):
-        Attack.__init__(self, mousepos=mousepos, playerpos=playerpos, offset=90, image=Texture("resources/textures/stab.png", single_run=True, set_height=8))
+        Attack.__init__(self, mousepos=mousepos, playerpos=playerpos, offset=90, image=Texture("stab", single_run=True, set_height=8))
         self.damage = 5

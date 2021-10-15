@@ -4,6 +4,7 @@ import time
 import pygame
 from utils import DefaultError
 from json import JSONDecodeError
+from utils.images import images
 
 class TextureError(DefaultError):
 
@@ -45,11 +46,12 @@ class Texture:
     "time" represents the timeout for this animation frame
     """
 
-    def __init__(self, path: str, single_run=False, set_height=False):
+    def __init__(self, image: str, single_run=False, set_height=False):
         self.init_time = time.time()
         self.single_run = single_run
         self.iterations = 0
-        self.path = path
+        self.image = None
+        self.img_str = image
         self.stop = False
         self.seth_bool = False
         if set_height == False:
@@ -59,13 +61,13 @@ class Texture:
             self.seth_value = set_height
 
         try:
-            self.image = pygame.image.load(self.path)
+            self.image = images[self.img_str]
         except Exception:
-            raise TextureError(f'unable to load file from {self.path} directory')
+            raise TextureError(f'unable to load image "{self.img_str}" directory')
         self.has_json = True
 
         try:
-            self.script = json.load(open(self.path.replace('.png', '.json')))
+            self.script = json.load(open("resources/textures/" + self.img_str + ".json"))
 
             self.height, self.width = self.image.get_height(), self.image.get_width()
             if self.seth_bool:
@@ -131,7 +133,7 @@ class Texture:
 
         except JSONDecodeError:
             self.has_json = False
-            print(f"unable to find json for {self.path}")
+            print(f'unable to find json for "{self.img_str}"')
 
     def get(self):
         """

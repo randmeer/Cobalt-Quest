@@ -2,32 +2,25 @@ import os
 import pygame
 
 tex_dir = './resources/textures/'
-
 pygame.display.init()
-
 images = {}
-
 for i in os.listdir(tex_dir):
     splitup = os.path.splitext(i)
     if splitup[1] == ".png":
         img = pygame.image.load(tex_dir + i).convert_alpha()
         images[splitup[0]] = img
 
-for i in images:
-    print(i)
-
-
 background_dungeon_tx = {
-    "northern_plains": pygame.image.load(tex_dir + "bg_dg_northern_plains.png").convert_alpha(),
-    "southern_plains": pygame.image.load(tex_dir + "background.png").convert_alpha(),
-    "tundra": pygame.image.load(tex_dir + "background.png").convert_alpha(),
-    "meadow": pygame.image.load(tex_dir + "background.png").convert_alpha(),
-    "snowy_tundra": pygame.image.load(tex_dir + "background.png").convert_alpha(),
-    "desert": pygame.image.load(tex_dir + "background.png").convert_alpha(),
-    "mushroom_island": pygame.image.load(tex_dir + "background.png").convert_alpha(),
-    "steppe": pygame.image.load(tex_dir + "background.png").convert_alpha(),
-    "ocean": pygame.image.load(tex_dir + "background.png").convert_alpha(),
-    "volcano_island": pygame.image.load(tex_dir + "background.png").convert_alpha()
+    "northern_plains": images["bg_dg_northern_plains"],
+    "southern_plains": images["background"],
+    "tundra": images["background"],
+    "meadow": images["background"],
+    "snowy_tundra": images["background"],
+    "desert": images["background"],
+    "mushroom_island": images["background"],
+    "steppe": images["background"],
+    "ocean": images["background"],
+    "volcano_island": images["background"]
 }
 
 map_dungeon_tx = {
