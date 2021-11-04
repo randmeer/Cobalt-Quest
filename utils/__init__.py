@@ -358,7 +358,6 @@ def debug_outlines(image, hitbox, rect, anchor="center"):
     img.blit(outlinesurf, (0, 0))
     #img.blit(hitoutlinesurf, (rect.width / 2 - hitbox.width / 2, rect.height / 2 - hitbox.height / 2))
     img.blit(hitoutlinesurf, hitboxcopy)
-
     return img
 
 def mask_overlay(image, color=(255, 0, 0), opacity=64):
@@ -368,3 +367,33 @@ def mask_overlay(image, color=(255, 0, 0), opacity=64):
     surf.set_alpha(opacity)
     image.blit(surf, (0, 0))
     return image
+
+def block_to_cord(pos, image=None, center=False):
+    if image is None:
+        width, height = 16, 16
+    else:
+        width, height = image.get_width(), image.get_height()
+    posx, posy = pos[0] * width, pos[1] * height
+    # this converts the positions of the blocks from my system to something pygame can use
+    if posx < 0 and posy < 0:
+        pass
+    elif posx > 0 and posy < 0:
+        posx -= width
+    elif posx > 0 and posy > 0:
+        posx -= width
+        posy -= height
+    elif posx < 0 and posy > 0:
+        posy -= height
+    if center:
+        return[posx+width/2, posy+height/2]
+    else:
+        return [posx, posy]
+
+def cord_to_block(posx, posy, image=None):
+    if image is None:
+        width, height = 16, 16
+    else:
+        width, height = image.get_width(), image.get_height()
+
+    pos = [round(posx/width), round(posy/height)]
+    return pos

@@ -6,8 +6,8 @@ from utils import conv_deg_rad, angle_deg
 
 class Apprentice(Entity):
 
-    def __init__(self, pos, health=None, weapon=None):
-        Entity.__init__(self, auto_movement=True, position=pos)
+    def __init__(self, pos, health=None, weapon=None, floorjson=None):
+        Entity.__init__(self, auto_movement=True, position=pos, floorjson=floorjson)
         self.priority = 2
         self.weapon = weapon
         if health is not None:
@@ -26,7 +26,7 @@ class Apprentice(Entity):
 
     def update(self, blocks, particles, projectiles, player, delta_time, entitys, melee):
         self.entity_update(blocks=blocks, particles=particles, delta_time=delta_time, entitys=entitys, melee=melee)
-        if self.attackcooldown < 0:
-            projectiles.append(Fireball(pos=self.hitbox.center, radians=conv_deg_rad(angle_deg(self.hitbox.center, player.hitbox.center))))
-            self.attackcooldown = 10
-        self.attackcooldown -= delta_time
+        #if self.attackcooldown < 0:
+        #    projectiles.append(Fireball(pos=self.hitbox.center, radians=conv_deg_rad(angle_deg(self.hitbox.center, player.hitbox.center))))
+        #    self.attackcooldown = 10
+        #self.attackcooldown -= delta_time

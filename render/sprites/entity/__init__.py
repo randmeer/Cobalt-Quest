@@ -1,15 +1,19 @@
 import random
 import pygame
+from pathfinding.core.diagonal_movement import DiagonalMovement
+from pathfinding.core.grid import Grid
+from pathfinding.finder.a_star import AStarFinder
 
-from utils import globs, dual_rect_anchor, debug_outlines, mask_overlay
+from utils import globs, dual_rect_anchor, debug_outlines, mask_overlay, block_to_cord, cord_to_block
 from render.sprites import particle_cloud
-
+from render.sprites.particle_cloud import entity
 class Entity(pygame.sprite.Sprite):
 
     def __init__(self, max_health=100, health=100, damage_overlay_on=True, immune_to_web=False, hurt_cooldown=0.5,
                  position=(0, 0), rotation=0, auto_rotation=True, hitboxsize=(16, 16), hitboxanchor="midbottom",
-                 auto_movement=False, auto_distance_max=2000):
+                 auto_movement=False, auto_movement_type='wander', auto_distance_max=2000, floorjson=None):
         pygame.sprite.Sprite.__init__(self)
+        self.floorjson = floorjson
         self.tex_down = self.tex_up = self.tex_left = self.tex_right = self.tex_idle = None
         self.offset = [0, 0]
         self.position = position
@@ -20,17 +24,32 @@ class Entity(pygame.sprite.Sprite):
         self.damage_overlay_on = damage_overlay_on
         self.health = health
         self.max_health = max_health
-        self.speed_multiplier = None
+        self.speed_multiplier = 1
         self.rotation = rotation
         self.auto_rotation = auto_rotation
         self.velocity = 25
         self.hitbox = pygame.Rect((0, 0), hitboxsize)
         self.hitboxanchor = hitboxanchor
         self.auto_move = auto_movement
+        self.am_type = auto_movement_type
         if self.auto_move:
-            self.auto_direction = 0
-            self.auto_distance = 0
-            self.auto_distance_max = auto_distance_max
+            if self.am_type == "stupid":
+                self.auto_direction = 0
+                self.auto_distance = 0
+                self.auto_distance_max = auto_distance_max
+            else:
+                self.am_blocks = list(self.floorjson["blocks"])
+                for i in range(len(self.am_blocks)):
+                    for j in range(len(self.am_blocks)):
+                        if self.am_blocks[i][j] == 0:
+                            self.am_blocks[i][j] = 1
+                        elif self.am_blocks[i][j] != 0:
+                            self.am_blocks[i][j] = 0
+                self.am_grid = Grid(matrix=self.am_blocks)
+                self.am_target = self.position
+                self.am_path = []
+                self.am_runs = 0
+                self.am_todo = 0
 
     def damage_overlay(self):
         if self.damage_overlay_on:
@@ -40,12 +59,11 @@ class Entity(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.move(blocks=blocks, particles=particles, delta_time=delta_time)
         if self.health <= 0:
-            particles.append(particle_cloud.ParticleCloud(center=self.hitbox.center, spawnregion=(self.hitbox.width/2, self.hitbox.height/2), radius=self.hitbox.height, particlesize=(1, 1), color=(255, 50, 0), density=40, velocity=50, colorvariation=20, priority=3, distribution=0.5))
-            particles.append(particle_cloud.ParticleCloud(center=self.hitbox.center, radius=self.hitbox.height/1.5, particlesize=(2, 2), color=(100, 10, 0), density=30, velocity=30, colorvariation=20, priority=3, distribution=0.5))
+            particles.append(entity.Die1(center=self.hitbox.center, region=(self.hitbox.width/2, self.hitbox.height/2), radius=self.hitbox.height, ))
+            particles.append(entity.Die2(center=self.hitbox.center, radius=self.hitbox.height/1.5))
             entitys.remove(self)
         if self.hc >= 0:
             self.hc -= delta_time
-
         if self.hc > self.hc_max - self.hc_ani:
             self.image = mask_overlay(image=self.image)
 
@@ -55,7 +73,7 @@ class Entity(pygame.sprite.Sprite):
         if self.hc < 0:
             self.health -= damage
             self.hc = self.hc_max
-            particles.append(particle_cloud.ParticleCloud(center=pos, radius=6, particlesize=(1, 1), color=(200, 20, 0), density=30, velocity=20, priority=0, distribution=0.5))
+            particles.append(entity.Damage(pos=pos))
 
     def check_block_collision(self, blocks):
         # return pygame.sprite.spritecollideany(self, blocks)
@@ -81,34 +99,76 @@ class Entity(pygame.sprite.Sprite):
         self.hitbox.center = pos
         dual_rect_anchor(self.rect, self.hitbox, self.hitboxanchor)
 
+    def _automove(self, pathfinding, blocks):
+        if pathfinding == "wander":
+            if self.am_todo > len(self.am_path):
+                # there is no path --> create a new path
+                stt = cord_to_block(self.position[0], self.position[1])
+                strt = [0, 0]
+                strt[0] = stt[0] + self.floorjson['size']
+                strt[1] = stt[1] + self.floorjson['size']
+                start = self.am_grid.node(strt[0], strt[1])
+
+                while True:
+                    random.seed()
+                    x_target_block = (random.randrange(self.floorjson["size"] * 2)) - self.floorjson["size"]
+                    y_target_block = (random.randrange(self.floorjson["size"] * 2)) - self.floorjson["size"]
+                    if self.am_blocks[y_target_block][x_target_block] != 0:
+                        break
+                end = self.am_grid.node(x_target_block, y_target_block)
+                finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
+                self.am_path, self.am_runs = finder.find_path(start, end, self.am_grid)
+
+                self.am_todo = 0
+                bambus = self.am_path[self.am_todo]
+                bingo = [0, 0]
+                bingo[0] = bambus[0]
+                bingo[1] = bambus[1]
+                bingo[0] -= self.floorjson["size"]
+                bingo[1] -= self.floorjson["size"]
+                self.am_target = block_to_cord(bingo, center=True)
+
+            if round(self.position[0]) != self.am_target[0] or round(self.position[1]) != self.am_target[1]:
+                # the entity has not reached its target yet --> keep moving in the target's direction
+                ott_x = self.am_target[0] - self.position[0]  # offset to target x
+                ott_y = self.am_target[1] - self.position[1]  # offset to target y
+
+                if ott_x > 0:
+                    self.offset[0] = self.velocity
+                elif ott_x < 0:
+                    self.offset[0] = -self.velocity
+                if ott_y > 0:
+                    self.offset[1] = self.velocity
+                elif ott_y < 0:
+                    self.offset[1] = -self.velocity
+
+            else:
+                # the entity has reached its target --> set target to next coordinate on path
+                self.am_todo += 1
+                try:
+                    bambus = self.am_path[self.am_todo]
+                    bingo = [0, 0]
+                    bingo[0] = bambus[0]
+                    bingo[1] = bambus[1]
+                    bingo[0] -= self.floorjson["size"]
+                    bingo[1] -= self.floorjson["size"]
+                    self.am_target = block_to_cord(bingo, center=True)
+                except:
+                    pass
+
+        self._move("x")
+        if self.check_block_collision(blocks):
+            self._undo_move("x")
+        self._move("y")
+        if self.check_block_collision(blocks):
+            self._undo_move("y")
+
     def move(self, blocks, particles, delta_time):
         self.speed_multiplier = delta_time
-
         if self.auto_move:
             self.image = self.tex_idle.get()
             self.offset = [0, 0]
-            if self.auto_distance <= 0:
-                self.auto_direction = random.randrange(4)
-                self.auto_distance = random.randrange(self.auto_distance_max)
-            self.offset = [0, 0]
-            velocity = self.velocity
-            if self.auto_direction == 0:
-                self.offset[1] += velocity
-                self.image = self.tex_down.get()
-            if self.auto_direction == 1:
-                self.offset[1] -= velocity
-                self.image = self.tex_up.get()
-            if self.auto_direction == 2:
-                self.offset[0] += velocity
-                self.image = self.tex_right.get()
-            if self.auto_direction == 3:
-                self.offset[0] -= velocity
-                self.image = self.tex_left.get()
-            self.auto_distance -= velocity
-            self._move("xy")
-            if self.check_block_collision(blocks):
-                self._undo_move("xy")
-                self.auto_direction = random.randrange(4)
+            self._automove(self.am_type, blocks)
         else:
             self._move("x")
             if self.check_block_collision(blocks):
@@ -119,10 +179,31 @@ class Entity(pygame.sprite.Sprite):
 
         dual_rect_anchor(self.hitbox, self.rect, self.hitboxanchor)
         if self.offset != [0, 0]:
-            particles.append(particle_cloud.ParticleCloud(center=(self.hitbox.midbottom[0], self.hitbox.midbottom[1]-2), radius=3, particlesize=(2, 2), color=(40, 20, 20), density=1, velocity=20, colorvariation=10, priority=self.priority+1))
+            particles.append(entity.Footstep(pos=(self.hitbox.midbottom[0], self.hitbox.midbottom[1]-2), priority=self.priority+1))
 
     def draw(self, surface):
         image = self.image
         if globs.soft_debug:
             image = debug_outlines(self.image, self.hitbox, self.rect, anchor="midbottom")
+
+            if self.auto_move:
+                cords = self.am_path.copy()
+                for i in range(len(cords)):
+                    cord = list(cords[i])
+                    cord[0] -= self.floorjson["size"]
+                    cord[1] -= self.floorjson["size"]
+                    cord = block_to_cord(cord, center=True)
+                    cord[0] += surface.get_width() / 2
+                    cord[1] += surface.get_height() / 2
+                    cords[i] = cord
+                try:
+                    pygame.draw.lines(surface, (255, 255, 0), False, cords, 1)
+                    for i in cords:
+                        pygame.draw.circle(surface, (255, 255, 0), (i[0], i[1]), 2)
+                    pygame.draw.circle(surface, (255, 0, 0), (cords[len(cords) - 1][0], cords[len(cords) - 1][1]), 3)
+                except:
+                    pass
+
+                pygame.draw.circle(surface, (255, 0, 0), (self.am_target[0] + surface.get_width() / 2, self.am_target[1] + surface.get_height() / 2), 2)
+
         surface.blit(image, (self.rect.x + surface.get_width() / 2, self.rect.y + surface.get_height() / 2))

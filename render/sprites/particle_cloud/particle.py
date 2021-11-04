@@ -3,7 +3,7 @@ import random
 import pygame
 
 class Particle(pygame.sprite.Sprite):
-    def __init__(self, pos, size, color, maxdistance, velocity, distribution, colorvariation, spawnregion):
+    def __init__(self, pos, size, color, rotation, maxdistance, velocity, distribution, colorvariation, spawnregion):
         pygame.sprite.Sprite.__init__(self)
         self.pos = pos
         self.size = size
@@ -13,7 +13,12 @@ class Particle(pygame.sprite.Sprite):
         self.maxdistance = maxdistance
         self.distribution = distribution
         self.original_velocity = velocity
+        self.rotation = rotation
         self.generate_randoms()
+        self.original_image = pygame.Surface((self.size[0], self.size[1]), pygame.SRCALPHA)
+        self.original_image.fill(self.color)
+        self.image = self.original_image
+        self.rect = self.original_image.get_rect()
         self.update(1/60, [])
         self.borderdistance = 0
 
@@ -35,16 +40,13 @@ class Particle(pygame.sprite.Sprite):
         self.dxtotal, self.dytotal = 0, 0
 
     def update(self, delta_time, particles):
-        self.image = pygame.Surface((self.size[0], self.size[1]))
-        self.image.fill(self.color)
-        self.image = pygame.transform.rotate(self.image, self.rotangle)
-        self.image = self.image.convert_alpha()
-        self.rect = self.image.get_rect()
+        if self.rotation:
+            self.image = pygame.transform.rotate(self.original_image, self.rotangle)
+            if self.rotangle > 90:
+                self.rotangle = 0
+            else:
+                self.rotangle += 1
         self.rect.center = self.pos[0] + self.dxtotal, self.pos[1] + self.dytotal
-        if self.rotangle > 90:
-            self.rotangle = 0
-        else:
-            self.rotangle += 1
         self.dxtotal += self.dx * self.velocity * delta_time
         self.dytotal += self.dy * self.velocity * delta_time
         self.borderdistance = self.maxdistance - math.sqrt((self.rect.centerx - self.pos[0])**2 + (self.rect.centery - self.pos[1])**2)

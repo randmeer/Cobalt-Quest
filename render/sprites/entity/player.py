@@ -3,7 +3,7 @@ import pygame
 from utils import play_sound
 from utils.texture import Texture
 from render.sprites.entity import Entity
-from render.sprites import particle_cloud
+from render.sprites.particle_cloud import entity
 
 class Player(Entity):
 
@@ -30,11 +30,7 @@ class Player(Entity):
         if self.dashing > 0:
             velocity = 200
             self.dashing -= delta_time
-            particles.append(
-                particle_cloud.ParticleCloud(center=(self.hitbox.center[0], self.hitbox.center[1]), radius=7,
-                                             particlesize=(1, 1), color=(100, 100, 255), density=10, velocity=20,
-                                             colorvariation=20, priority=self.priority + 1))
-
+            particles.append(entity.Dash(center=(self.hitbox.center[0], self.hitbox.center[1]), priority=self.priority + 1))
         else:
             velocity = self.velocity
         key = pygame.key.get_pressed()

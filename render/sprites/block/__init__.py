@@ -1,38 +1,20 @@
 import pygame
 from utils.images import block_tx
-# from utils.images import web_texture, mud_texture, brick_texture, cobblestone_texture, sandstone_texture, wall_texture
-# from utils.__init__ import rta_height, rta_dual
-
-# blocks = ["web", "wall", "brick", "cobble", "sandstone", "mud"]
-# textures = [web_texture, wall_texture, brick_texture, cobblestone_texture, sandstone_texture, mud_texture]
+from utils import block_to_cord
 
 class Block(pygame.sprite.Sprite):
     def __init__(self, block, pos):
         pygame.sprite.Sprite.__init__(self)
         self.priority = 3
         self.block = block
-        self.pos = pos
-        self.posx, self.posy = pos[0]*16, pos[1]*16
         self.image = block_tx[block]
         self.rect = self.image.get_rect()
-
-        # this converts the positions of the blocks from my system to something pygame can use
-        if self.posx < 0 and self.posy < 0:
-            pass
-        elif self.posx > 0 and self.posy < 0:
-            self.posx -= self.image.get_width()
-        elif self.posx > 0 and self.posy > 0:
-            self.posx -= self.image.get_width()
-            self.posy -= self.image.get_height()
-        elif self.posx < 0 and self.posy > 0:
-            self.posy -= self.image.get_height()
-
+        self.pos = pos
+        self.posx, self.posy = block_to_cord(pos, self.image)
         self.rect.x, self.rect.y = (self.posx, self.posy)
-        #print(self.rect)
 
     def draw(self, surface):
         surface.blit(self.image, (self.rect.x+surface.get_width()/2, self.rect.y+surface.get_height()/2))
-        #print("drew block")
 
         # for i in range(len(blocks)):
         #     if self.type == blocks[i]:

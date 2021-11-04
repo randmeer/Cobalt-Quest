@@ -36,22 +36,28 @@ class Label(pygame.sprite.Sprite):
         self.hoversurf = None
         self.outlinesurf = None
         self.render()
+        if self.hoverevent:
+            self.render_hover()
+        if self.default_outlined or self.hoveroutlined:
+            self.render_outline()
 
     def render(self):
-        self.outlinesurf = pygame.Surface((0, 0))
         self.rect = get_text_rect(self.text, self.textsize)
         self.surface = pygame.Surface((self.rect.width, self.rect.height), pygame.SRCALPHA)
-        self.hoversurf = pygame.Surface((self.rect.width, self.rect.height), pygame.SRCALPHA)
-        render_text(window=self.hoversurf, text=self.text, pos=(0, 0), color=self.hovercolor, size=self.textsize,
-                    font=self.font)
-        render_text(window=self.surface, text=self.text, pos=(0, 0), color=self.color, size=self.textsize,
-                    font=self.font)
-        self.clone = pygame.Surface((self.surface.get_width() + 4, self.surface.get_height() + 4))
-        self.clone.fill((0, 0, 0))
-        self.outlinesurf = get_outline_mask(self.clone)
+        render_text(window=self.surface, text=self.text, pos=(0, 0), color=self.color, size=self.textsize, font=self.font)
         pos = rta_dual(self.relpos[0], self.relpos[1])
         set_anchor_point(self.rect, pos, self.anchor)
         self.image = self.surface
+
+    def render_hover(self):
+        self.hoversurf = pygame.Surface((self.rect.width, self.rect.height), pygame.SRCALPHA)
+        render_text(window=self.hoversurf, text=self.text, pos=(0, 0), color=self.hovercolor, size=self.textsize, font=self.font)
+
+    def render_outline(self):
+        self.clone = pygame.Surface((self.surface.get_width() + 4, self.surface.get_height() + 4))
+        self.clone.fill((0, 0, 0))
+        self.outlinesurf = pygame.Surface((0, 0))
+        self.outlinesurf = get_outline_mask(self.clone)
 
     def set_outline(self, outline):
         self.default_outlined = outline
@@ -62,12 +68,13 @@ class Label(pygame.sprite.Sprite):
     def update(self):
         self.hoverbool = self.outlinebool = False
         self.image = self.surface
-        if self.hoverevent and self.rect.collidepoint((pygame.mouse.get_pos()[0] / (globs.res_size[0] / globs.SIZE[0]), pygame.mouse.get_pos()[1] / (globs.res_size[1] / globs.SIZE[1]))):
-            if self.hoveroutlined:
-                self.hoverbool = self.outlinebool = True
-            else:
-                self.hoverbool = True
-                self.image = self.hoversurf
+        if self.hoverevent:
+            if self.rect.collidepoint((pygame.mouse.get_pos()[0] / (globs.res_size[0] / globs.SIZE[0]), pygame.mouse.get_pos()[1] / (globs.res_size[1] / globs.SIZE[1]))):
+                if self.hoveroutlined:
+                    self.hoverbool = self.outlinebool = True
+                else:
+                    self.hoverbool = True
+                    self.image = self.hoversurf
         if self.default_outlined:
             self.outlinebool = True
 

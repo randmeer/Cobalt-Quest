@@ -17,18 +17,19 @@ class Button(pygame.sprite.Sprite):
         self.textcolor = textcolor
         self.textanchor = textanchor
         self.textsize = textsize
-        self.textrect = get_text_rect(text, textsize)
         self.anchor = anchor
         self.hover = self.press = False
-        self.visible = True
+        self.visible = visible
 
         if tags is None:
             self.tags = []
         else:
             self.tags = tags
-        self.surface = pygame.Surface(rta_dual(self.relw, self.relh))
-        self.hoversurface = pygame.Surface(rta_dual(self.relw, self.relh))
-        self.presssurface = pygame.Surface(rta_dual(self.relw, self.relh))
+
+        size = rta_dual(self.relw, self.relh)
+        self.surface = pygame.Surface(size)
+        self.hoversurface = pygame.Surface(size)
+        self.presssurface = pygame.Surface(size)
         self.innerarea = pygame.Surface((rta_width(self.relw) - border * 2, rta_height(self.relh) - border * 2))
 
         if gradients:
@@ -55,17 +56,22 @@ class Button(pygame.sprite.Sprite):
         self.image = self.surface
         self.rect = self.surface.get_rect()
         self.rect.x, self.rect.y = rta_width(relpos[0]), rta_height(relpos[1])
-        self.textanchorupdate()
+        pos = rta_dual(self.relposx, self.relposy)
+        set_anchor_point(self.rect, pos, self.anchor)
 
-    def textanchorupdate(self):
+        render_text(window=self.surface, text=self.text, pos=self.textposition(), color=self.textcolor, size=self.textsize)
+        render_text(window=self.hoversurface, text=self.text, pos=self.textposition(), color=self.textcolor, size=self.textsize)
+        render_text(window=self.presssurface, text=self.text, pos=self.textposition(), color=self.textcolor, size=self.textsize)
+
+    def textposition(self):
+        textrect = get_text_rect(self.text, self.textsize)
+        size = (rta_width(self.relw), rta_height(self.relh))
         if self.textanchor == "center":
-            self.textrect.center = self.rect.center
+            return size[0]/2-textrect.width/2, size[1]/2-textrect.height/2
         elif self.textanchor == "right":
-            self.textrect.centery = self.rect.centery
-            self.textrect.right = self.rect.right
+            return size[0]-textrect.width, size[1]/2-textrect.height/2
         elif self.textanchor == "left":
-            self.textrect.centery = self.rect.centery
-            self.textrect.left = self.rect.left
+            return 0, size[1]/2-textrect.height/2
 
     def update(self):
         if self.press:
@@ -75,12 +81,6 @@ class Button(pygame.sprite.Sprite):
             self.image = self.hoversurface
         else:
             self.image = self.surface
-        self.rect = self.image.get_rect()
-        pos = rta_dual(self.relposx, self.relposy)
-        set_anchor_point(self.rect, pos, self.anchor)
-
-        self.textrect = get_text_rect(self.text, self.textsize)
-        self.textanchorupdate()
 
     def set_hovered(self, hover):
         self.hover = hover
@@ -95,4 +95,4 @@ class Button(pygame.sprite.Sprite):
         if not self.visible:
             return
         surface.blit(self.image, self.rect)
-        render_text(window=surface, text=self.text, pos=self.textrect, color=self.textcolor, size=self.textsize)
+        # render_text(window=surface, text=self.text, pos=self.textrect, color=self.textcolor, size=self.textsize)

@@ -147,6 +147,10 @@ def _show_settings(window, background):
         button.Button(tags=["general", ""], anchor="center", relsize=(0.2, 0.1), text="GENERAL", relpos=(0.85, 0.1)),
         button.Button(tags=["", ""], anchor="bottomright", relsize=(0.4, 0.1), text="SAVE AND RETURN", relpos=(0.95, 0.95))])
 
+    for i in settings_gui.labelgroup:
+        if i.tags[0] == "saves" and i.tags[1] == "saveslist":
+            i.render_outline()
+
     settings_gui.buttongroup[0].set_pressed(press=True)
     for i in settings_gui.labelgroup:
         if i.tags[0] == "saves" and i.text == settings["current_savegame"]:

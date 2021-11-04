@@ -1,4 +1,4 @@
-VERSION = "0.9.4"
+VERSION = "0.9.5"
 
 # VIDEO SETTINGS:
 SIZE = (256, 144)
@@ -85,3 +85,4 @@ REDSHADES = [(218, 134, 62), (207, 87, 60), (165, 48, 48), (117, 36, 56), (65, 2
 
 soft_debug = False
 hard_debug = False
+render_all = False

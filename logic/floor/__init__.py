@@ -74,7 +74,7 @@ class Floor:
         # read and convert entitys to Entity()'s in list
         for i in self.floorjson["entitys"]:
             if i[0] == "apprentice":
-                self.entitys.append(apprentice.Apprentice(pos=(i[1][0], i[1][1]), health=i[2], weapon=i[3]))
+                self.entitys.append(apprentice.Apprentice(pos=(i[1][0], i[1][1]), health=i[2], weapon=i[3], floorjson=self.floorjson))
 
         # create scene and set camera target
         self.scene = camera.Scene(sidelength=self.sidelength)
@@ -143,14 +143,14 @@ class Floor:
                             self.projectiles.append(arrow.Arrow(pos=self.player.hitbox.center, radians=conv_deg_rad(angle_deg(self.player.hitbox.center, mp))))
                             self.cooldown += 1
                         self.guisprite.hotbar[self.guisprite.slot][2] -= 1
-                if event.button == pygame.BUTTON_RIGHT and self.cooldown <= 0:
+                elif event.button == pygame.BUTTON_RIGHT and self.cooldown <= 0:
                     if self.guisprite.hotbar[self.guisprite.slot][1] == "dagger":
                         utils.play_sound('swing')
                         self.melee.append(dagger.Swing(playerpos=self.player.hitbox.center, mousepos=mp))
                         self.cooldown += 0.5
-                if event.button == pygame.BUTTON_WHEELUP:
+                elif event.button == pygame.BUTTON_WHEELUP:
                     self.guisprite.set_selectangle(self.guisprite.slot - 1)
-                if event.button == pygame.BUTTON_WHEELDOWN:
+                elif event.button == pygame.BUTTON_WHEELDOWN:
                     self.guisprite.set_selectangle(self.guisprite.slot + 1)
             # keyevents
             if event.type == pygame.KEYDOWN:

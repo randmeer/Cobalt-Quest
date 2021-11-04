@@ -21,7 +21,7 @@ def show_dungeon(window, dungeon):
         color1, color2, hcolor = (199, 207, 204), (87, 114, 119), (235, 237, 233)
         if not floors[str(list(floors.keys())[i])]["unlocked"]:
             color1, color2, hcolor = (200, 100, 100), (100, 50, 50), (255, 100, 100)
-        labels.append(label.Label(text=floors[str(list(floors.keys())[i])]["display_name"].upper(), relpos=(0.045, 0.25+0.15*i), anchor="tl", color=color1, h_event=True, h_color=hcolor, outlinecolor=(235, 237, 233)))
+        labels.append(label.Label(text=floors[str(list(floors.keys())[i])]["display_name"].upper(), relpos=(0.045, 0.25+0.15*i), anchor="tl", color=color1, h_event=True, h_color=hcolor, outlinecolor=(235, 237, 233), default_outlined=True))
         labels.append(label.Label(text="PROGRESS: " + str(floors[str(list(floors.keys())[i])]["progress"]) + "%", relpos=(0.1, 0.25+0.15*i + 0.05), anchor="tl", color=color2))
     labels.append(label.Label(text=name.upper(), relpos=(0.045, 0.08), anchor="topleft", color=(235, 237, 233), textsize=10))
 
@@ -29,6 +29,8 @@ def show_dungeon(window, dungeon):
                           buttons=[button.Button(anchor="br", relsize=(0.2, 0.1), text="PLAY", relpos=(0.95, 0.95)),
                                    button.Button(anchor="br", relsize=(0.2, 0.1), text="CANCEL", relpos=(0.7, 0.95))],
                           images=[image.Image(image=map_dungeon_tx[dungeon][0], anchor="topleft", relpos=(0.5, 0.25))])
+    for i in dungeon_gui.labelgroup:
+        i.set_outline(outline=False)
     dungeon_gui.labelgroup[0].set_outline(outline=True)
 
     clock = pygame.time.Clock()
