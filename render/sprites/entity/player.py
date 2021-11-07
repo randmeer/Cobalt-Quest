@@ -65,7 +65,7 @@ class Player(Entity):
         if key[pygame.K_a]:
             self.offset[0] -= velocity
             self.image = self.tex_left.get()
-        self.entity_update(blocks=blocks, particles=particles, delta_time=delta_time, entitys=[], melee=[])
+        self.entity_update(blocks=blocks, particles=particles, delta_time=delta_time, entitys=[], player=player)
         if self.offset != [0, 0]:
             play_sound('step')
 

@@ -5,8 +5,8 @@ from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 
 from utils import globs, dual_rect_anchor, debug_outlines, mask_overlay, block_to_cord, cord_to_block
-from render.sprites import particle_cloud
 from render.sprites.particle_cloud import entity
+
 class Entity(pygame.sprite.Sprite):
 
     def __init__(self, max_health=100, health=100, damage_overlay_on=True, immune_to_web=False, hurt_cooldown=0.5,
@@ -33,29 +33,19 @@ class Entity(pygame.sprite.Sprite):
         self.auto_move = auto_movement
         self.am_type = auto_movement_type
         if self.auto_move:
-            if self.am_type == "stupid":
-                self.auto_direction = 0
-                self.auto_distance = 0
-                self.auto_distance_max = auto_distance_max
-            else:
-                self.am_blocks = list(self.floorjson["blocks"])
-                for i in range(len(self.am_blocks)):
-                    for j in range(len(self.am_blocks)):
-                        if self.am_blocks[i][j] == 0:
-                            self.am_blocks[i][j] = 1
-                        elif self.am_blocks[i][j] != 0:
-                            self.am_blocks[i][j] = 0
-                self.am_grid = Grid(matrix=self.am_blocks)
+            if self.am_type == "wander":
+                self._am_createblockgrid()
                 self.am_target = self.position
                 self.am_path = []
                 self.am_runs = 0
                 self.am_todo = 0
+                self._am_newpath()
 
     def damage_overlay(self):
         if self.damage_overlay_on:
             pass
 
-    def entity_update(self, blocks, particles, delta_time, entitys, melee):
+    def entity_update(self, blocks, particles, delta_time, entitys, player):
         self.rect = self.image.get_rect()
         self.move(blocks=blocks, particles=particles, delta_time=delta_time)
         if self.health <= 0:
@@ -99,62 +89,73 @@ class Entity(pygame.sprite.Sprite):
         self.hitbox.center = pos
         dual_rect_anchor(self.rect, self.hitbox, self.hitboxanchor)
 
+    def _am_createblockgrid(self):
+        self.am_blocks = list(self.floorjson["blocks"])
+        for i in range(len(self.am_blocks)):
+            for j in range(len(self.am_blocks)):
+                if self.am_blocks[i][j] == 0:
+                    self.am_blocks[i][j] = 1
+                elif self.am_blocks[i][j] != 0:
+                    self.am_blocks[i][j] = 0
+
+    def _am_settarget(self):
+        bambus = self.am_path[self.am_todo]
+        bingo = [0, 0]
+        bingo[0] = bambus[0]
+        bingo[1] = bambus[1]
+        bingo[0] -= self.floorjson["size"]
+        bingo[1] -= self.floorjson["size"]
+        self.am_target = block_to_cord(bingo, center=True)
+        self.am_todo += 1
+
+    def _am_newpath(self):
+        stt = cord_to_block(self.position[0], self.position[1])
+        strt = [0, 0]
+        strt[0] = stt[0] + self.floorjson['size']
+        strt[1] = stt[1] + self.floorjson['size']
+        self.am_grid = Grid(matrix=self.am_blocks)
+        start = self.am_grid.node(strt[0], strt[1])
+        while True:
+            random.seed()
+            x_target_block = (random.randrange(self.floorjson["size"] * 2)) - self.floorjson["size"]
+            y_target_block = (random.randrange(self.floorjson["size"] * 2)) - self.floorjson["size"]
+            if self.am_blocks[y_target_block][x_target_block] != 0:
+                break
+        end = self.am_grid.node(x_target_block, y_target_block)
+        finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
+        self.am_path, self.am_runs = finder.find_path(start, end, self.am_grid)
+        self.am_todo = 0
+        self._am_settarget()
+        if self.am_target != self.position:
+            # the entity does not stand in the mittle of a block
+            # --> start from the 2nd path coordinate to avoid doing an unnecessary movement
+            self._am_settarget()
+
+    def _am_approachtarget(self):
+        ott_x = self.am_target[0] - self.position[0]  # offset to target x
+        ott_y = self.am_target[1] - self.position[1]  # offset to target y
+        if ott_x > 0:
+            self.offset[0] = self.velocity
+        elif ott_x < 0:
+            self.offset[0] = -self.velocity
+        if ott_y > 0:
+            self.offset[1] = self.velocity
+        elif ott_y < 0:
+            self.offset[1] = -self.velocity
+
     def _automove(self, pathfinding, blocks):
         if pathfinding == "wander":
-            if self.am_todo > len(self.am_path):
-                # there is no path --> create a new path
-                stt = cord_to_block(self.position[0], self.position[1])
-                strt = [0, 0]
-                strt[0] = stt[0] + self.floorjson['size']
-                strt[1] = stt[1] + self.floorjson['size']
-                start = self.am_grid.node(strt[0], strt[1])
-
-                while True:
-                    random.seed()
-                    x_target_block = (random.randrange(self.floorjson["size"] * 2)) - self.floorjson["size"]
-                    y_target_block = (random.randrange(self.floorjson["size"] * 2)) - self.floorjson["size"]
-                    if self.am_blocks[y_target_block][x_target_block] != 0:
-                        break
-                end = self.am_grid.node(x_target_block, y_target_block)
-                finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
-                self.am_path, self.am_runs = finder.find_path(start, end, self.am_grid)
-
-                self.am_todo = 0
-                bambus = self.am_path[self.am_todo]
-                bingo = [0, 0]
-                bingo[0] = bambus[0]
-                bingo[1] = bambus[1]
-                bingo[0] -= self.floorjson["size"]
-                bingo[1] -= self.floorjson["size"]
-                self.am_target = block_to_cord(bingo, center=True)
-
             if round(self.position[0]) != self.am_target[0] or round(self.position[1]) != self.am_target[1]:
                 # the entity has not reached its target yet --> keep moving in the target's direction
-                ott_x = self.am_target[0] - self.position[0]  # offset to target x
-                ott_y = self.am_target[1] - self.position[1]  # offset to target y
-
-                if ott_x > 0:
-                    self.offset[0] = self.velocity
-                elif ott_x < 0:
-                    self.offset[0] = -self.velocity
-                if ott_y > 0:
-                    self.offset[1] = self.velocity
-                elif ott_y < 0:
-                    self.offset[1] = -self.velocity
-
+                self._am_approachtarget()
             else:
                 # the entity has reached its target --> set target to next coordinate on path
-                self.am_todo += 1
-                try:
-                    bambus = self.am_path[self.am_todo]
-                    bingo = [0, 0]
-                    bingo[0] = bambus[0]
-                    bingo[1] = bambus[1]
-                    bingo[0] -= self.floorjson["size"]
-                    bingo[1] -= self.floorjson["size"]
-                    self.am_target = block_to_cord(bingo, center=True)
-                except:
-                    pass
+                if self.am_todo == len(self.am_path):
+                    # the reached target is the path's last coordinate --> create new path
+                    self._am_newpath()
+                else:
+                    # set next target to approach
+                    self._am_settarget()
 
         self._move("x")
         if self.check_block_collision(blocks):

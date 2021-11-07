@@ -3,7 +3,7 @@ import pygame
 from utils.images import item_tx, overlays, images
 from render.sprites import progress_bar
 from render.elements import label
-from utils import globs, rta_height, rta_dual_height
+from utils import globs, rta_height, rta_dual_height, rta_dual, render_multiline_text
 
 damage_overlay = pygame.transform.scale(images["damage_overlay"], globs.SIZE)
 mana_overlay = pygame.transform.scale(images["mana_overlay"], globs.SIZE)
@@ -15,9 +15,6 @@ class IngameGUI(pygame.sprite.Sprite):
         self.inventory = invjson
         self.inventory.load()
         self.hotbar, self.rects, self.itemlabels, self.itemtextures = [], [], [], []
-
-
-
         self.load_hotbar()
 
         for i in range(len(self.hotbar)):
@@ -25,7 +22,6 @@ class IngameGUI(pygame.sprite.Sprite):
             if self.hotbar[i][2] != -1:
                 text = str(self.hotbar[i][2])
             self.itemlabels.append(label.Label(text=text, anchor="topleft", relpos=(i * 0.045 + i * 0.025 + 0.005, 0.055), color=(255, 255, 255)))
-
         self.update_hotbar()
 
         self.last_hotbar = self.hotbar
@@ -46,6 +42,9 @@ class IngameGUI(pygame.sprite.Sprite):
         self.objectangle.set_alpha(75)
         self.objectivelabel = label.Label(text="Objective:", anchor="topleft", relpos=(0.035, 0.035), color=(255, 255, 255))
 
+        self.chatangle = pygame.Surface(rta_dual(0.367, 0.805), pygame.SRCALPHA)
+        self.last_chat = globs.chat
+        self.update_chat()
 
         self.selectangle = images["selection"]
         self.overlangle = pygame.Surface(rta_dual_height(0.1, 0.1), pygame.SRCALPHA)
@@ -61,6 +60,10 @@ class IngameGUI(pygame.sprite.Sprite):
         self.bars[0].set(self.inventory["health"])
         self.bars[1].set(self.inventory["mana"])
 
+        self.last_fps = []
+        for i in range(256):
+            self.last_fps.append([i, 144])
+
     def load_hotbar(self):
         self.inventory.load()
         self.hotbar = self.inventory["hotbar"]
@@ -69,7 +72,6 @@ class IngameGUI(pygame.sprite.Sprite):
         self.inventory.save()
 
     def update_hotbar(self):
-        #print("update_hotbar function")
         for i in range(len(self.hotbar)):
             if self.hotbar[i][2] == 0:
                 self.hotbar[i][0] = self.hotbar[i][1] = "unset"
@@ -83,6 +85,17 @@ class IngameGUI(pygame.sprite.Sprite):
         self.itemtextures = []
         for i in self.hotbar:
             self.itemtextures.append(item_tx[i[1]])
+
+    def update_chat(self):
+        if self.last_chat != globs.chat:
+            self.chatangle.set_alpha(255)
+            self.chatangle.fill((0, 0, 0, 0))
+            lastlines = "\n".join(globs.chat.splitlines()[-5:])
+            # set to 19 for full lenght chat, on 5 for now because it looks better ig...
+            render_multiline_text(surface=self.chatangle, text=lastlines, pos=(0, 0), fadeout="up")
+        else:
+            self.chatangle.set_alpha(self.chatangle.get_alpha()-1)
+        self.last_chat = globs.chat
 
     def update(self, player):
         if self.last_health != player.health:
@@ -113,6 +126,8 @@ class IngameGUI(pygame.sprite.Sprite):
         for i in range(len(self.hotbar)):
             self.last_hotbar.append(self.hotbar[i][2])
 
+        self.update_chat()
+
     def set_selectangle(self, pos: int):
         self.slot = pos
         if self.slot > len(self.hotbar)-1:
@@ -120,7 +135,7 @@ class IngameGUI(pygame.sprite.Sprite):
         elif self.slot < 0:
             self.slot = len(self.hotbar) - 1
 
-    def draw(self, surface):
+    def draw(self, surface, clock):
         if self.overlay is not None:
             surface.blit(self.overlay, (0, 0))
         for i in range(len(self.rects)):
@@ -134,8 +149,15 @@ class IngameGUI(pygame.sprite.Sprite):
         surf_selection_2.blit(self.surf_selection, rta_dual_height(0.01, 0.01))
         surf_selection_2.blit(self.selectangle, (self.rects[self.slot].x, self.rects[self.slot].y))
         surface.blit(surf_selection_2, self.surf_selection_rect)
-        surface.blit(self.objectangle, rta_dual_height(0.025, 0.025))
-        self.objectivelabel.draw(surface=surface)
+        # objective overlay and label - may needed in future - do not delete
+        #surface.blit(self.objectangle, rta_dual_height(0.025, 0.025))
+        #self.objectivelabel.draw(surface=surface)
+        surface.blit(self.chatangle, rta_dual_height(0.025, 0.025))
         for i in self.bars:
             i.draw(surface=surface)
+        if globs.fps_meter:
+            for i in range(len(self.last_fps)-1):
+                self.last_fps[i][1] = self.last_fps[i+1][1]
+            self.last_fps[len(self.last_fps)-1][1] = (144 - round(clock.get_fps()))
 
+            pygame.draw.lines(surface, (255, 255, 255), False, self.last_fps, 1)

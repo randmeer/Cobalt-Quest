@@ -33,7 +33,6 @@ class ProgressBar:
         self.image.blit(self.surf, rta_dual(self.relsize[1]*2, 0))
         textrect = get_text_rect(str(self.value))
         textrect.topright = (17, 0)
-        print(textrect.topleft)
         render_text(self.image, str(self.value), (textrect.x, textrect.y), (255, 255, 255), 5)
         #self.image.blit(self.icon, rta_dual(self.relsize[1] * 2 - 0.0075, 0))
 

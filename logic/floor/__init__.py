@@ -3,7 +3,7 @@ import pygame
 import QuickJSON
 
 import utils
-from utils import globs, mp_scene, get_setting, render_text, rta_dual, angle_deg, conv_deg_rad, set_global_defaults
+from utils import globs, mp_scene, get_setting, render_text, rta_dual, angle_deg, conv_deg_rad, set_global_defaults, cout
 from utils.images import images
 from render.sprites import gui, dagger
 from render import camera
@@ -170,6 +170,19 @@ class Floor:
                 elif event.key == pygame.K_b:
                     if key[pygame.K_F3]:
                         globs.soft_debug = not globs.soft_debug
+                        cout("soft_debug = " + str(globs.soft_debug))
+                elif event.key == pygame.K_h:
+                    if key[pygame.K_F3]:
+                        globs.hard_debug = not globs.hard_debug
+                        cout("hard_debug = " + str(globs.hard_debug))
+                elif event.key == pygame.K_g:
+                    if key[pygame.K_F3]:
+                        globs.render_all = not globs.render_all
+                        cout("render_all = " + str(globs.render_all))
+                elif event.key == pygame.K_f:
+                    if key[pygame.K_F3]:
+                        globs.fps_meter = not globs.fps_meter
+                        cout("fps_meter = " + str(globs.fps_meter))
                 elif event.key == pygame.K_e:
                     pass
                 elif event.key == pygame.K_1:
@@ -186,7 +199,7 @@ class Floor:
                     self.guisprite.set_selectangle(5)
                 elif event.key == pygame.K_x:
                     self.save()
-                    print("SAVED")
+                    print("game saved")
 
         # end loop if exittomenu order is detected
         if globs.exittomenu:
@@ -202,12 +215,12 @@ class Floor:
             surface = pygame.Surface(self.window.get_size())
             surface.blit(pygame.transform.scale(images["background"], self.window.get_size()), (0, 0))
             self.scene.draw(surface)
+            render_text(window=surface, text=str(round(self.clock.get_fps())) + "", pos=(surface.get_width() - 60 , 20), color=globs.WHITE, size=20)
         else:
             self.surface.blit(images["background"], (0, 0))
             self.scene.draw(self.surface)
-            self.guisprite.draw(self.surface)
-            render_text(window=self.surface, text=str(round(self.clock.get_fps())) + "", pos=rta_dual(0.92, 0.02),
-                        color=globs.WHITE)
+            self.guisprite.draw(self.surface, self.clock)
+            render_text(window=self.surface, text=str(round(self.clock.get_fps())) + "", pos=rta_dual(0.92, 0.02), color=globs.WHITE)
             surface = pygame.transform.scale(self.surface, globs.res_size)
         self.window.blit(surface, (0, 0))
         pygame.display.update()

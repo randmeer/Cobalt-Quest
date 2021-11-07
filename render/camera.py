@@ -3,7 +3,7 @@ import pygame
 from utils import globs
 from utils.images import images
 from render.sprites import particle_cloud
-from utils.globs import render_all
+import utils.globs
 
 class Camera:
     def __init__(self):
@@ -24,7 +24,7 @@ class Camera:
         obj_list = []
         if objects is None:
             objects = []
-        if render_all:
+        if globs.render_all:
             return objects
         else:
             for i in objects:

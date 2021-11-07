@@ -21,11 +21,11 @@ class Apprentice(Entity):
         self.tex_idle = Texture("apprentice_animation_idle")
         self.image = self.tex_idle.get()
         self.rect = self.image.get_rect()
-        self.velocity = 5
+        self.velocity = 25
         self.attackcooldown = 1
 
     def update(self, blocks, particles, projectiles, player, delta_time, entitys, melee):
-        self.entity_update(blocks=blocks, particles=particles, delta_time=delta_time, entitys=entitys, melee=melee)
+        self.entity_update(blocks=blocks, particles=particles, delta_time=delta_time, entitys=entitys, player=player)
         #if self.attackcooldown < 0:
         #    projectiles.append(Fireball(pos=self.hitbox.center, radians=conv_deg_rad(angle_deg(self.hitbox.center, player.hitbox.center))))
         #    self.attackcooldown = 10

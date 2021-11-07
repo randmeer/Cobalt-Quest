@@ -186,13 +186,51 @@ def render_text(window, text, pos, color, size=5, antialiased=False, vertical=Fa
     f.vertical = vertical
     f.render_to(surf=window, dest=pos, text=text, fgcolor=color)
 
-
 def get_text_rect(text, size=5, font="game"):
     if font == "game":
         f = pygame.freetype.Font("./resources/fonts/PortableVengeance.ttf", size)
     elif font == "debug":
         f = pygame.freetype.Font("./resources/fonts/standart.otf", size)
     return f.get_rect(text=text)
+
+# https://stackoverflow.com/questions/42014195/rendering-text-with-multiple-lines-in-pygame
+def render_multiline_text(surface, text, pos, linebreak=False, fadeout=None, color=(255, 255, 255)):
+    if linebreak:
+        words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words.
+    else:
+        words = text.splitlines()
+    #space = font.size(' ')[0]  # The width of a space.
+    space = 5
+    word_width, word_height = 5, 5
+    max_width, max_height = surface.get_size()
+    x, y = pos
+    alpha = 255
+    if fadeout == "up":
+        alpha = 0
+        # if it's down, it stays 255
+    rendercolor = [color[0], color[1], color[2], alpha]
+    for line in words:
+        if fadeout == "up":
+            rendercolor[3] += 255/len(words)
+        elif fadeout == "down":
+            rendercolor[3] -= 255/len(words)
+
+        if linebreak:
+            for word in line:
+                bingorect = get_text_rect(word)
+                word_width, word_height = bingorect.width, bingorect.height
+                bingosurf = pygame.Surface((word_width, word_height), pygame.SRCALPHA)
+                if x + word_width >= max_width:
+                    x = pos[0]  # Reset the x.
+                    y += word_height+1  # Start on new row.
+                render_text(window=bingosurf, text=word, pos=(0, 0), color=rendercolor)
+                surface.blit(bingosurf, (x, y))
+                x += word_width + space
+        else:
+            print(line)
+            render_text(window=surface, text=line, pos=(x, y), color=rendercolor)
+        x = pos[0]  # Reset the x.
+        y += word_height+1  # Start on new row.
 
 
 def gradient_rect(width, height, colors):
@@ -397,3 +435,16 @@ def cord_to_block(posx, posy, image=None):
 
     pos = [round(posx/width), round(posy/height)]
     return pos
+
+def cout(message):
+    globs.chat += message + "\n"
+
+def load_console():
+    f = open('./data/chat.txt', 'r')
+    globs.chat = f.read()
+    f.close()
+
+def save_console():
+    f = open('./data/chat.txt', 'w')
+    f.write(globs.chat)
+    f.close()

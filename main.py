@@ -2,7 +2,7 @@ import pygame
 
 import utils
 from utils import globs
-
+import sys
 """
 How the File Sytem works:
 
@@ -18,6 +18,9 @@ main.py is the script initializing and supervising all the action
 if __name__ == '__main__':
     pygame.freetype.init()
     pygame.mixer.init()
+
+    #sys.stdout = open('./data/chat.txt', 'w')
+    utils.load_console()
 
     # if music present play the music
     if utils.get_setting('background_music'):
@@ -58,8 +61,6 @@ if __name__ == '__main__':
             map.show_map(window=window)
         elif globs.dungeon:
             dungeon.show_dungeon(window=window, dungeon=globs.dungeon_str)
-            #level = FloorTemplate(window=window)
-            #level.start_loop()
         elif globs.floor:
             globs.floor_str = "entrance"
             floor = Floor(window=window)
@@ -69,5 +70,6 @@ if __name__ == '__main__':
             print("yeah so there is no current state u f**ked up")
             run = False
         print("MAIN LOOP ROUND END")
-
     print("MAIN LOOP FULLY EXECUTED, PROGRAM END")
+    #sys.stdout.close()
+    utils.save_console()
