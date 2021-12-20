@@ -10,6 +10,6 @@ class Shuriken(Projectile):
         self.projectile_update(delta_time=delta_time, blocks=blocks, entitys=entitys, particles=particles, player=player, projectiles=projectiles, melee=melee)
         if self.exploding:
             particles.append(particle_cloud.ParticleCloud(center=(self.rect.centerx, self.rect.centery), radius=5,
-                                                          particlesize=(1, 1), color=(200, 100, 0), density=1,
-                                                          velocity=50,
+                                                          particlesize=1, color=(200, 100, 0), density=1,
+                                                          velocity=0.1,
                                                           distribution=0.7, colorvariation=5))

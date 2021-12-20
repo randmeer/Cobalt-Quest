@@ -32,7 +32,6 @@ if __name__ == '__main__':
     globs.titlescreen = True
 
     window = utils.setup_window()
-    clock = pygame.time.Clock()
 
     from logic.gui import menu, title_screen, map, dungeon
     from logic.floor import Floor
@@ -42,7 +41,6 @@ if __name__ == '__main__':
     while run:
         print(" ")
         print("MAIN LOOP ROUND START")
-        clock.tick(60)
 
         # event iteration
         for event in pygame.event.get():

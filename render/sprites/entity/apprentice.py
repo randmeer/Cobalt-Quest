@@ -6,9 +6,9 @@ from utils import conv_deg_rad, angle_deg
 
 class Apprentice(Entity):
 
-    def __init__(self, pos, health=None, weapon=None, floorjson=None):
-        Entity.__init__(self, auto_movement=True, position=pos, floorjson=floorjson)
+    def __init__(self, particles, pos, health=None, weapon=None, floorjson=None):
         self.priority = 2
+        Entity.__init__(self, particles, auto_movement=True, position=pos, floorjson=floorjson)
         self.weapon = weapon
         if health is not None:
             self.health = health

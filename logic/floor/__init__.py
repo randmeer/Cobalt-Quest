@@ -1,9 +1,10 @@
+import random
 import time
 import pygame
 import QuickJSON
 
 import utils
-from utils import globs, mp_scene, get_setting, render_text, rta_dual, angle_deg, conv_deg_rad, set_global_defaults, cout
+from utils import globs, mp_scene, mp_screen, get_setting, render_text, rta_dual, angle_deg, conv_deg_rad, set_global_defaults, cout
 from utils.images import images
 from render.sprites import gui, dagger
 from render import camera
@@ -11,6 +12,7 @@ from logic.gui.overlay import pause_screen, show_inventory, end_screen
 from render.sprites import block
 from render.sprites.entity import player, apprentice
 from render.sprites.projectile import shuriken, arrow
+from render.sprites.particle_cloud import ParticleCloud
 
 class Floor:
 
@@ -53,7 +55,7 @@ class Floor:
         self.floorjson.load()
         self.invjson.load()
         self.sidelength = self.floorjson["size"] * 16 * 2
-        self.player = player.Player(pos=(self.floorjson["player"][0], self.floorjson["player"][1]), health=self.invjson["health"], mana=self.invjson["mana"])
+        self.player = player.Player(particles=self.particles, pos=(self.floorjson["player"][0], self.floorjson["player"][1]), health=self.invjson["health"], mana=self.invjson["mana"])
         # read and convert blocks to Block()'s in list
         blocks = list(self.floorjson["blocks"])
         for i in range(self.floorjson["size"] * 2):
@@ -74,11 +76,15 @@ class Floor:
         # read and convert entitys to Entity()'s in list
         for i in self.floorjson["entitys"]:
             if i[0] == "apprentice":
-                self.entitys.append(apprentice.Apprentice(pos=(i[1][0], i[1][1]), health=i[2], weapon=i[3], floorjson=self.floorjson))
+                self.entitys.append(apprentice.Apprentice(particles=self.particles, pos=(i[1][0], i[1][1]), health=i[2], weapon=i[3], floorjson=self.floorjson))
 
         # create scene and set camera target
         self.scene = camera.Scene(sidelength=self.sidelength)
         self.scene.camera.follow(target=self.player)
+
+        self.particles.append(ParticleCloud(center=(self.sidelength / 2, 0), radius=self.sidelength*2,
+                      color=(255, 0, 0), colorvariation=100, spawnregion=(2, self.sidelength), velocity=1,
+                      priority=0, no_debug=True, distribution=0.1, emitter=True, particles_per_second=100))
 
     def save(self):
         self.floorjson["entitys"] = []
@@ -222,6 +228,7 @@ class Floor:
             self.guisprite.draw(self.surface, self.clock)
             render_text(window=self.surface, text=str(round(self.clock.get_fps())) + "", pos=rta_dual(0.92, 0.02), color=globs.WHITE)
             surface = pygame.transform.scale(self.surface, globs.res_size)
+
         self.window.blit(surface, (0, 0))
         pygame.display.update()
 

@@ -1,4 +1,5 @@
 import pygame
+import math
 
 from utils import play_sound
 from utils.texture import Texture
@@ -7,14 +8,14 @@ from render.sprites.particle_cloud import entity
 
 class Player(Entity):
 
-    def __init__(self, pos, health=100, mana=100):
+    def __init__(self, particles, pos, health=100, mana=100):
         self.priority = 1
         self.mana = mana
         self.max_mana = 100
         self.position = pos
         self.velocity = 25
         self.dashing = 0
-        Entity.__init__(self, position=pos, health=health)
+        Entity.__init__(self, particles, position=pos, health=health)
         self.tex_up = Texture("player_animation_up")
         self.tex_down = Texture("player_animation_down")
         self.tex_right = Texture("player_animation_right")
@@ -37,20 +38,6 @@ class Player(Entity):
         if key[pygame.K_LSHIFT]:
             velocity /= 2
 
-        # following code would move the player the same distance even with 2 keys pressed at the same time
-        # but it feels kinda weird so commented it for now
-
-        # keys = 0
-        # if key[pygame.K_s]:
-        #     keys += 1
-        # if key[pygame.K_w]:
-        #     keys += 1
-        # if key[pygame.K_d]:
-        #     keys += 1
-        # if key[pygame.K_a]:
-        #     keys += 1
-        # if keys >= 2:
-        #     velocity = self.velocity/math.sqrt(self.velocity)
         self.image = self.tex_idle.get()
 
         if key[pygame.K_s]:

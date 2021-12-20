@@ -9,7 +9,7 @@ from render.sprites.particle_cloud import entity
 
 class Entity(pygame.sprite.Sprite):
 
-    def __init__(self, max_health=100, health=100, damage_overlay_on=True, immune_to_web=False, hurt_cooldown=0.5,
+    def __init__(self, particles, max_health=100, health=100, damage_overlay_on=True, immune_to_web=False, hurt_cooldown=0.5,
                  position=(0, 0), rotation=0, auto_rotation=True, hitboxsize=(16, 16), hitboxanchor="midbottom",
                  auto_movement=False, auto_movement_type='wander', auto_distance_max=2000, floorjson=None):
         pygame.sprite.Sprite.__init__(self)
@@ -40,6 +40,8 @@ class Entity(pygame.sprite.Sprite):
                 self.am_runs = 0
                 self.am_todo = 0
                 self._am_newpath()
+        self.footstep_emitter = entity.Footstep(pos=(self.hitbox.midbottom[0], self.hitbox.midbottom[1]-2), priority=self.priority+1)
+        particles.append(self.footstep_emitter)
 
     def damage_overlay(self):
         if self.damage_overlay_on:
@@ -47,10 +49,11 @@ class Entity(pygame.sprite.Sprite):
 
     def entity_update(self, blocks, particles, delta_time, entitys, player):
         self.rect = self.image.get_rect()
-        self.move(blocks=blocks, particles=particles, delta_time=delta_time)
+        self.move(blocks=blocks, delta_time=delta_time)
         if self.health <= 0:
             particles.append(entity.Die1(center=self.hitbox.center, region=(self.hitbox.width/2, self.hitbox.height/2), radius=self.hitbox.height, ))
             particles.append(entity.Die2(center=self.hitbox.center, radius=self.hitbox.height/1.5))
+            particles.remove(self.footstep_emitter)
             entitys.remove(self)
         if self.hc >= 0:
             self.hc -= delta_time
@@ -164,7 +167,7 @@ class Entity(pygame.sprite.Sprite):
         if self.check_block_collision(blocks):
             self._undo_move("y")
 
-    def move(self, blocks, particles, delta_time):
+    def move(self, blocks, delta_time):
         self.speed_multiplier = delta_time
         if self.auto_move:
             self.image = self.tex_idle.get()
@@ -179,8 +182,11 @@ class Entity(pygame.sprite.Sprite):
                 self._undo_move("y")
 
         dual_rect_anchor(self.hitbox, self.rect, self.hitboxanchor)
-        if self.offset != [0, 0]:
-            particles.append(entity.Footstep(pos=(self.hitbox.midbottom[0], self.hitbox.midbottom[1]-2), priority=self.priority+1))
+        if self.offset == [0, 0]:
+            self.footstep_emitter.stop_emitting()
+        else:
+            self.footstep_emitter.update_emitter([self.hitbox.midbottom[0], self.hitbox.midbottom[1] - 2])
+
 
     def draw(self, surface):
         image = self.image

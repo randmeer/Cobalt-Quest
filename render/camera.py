@@ -3,7 +3,6 @@ import pygame
 from utils import globs
 from utils.images import images
 from render.sprites import particle_cloud
-import utils.globs
 
 class Camera:
     def __init__(self):
@@ -42,9 +41,6 @@ class Scene:
         self.camera = Camera()
 
     def update(self, playerentity, delta_time, blocks, entitys, particles, projectiles, melee):
-        if not globs.soft_debug:particles.append(particle_cloud.ParticleCloud(center=(self.surface.get_width() / 2, 0), radius=self.surface.get_width(),
-                                                          particlesize=(1, 1), color=(255, 0, 0), density=1, spawnregion=(2, self.surface.get_height() / 2),
-                                                          velocity=100, priority=0, no_debug=True, distribution=0.5, colorvariation=100))
         self.objects = entitys + projectiles + melee + particles
         self.objects.append(playerentity)
         for i in self.objects:
@@ -64,7 +60,6 @@ class Scene:
             for j in self.objects_toblit:
                 if j.priority == i:
                     j.draw(surface=self.surface)
-                    #self.objects_toblit.remove(j)
 
         self.rect = self.surface.get_rect()
         if globs.hard_debug:
