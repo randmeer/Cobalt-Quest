@@ -2,7 +2,7 @@ import pygame
 
 from utils import globs
 from utils.images import images
-from render.sprites import particle_cloud
+from render.sprites import particle
 
 class Camera:
     def __init__(self):

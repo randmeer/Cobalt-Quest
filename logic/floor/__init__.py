@@ -12,7 +12,7 @@ from logic.gui.overlay import pause_screen, show_inventory, end_screen
 from render.sprites import block
 from render.sprites.entity import player, apprentice
 from render.sprites.projectile import shuriken, arrow
-from render.sprites.particle_cloud import ParticleCloud
+from render.sprites.particle import ParticleCloud, environment
 
 class Floor:
 
@@ -82,9 +82,7 @@ class Floor:
         self.scene = camera.Scene(sidelength=self.sidelength)
         self.scene.camera.follow(target=self.player)
 
-        self.particles.append(ParticleCloud(center=(self.sidelength / 2, 0), radius=self.sidelength*2,
-                      color=(255, 0, 0), colorvariation=100, spawnregion=(2, self.sidelength), velocity=1,
-                      priority=0, no_debug=True, distribution=0.1, emitter=True, particles_per_second=100))
+        self.particles.append(environment.Cinder(sidelength=self.sidelength))
 
     def save(self):
         self.floorjson["entitys"] = []
@@ -142,7 +140,7 @@ class Floor:
                     if self.guisprite.hotbar[self.guisprite.slot][2] > 0:
                         if self.guisprite.hotbar[self.guisprite.slot][1] == "shuriken":
                             utils.play_sound('swing')
-                            self.projectiles.append(shuriken.Shuriken(exploding=True, pos=self.player.hitbox.center, radians=conv_deg_rad(angle_deg(self.player.hitbox.center, mp))))
+                            self.projectiles.append(shuriken.Shuriken(exploding=True, particles=self.particles, pos=self.player.hitbox.center, radians=conv_deg_rad(angle_deg(self.player.hitbox.center, mp))))
                             self.cooldown += 0.25
                         elif self.guisprite.hotbar[self.guisprite.slot][1] == "bow":
                             utils.play_sound('swing')

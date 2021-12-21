@@ -1,13 +1,11 @@
 import pygame
-import math
 
 from utils import play_sound
 from utils.texture import Texture
 from render.sprites.entity import Entity
-from render.sprites.particle_cloud import entity
+from render.sprites.particle import entity
 
 class Player(Entity):
-
     def __init__(self, particles, pos, health=100, mana=100):
         self.priority = 1
         self.mana = mana
@@ -24,16 +22,21 @@ class Player(Entity):
         self.image = self.tex_idle.get()
         self.rect = self.image.get_rect()
         self.rect.center = (0, 0)
+        self.dash_emitter = entity.Dash(pos=(self.hitbox.center[0], self.hitbox.center[1]), priority=self.priority + 1)
+        self.dash_emitter.emitting = False
+        particles.append(self.dash_emitter)
 
     def update(self, blocks, particles, projectiles, player, delta_time, entitys, melee):
         if self.health <= 0: return
         self.offset = [0, 0]
+        velocity = self.velocity
         if self.dashing > 0:
             velocity = 200
             self.dashing -= delta_time
-            particles.append(entity.Dash(center=(self.hitbox.center[0], self.hitbox.center[1]), priority=self.priority + 1))
+            self.dash_emitter.update_emitter([self.hitbox.center[0], self.hitbox.center[1]])
         else:
-            velocity = self.velocity
+            self.dash_emitter.emitting = False
+
         key = pygame.key.get_pressed()
         if key[pygame.K_LSHIFT]:
             velocity /= 2
@@ -58,5 +61,6 @@ class Player(Entity):
 
     def dash(self):
         play_sound('swing')
+        self.dash_emitter.emitting = True
         self.dashing = 0.1
         self.mana -= 20

@@ -2,7 +2,7 @@ import math
 import pygame
 
 from utils import play_sound, globs, conv_rad_deg, debug_outlines, angle_deg, conv_deg_rad
-from render.sprites.particle_cloud import explosion
+from render.sprites.particle import explosion
 
 def get_deltas(radians):
     dx = math.sin(radians)
@@ -10,7 +10,7 @@ def get_deltas(radians):
     return dx, dy
 
 class Projectile(pygame.sprite.Sprite):
-    def __init__(self, image, pos, radians=None, homing=False, homing_target=None, hitbox=(3, 3), rotating=False,
+    def __init__(self, particles, image, pos, radians=None, homing=False, homing_target=None, hitbox=(3, 3), rotating=False,
                  rotation_increment=0, velocity=3, exploding=False, damage=10, sender="player"):
         pygame.sprite.Sprite.__init__(self)
         self.priority = 2
@@ -20,6 +20,7 @@ class Projectile(pygame.sprite.Sprite):
         self.homing_target = homing_target
         self.exploding = exploding
         self.exploded = False
+
         self.rotating = rotating
         self.rot_increment = rotation_increment
         self.sender = sender
@@ -34,6 +35,9 @@ class Projectile(pygame.sprite.Sprite):
         self.dx, self.dy = get_deltas(self.radians)
         self.dxtotal, self.dytotal = 0, 0
         self.hitbox = pygame.Rect(pos, hitbox)
+        if self.exploding:
+            self.spark_emitter = explosion.SparkEmitter(pos=(self.rect.centerx, self.rect.centery))
+            particles.append(self.spark_emitter)
 
     def projectile_update(self, delta_time, blocks, entitys, player, particles, projectiles, melee):
         if self.collided:
@@ -80,11 +84,12 @@ class Projectile(pygame.sprite.Sprite):
         self.rect.center = (self.pos[0] + self.dxtotal, self.pos[1] + self.dytotal)
         self.hitbox.center = self.rect.center
 
-    def collide(self, particles, projectiles, sound=None, despawn_seconds=4, ):
+    def collide(self, particles, projectiles, sound=None, despawn_seconds=4):
         if self.exploding:
             play_sound('explosion')
             self.explode(particles=particles)
             projectiles.remove(self)
+            self.spark_emitter.kill()
         else:
             self.despawn_seconds = despawn_seconds
             if sound is not None:

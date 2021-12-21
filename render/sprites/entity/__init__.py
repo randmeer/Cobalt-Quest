@@ -5,13 +5,13 @@ from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 
 from utils import globs, dual_rect_anchor, debug_outlines, mask_overlay, block_to_cord, cord_to_block
-from render.sprites.particle_cloud import entity
+from render.sprites.particle import entity
 
 class Entity(pygame.sprite.Sprite):
 
-    def __init__(self, particles, max_health=100, health=100, damage_overlay_on=True, immune_to_web=False, hurt_cooldown=0.5,
-                 position=(0, 0), rotation=0, auto_rotation=True, hitboxsize=(16, 16), hitboxanchor="midbottom",
-                 auto_movement=False, auto_movement_type='wander', auto_distance_max=2000, floorjson=None):
+    def __init__(self, particles, max_health=100, health=100, damage_overlay_on=True, immune_to_web=False,
+                 hurt_cooldown=0.5, position=(0, 0), rotation=0, auto_rotation=True, hitboxsize=(16, 16),
+                 hitboxanchor="midbottom", auto_movement=False, auto_movement_type='wander', floorjson=None):
         pygame.sprite.Sprite.__init__(self)
         self.floorjson = floorjson
         self.tex_down = self.tex_up = self.tex_left = self.tex_right = self.tex_idle = None
@@ -183,10 +183,10 @@ class Entity(pygame.sprite.Sprite):
 
         dual_rect_anchor(self.hitbox, self.rect, self.hitboxanchor)
         if self.offset == [0, 0]:
-            self.footstep_emitter.stop_emitting()
+            self.footstep_emitter.emitting = False
         else:
             self.footstep_emitter.update_emitter([self.hitbox.midbottom[0], self.hitbox.midbottom[1] - 2])
-
+            self.footstep_emitter.emitting = True
 
     def draw(self, surface):
         image = self.image
