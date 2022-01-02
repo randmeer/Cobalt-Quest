@@ -1,9 +1,9 @@
-from utils.images import images
+from utils import img
 from render.sprites.projectile import Projectile
 
 class Fireball(Projectile):
     def __init__(self, particles,  pos, sender="entity", homing=False, homing_target=None, radians=0, velocity=1.5):
-        Projectile.__init__(self, particles=particles, pos=pos, radians=radians, rotating=True, velocity=velocity, image=images["fireball"],
+        Projectile.__init__(self, particles=particles, pos=pos, radians=radians, rotating=True, velocity=velocity, image=img.textures["fireball"],
                             homing=homing, homing_target=homing_target, sender=sender, exploding=True)
 
     def update(self, blocks, particles, projectiles, player, delta_time, entitys, melee):

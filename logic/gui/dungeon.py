@@ -1,13 +1,11 @@
 import pygame
 import QuickJSON
 
-from utils import globs, mp_screen, set_global_defaults, play_sound, get_setting
+from utils import globs, img, mp_screen, set_global_defaults, play_sound, get_setting
 from render.elements import button, image, label
 from render import gui
-from utils.images import background_dungeon_tx, map_dungeon_tx
 
 def show_dungeon(window, dungeon):
-    print("    DUNGEON START")
     set_global_defaults()
 
     blueprint = QuickJSON.QJSON(f"./data/savegames/{get_setting('current_savegame')}/dungeons/{dungeon}/blueprint.json")
@@ -25,10 +23,10 @@ def show_dungeon(window, dungeon):
         labels.append(label.Label(text="PROGRESS: " + str(floors[str(list(floors.keys())[i])]["progress"]) + "%", relpos=(0.1, 0.25+0.15*i + 0.05), anchor="tl", color=color2))
     labels.append(label.Label(text=name.upper(), relpos=(0.045, 0.08), anchor="topleft", color=(235, 237, 233), textsize=10))
 
-    dungeon_gui = gui.GUI(background=background_dungeon_tx[dungeon], overlay=128, labels=labels,
+    dungeon_gui = gui.GUI(background=img.misc["background"]["dungeon"], overlay=128, labels=labels,
                           buttons=[button.Button(anchor="br", relsize=(0.2, 0.1), text="PLAY", relpos=(0.95, 0.95)),
                                    button.Button(anchor="br", relsize=(0.2, 0.1), text="CANCEL", relpos=(0.7, 0.95))],
-                          images=[image.Image(image=map_dungeon_tx[dungeon][0], anchor="topleft", relpos=(0.5, 0.25))])
+                          images=[image.Image(image=img.misc["map"][dungeon], anchor="topleft", relpos=(0.5, 0.25))])
     for i in dungeon_gui.labelgroup:
         i.set_outline(outline=False)
     dungeon_gui.labelgroup[0].set_outline(outline=True)
@@ -68,4 +66,3 @@ def show_dungeon(window, dungeon):
                     globs.map = True
         dungeon_gui.draw(window=window)
     play_sound('click')
-    print("MENU END")

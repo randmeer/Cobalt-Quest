@@ -20,7 +20,8 @@ class Projectile(pygame.sprite.Sprite):
         self.homing_target = homing_target
         self.exploding = exploding
         self.exploded = False
-
+        self.pc_target = None
+        self.pc_target_offset = [0, 0]
         self.rotating = rotating
         self.rot_increment = rotation_increment
         self.sender = sender
@@ -59,14 +60,15 @@ class Projectile(pygame.sprite.Sprite):
         if self.sender == "player":
             for i in entitys:
                 if self.hitbox.colliderect(i.hitbox):
-                    self.collide(particles=particles, projectiles=projectiles, sound="hit", despawn_seconds=1)
+                    self.collide(hit=True, target=i, particles=particles, projectiles=projectiles, sound="hit", despawn_seconds=2)
                     i.damage(damage=self.damage, particles=particles, pos=self.hitbox.center)
                     return
         elif self.sender == "entity":
             if self.hitbox.colliderect(player.hitbox):
-                self.collide(particles=particles, projectiles=projectiles, sound="hit", despawn_seconds=0)
+                self.collide(particles=particles, projectiles=projectiles, sound="hit", despawn_seconds=2)
                 player.damage(damage=self.damage, particles=particles, pos=self.hitbox.center)
                 return
+
         if self.rotating:
             self.image = pygame.transform.rotate(self.original_image, self.rot_angle)
             self.rot_angle += 4
@@ -84,7 +86,7 @@ class Projectile(pygame.sprite.Sprite):
         self.rect.center = (self.pos[0] + self.dxtotal, self.pos[1] + self.dytotal)
         self.hitbox.center = self.rect.center
 
-    def collide(self, particles, projectiles, sound=None, despawn_seconds=4):
+    def collide(self, particles, projectiles, hit=False, target=None, sound=None, despawn_seconds=4):
         if self.exploding:
             play_sound('explosion')
             self.explode(particles=particles)
@@ -95,11 +97,17 @@ class Projectile(pygame.sprite.Sprite):
             if sound is not None:
                 play_sound(sound)
             self.collided = True
+            if hit:
+                self.pc_target_offset = [self.hitbox.centerx - target.hitbox.centerx, self.hitbox.centery - target.hitbox.centery]
+                self.pc_target = target
 
     def post_collision_update(self, delta_time, projectiles):
         self.despawn_seconds -= delta_time
         if self.despawn_seconds < 0:
             projectiles.remove(self)
+        if self.pc_target:
+            self.rect.centerx = self.pc_target.hitbox.centerx + self.pc_target_offset[0]
+            self.rect.centery = self.pc_target.hitbox.centery + self.pc_target_offset[1]
 
     def explode(self, particles):
         particles.append(explosion.Smoke(self.rect.center))

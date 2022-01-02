@@ -3,15 +3,29 @@ import pygame
 import utils
 from utils import globs
 import sys
+
 """
 How the File Sytem works:
 
-The logic folder contains scripts chaning the state of the game.
-The render folder contains scripts displaying the state of the game.
-The utils folder contains useful functions used by multiple scripts in different folders.
-The resources folder contains non-script files and read by logic scripts.
-The data folder contains non-script files and is read and written by scripts.
-main.py is the script initializing and supervising all the action
+logic: scripts chaning the state of the game
+    floor: floor (ingame) logic
+    gui: all user infaces and ingame overlays
+    
+render:  scripts displaying the state of the game
+    elements: user interface elements
+    sprites: ingame sprites
+    camera: ingame rendering script
+    gui: user interface template
+    
+resources: final non-script files like images, audio, json
+
+data: variable non-script files like settings, savegames, chat
+
+utils: useful functions
+    globs: global variables
+    img: globs, but with textures
+    texture: texture template class
+
 """
 
 
@@ -39,8 +53,6 @@ if __name__ == '__main__':
     # main game loop
     run = True
     while run:
-        print(" ")
-        print("MAIN LOOP ROUND START")
 
         # event iteration
         for event in pygame.event.get():
@@ -50,7 +62,6 @@ if __name__ == '__main__':
         # game state manager
         if globs.quitgame:
             run = False
-            print("DETECTED ORDER TO QUIT GAME")
         elif globs.titlescreen:
             title_screen.show_title_screen(window=window)
         elif globs.menu:
@@ -67,7 +78,5 @@ if __name__ == '__main__':
         else:
             print("yeah so there is no current state u f**ked up")
             run = False
-        print("MAIN LOOP ROUND END")
-    print("MAIN LOOP FULLY EXECUTED, PROGRAM END")
     #sys.stdout.close()
     utils.save_console()

@@ -1,8 +1,9 @@
 {
   "aspect_ratio": "16to9",
-  "resolution": 4,
+  "resolution": 3,
   "fullscreen": false,
   "background_music": false,
-  "volume": 0,
-  "current_savegame": ""
+  "volume": 10,
+  "current_savegame": "",
+  "resourcepack": "christmas"
 }

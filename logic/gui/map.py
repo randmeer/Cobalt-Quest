@@ -1,13 +1,11 @@
 import pygame
 
-from utils import globs, mp_screen, set_global_defaults, play_sound
+from utils import globs, img, mp_screen, set_global_defaults, play_sound
 from render.elements import button, image
 from render import gui
-from utils.images import images
 from utils.texture import Texture
 
 def show_map(window):
-    print("    LEVEL SELECTION START")
     set_global_defaults()
 
     # TODO: make the map's dungeons clickable
@@ -21,8 +19,8 @@ def show_map(window):
         levelbutton = button.Button(relsize=(0.28, 0.22), text=f"LVL {i}", relpos=(lvlrelposx, lvlrelposy))
         levelbuttons.append(levelbutton)
 
-    map = Texture("map")
-    map_gui = gui.GUI(background=images["bg_dg_northern_plains"], overlay=160, buttons=[
+    map = Texture(img.misc["map"]["map"], 0.1)
+    map_gui = gui.GUI(background=img.misc["map"]["northern_plains"], overlay=160, buttons=[
         button.Button(anchor="topleft", relsize=(0.4, 0.1), text="BACK TO MENU", relpos=(0.05, 0.05)), levelbuttons[0]], images=[
         image.Image(image=map.get(), anchor="center", relpos=(0.5, 0.5))])
 
@@ -67,4 +65,3 @@ def show_map(window):
                     globs.menu = True
         map_gui.draw(window=window)
     play_sound('click')
-    print("LEVEL SELECTION END")

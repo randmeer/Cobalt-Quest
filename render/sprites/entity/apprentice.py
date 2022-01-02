@@ -1,8 +1,7 @@
 from utils.texture import Texture
 from render.sprites.entity import Entity
 from render.sprites.projectile.fireball import Fireball
-
-from utils import conv_deg_rad, angle_deg
+from utils import img, conv_deg_rad, angle_deg
 
 class Apprentice(Entity):
 
@@ -14,11 +13,11 @@ class Apprentice(Entity):
             self.health = health
         else:
             self.health = 100
-        self.tex_up = Texture("apprentice_animation_up")
-        self.tex_down = Texture("apprentice_animation_down")
-        self.tex_right = Texture("apprentice_animation_right")
-        self.tex_left = Texture("apprentice_animation_left")
-        self.tex_idle = Texture("apprentice_animation_idle")
+        self.tex_up = Texture(img.entity["apprentice_up"], 0.2)
+        self.tex_down = Texture(img.entity["apprentice_down"], 0.2)
+        self.tex_right = Texture(img.entity["apprentice_right"], 0.2)
+        self.tex_left = Texture(img.entity["apprentice_left"], 0.2)
+        self.tex_idle = Texture(img.entity["apprentice_idle"], 0.4)
         self.image = self.tex_idle.get()
         self.rect = self.image.get_rect()
         self.velocity = 25

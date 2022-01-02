@@ -1,13 +1,12 @@
 import pygame
-from utils.images import block_tx
-from utils import block_to_cord
+from utils import img, block_to_cord
 
 class Block(pygame.sprite.Sprite):
     def __init__(self, block, pos):
         pygame.sprite.Sprite.__init__(self)
         self.priority = 3
         self.block = block
-        self.image = block_tx[block]
+        self.image = img.block[img.blockcode[block]]
         self.rect = self.image.get_rect()
         self.pos = pos
         self.posx, self.posy = block_to_cord(pos, self.image)

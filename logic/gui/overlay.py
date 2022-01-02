@@ -4,13 +4,13 @@ import os
 import shutil
 
 from distutils.dir_util import copy_tree
-from utils import globs, play_sound, set_global_defaults, rta_dual, mp_screen, rta_dual_height, get_setting, get_inventory
-from utils.images import images, item_tx, overlays
+
+from utils import globs, img, play_sound, set_global_defaults, rta_dual, mp_screen, rta_dual_height, get_setting, get_inventory, set_setting
 from render.elements import button, label, image
 from render import gui
 
-victory = pygame.transform.scale(images["victory"], globs.SIZE)
-defeat = pygame.transform.scale(images["defeat"], globs.SIZE)
+victory = pygame.transform.scale(img.misc["overlay"]["victory"], globs.SIZE)
+defeat = pygame.transform.scale(img.misc["overlay"]["defeat"], globs.SIZE)
 
 
 def pause_screen(window, background):
@@ -53,14 +53,14 @@ def pause_screen(window, background):
 def end_screen(window, background, end):
     # TODO: end screen textures
     set_global_defaults()
-    img = []
+    images = []
     if end == "victory":
         play_sound('victory')
-        img.append(image.Image(image=images["victory"], anchor="center", relpos=(0.5, 0.25)))
+        images.append(image.Image(image=img.misc["overlay"]["victory"], anchor="center", relpos=(0.5, 0.25)))
     if end == "defeat":
         play_sound('defeat')
-        img.append(image.Image(image=images["defeat"], anchor="center", relpos=(0.5, 0.25)))
-    end_gui = gui.GUI(background=background, overlay=128, images=img, buttons=[
+        images.append(image.Image(image=img.misc["overlay"]["defeat"], anchor="center", relpos=(0.5, 0.25)))
+    end_gui = gui.GUI(background=background, overlay=128, images=images, buttons=[
         button.Button(relsize=(0.413, 0.1), anchor="midtop", text="Back to Menu", relpos=(0.5, 0.525)),
         button.Button(relsize=(0.413, 0.1), anchor="midtop", text="Replay", relpos=(0.5, 0.65))])
 
@@ -110,8 +110,6 @@ def _show_settings(window, background):
     set_global_defaults()
     play_sound('click')
 
-    settings = QuickJSON.QJSON("./data/settings.json")
-    settings.load()
     saves = os.listdir("./data/savegames")
     labels = []
 
@@ -132,10 +130,16 @@ def _show_settings(window, background):
     labels.append(label.Label(tags=["audio"], text="BACKGROUND MUSIC:", relpos=(0.05, 0.3), anchor="topleft"))
 
     # video tab labels
-    labels.append(label.Label(tags=["video"], text="RESOLUTION:", relpos=(0.05, 0.2), anchor="topleft"))
-    labels.append(label.Label(tags=["video"], text="ASPECT RATIO:", relpos=(0.05, 0.3), anchor="topleft"))
-    labels.append(label.Label(tags=["video"], text="PARTICLES:", relpos=(0.05, 0.4), anchor="topleft"))
-    labels.append(label.Label(tags=["video"], text="ASPECT RATIO:", relpos=(0.05, 0.3), anchor="topleft"))
+    resourcepacks = os.listdir("./resources/resourcepacks")
+    for i in range(len(resourcepacks)):
+        print("pacco")
+        print(resourcepacks[i])
+        labels.append(label.Label(tags=["video", "packlist"], text=resourcepacks[i], relpos=(0.05, 0.2+0.05*i+0.02*i+0.1), anchor="topleft", color=globs.GRAYSHADES[2]))
+
+    labels.append(label.Label(tags=["video", ""], text="SELECT PACK", relpos=(0.05, 0.2), anchor="topleft", color=globs.GRAYSHADES[0]))
+    labels.append(label.Label(tags=["video", "res"], text="RESOLUTION:", relpos=(0.5, 0.2), anchor="topleft"))
+    labels.append(label.Label(tags=["video", "part"], text="PARTICLES:", relpos=(0.5, 0.4), anchor="topleft"))
+    labels.append(label.Label(tags=["video", "ratio"], text="ASPECT RATIO:", relpos=(0.5, 0.3), anchor="topleft"))
 
     # general tab labels
     labels.append(label.Label(tags=["general"], text="RELOAD SETTINGS GUI", relpos=(0.05, 0.2), anchor="topleft"))
@@ -150,11 +154,16 @@ def _show_settings(window, background):
     for i in settings_gui.labelgroup:
         if i.tags[0] == "saves" and i.tags[1] == "saveslist":
             i.render_outline()
+        elif i.tags[0] == "video" and i.tags[1] == "packlist":
+            i.render_outline()
+
+    for i in settings_gui.labelgroup:
+        if i.tags[0] == "saves" and i.text == get_setting("current_savegame"):
+            i.set_outline(outline=True)
+        elif i.tags[0] == "video" and i.text == get_setting("resourcepack"):
+            i.set_outline(outline=True)
 
     settings_gui.buttongroup[0].set_pressed(press=True)
-    for i in settings_gui.labelgroup:
-        if i.tags[0] == "saves" and i.text == settings["current_savegame"]:
-            i.set_outline(outline=True)
     current_tab = "saves"
 
     def set_current_tab():
@@ -178,6 +187,8 @@ def _show_settings(window, background):
                 if event.button == globs.LEFT:
                     if settings_gui.buttongroup[4].rect.collidepoint(mp):
                         run = False
+
+                    # button click events
                     for i in range(4):
                         if settings_gui.buttongroup[i].rect.collidepoint(mp):
                             for j in range(4):
@@ -186,47 +197,58 @@ def _show_settings(window, background):
                             current_tab = settings_gui.buttongroup[i].tags[0]
                             set_current_tab()
                             play_sound('click')
+
                     # label click events
                     for i in settings_gui.labelgroup:
-                        if i.rect.collidepoint(mp):
-                            if i.visible:
-                                # clicked label is from saves.saveslist
-                                if i.tags[0] == "saves" and i.tags[1] == "saveslist":
+                        if i.rect.collidepoint(mp) and i.visible:
+
+                            # clicked label is from saves.saveslist
+                            if i.tags[0] == "saves" and i.tags[1] == "saveslist":
+                                for j in settings_gui.labelgroup:
+                                    if j.tags[0] == "saves" and j.tags[1] == "saveslist":
+                                        j.set_outline(outline=False)
+                                i.set_outline(outline=True)
+                                set_setting("current_savegame", i.text)
+                                play_sound('click')
+
+                            # clicked label is saves.unselect
+                            if i.tags[0] == "saves" and i.tags[1] == "unselect":
+                                set_setting('current_savegame', "")
+                                return True
+
+                            # clicked label is saves.create
+                            if i.tags[0] == "saves" and i.tags[1] == "create":
+                                for j in settings_gui.labelgroup:
+                                    if j.tags[0] == "saves" and j.tags[1] == "input":
+                                        if j.text != "NAME: ":
+                                            copy_tree("./resources/savegame_template", f"./data/savegames/{j.text[6:]}")
+                                            set_setting('current_savegame', j.text[6:])
+                                            alert(window=window, background=settings_gui.get_surface(), message=[f"SUCCESSFULLY CREATED '{j.text[6:]}'."])
+                                            return True
+                                        else:
+                                            alert(window=window, background=settings_gui.get_surface(), message=["PLEASE INPUT A NAME", "FOR YOUR SAVEGAME FIRST"])
+
+                            # clicked label is saves.delete
+                            if i.tags[0] == "saves" and i.tags[1] == "delete":
+                                if get_setting("current_savegame") == "":
+                                    alert(window=window, background=settings_gui.get_surface(), message=["PLEASE SELECT A SAVEGAME FIRST"])
+                                else:
+                                    del_bool = alert(window=window, background=settings_gui.get_surface(), question=True, question_keyword="DELETE", message=[f"ARE YOU SURE YOU WANT TO DELETE", f"THE SAVEGAME '{get_setting('current_savegame')}'"])
+                                    if del_bool:
+                                        shutil.rmtree(f"./data/savegames/{get_setting('current_savegame')}")
+                                        set_setting("current_savegame", "")
+                                        return True
+
+                            # clicked label is video.pack
+                            if i.tags[0] == "video":
+                                if i.tags[1] == "packlist":
                                     for j in settings_gui.labelgroup:
-                                        if j.tags[0] == "saves" and j.tags[1] == "saveslist":
+                                        if j.tags[0] == "video" and j.tags[1] == "packlist":
                                             j.set_outline(outline=False)
                                     i.set_outline(outline=True)
-                                    settings["current_savegame"] = i.text
+                                    set_setting('resourcepack', i.text)
+                                    img.load()
                                     play_sound('click')
-                                # clicked label is saves.unselect
-                                if i.tags[0] == "saves" and i.tags[1] == "unselect":
-                                    settings["current_savegame"] = ""
-                                    settings.save()
-                                    return True
-                                # clicked label is saves.create
-                                if i.tags[0] == "saves" and i.tags[1] == "create":
-                                    for j in settings_gui.labelgroup:
-                                        if j.tags[0] == "saves" and j.tags[1] == "input":
-                                            if j.text != "NAME: ":
-                                                copy_tree("./resources/savegame_template", f"./data/savegames/{j.text[6:]}")
-                                                settings["current_savegame"] = j.text[6:]
-                                                settings.save()
-                                                alert(window=window, background=settings_gui.get_surface(), message=[f"SUCCESSFULLY CREATED '{j.text[6:]}'."])
-                                                return True
-                                            else:
-                                                alert(window=window, background=settings_gui.get_surface(), message=["PLEASE INPUT A NAME", "FOR YOUR SAVEGAME FIRST"])
-
-                                # clicked label is saves.delete
-                                if i.tags[0] == "saves" and i.tags[1] == "delete":
-                                    if settings["current_savegame"] == "":
-                                        alert(window=window, background=settings_gui.get_surface(), message=["PLEASE SELECT A SAVEGAME FIRST"])
-                                    else:
-                                        del_bool = alert(window=window, background=settings_gui.get_surface(), question=True, question_keyword="DELETE", message=[f"ARE YOU SURE YOU WANT TO DELETE", f"THE SAVEGAME '{settings['current_savegame']}'"])
-                                        if del_bool:
-                                            shutil.rmtree(f"./data/savegames/{settings['current_savegame']}")
-                                            settings["current_savegame"] = ""
-                                            settings.save()
-                                            return True
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
@@ -241,7 +263,6 @@ def _show_settings(window, background):
         if run:
             settings_gui.draw(window=window)
 
-    settings.save()
     play_sound('click')
     return False
 
@@ -322,27 +343,28 @@ def _show_inventory(window, background):
     # label tab      ["tab",     category, slot]
 
     # add overlays
+
     slots = []
     for i in range(5):
         for j in range(6):
             slots.append([0.605+j/14.25, 0.25+i/8])
-            images.append(image.Image(tags=["overlay", "tab", i*6+j], image=overlays["weapon"][0], relpos=(0.605+j/14.25, 0.25+i/8), h_event=True, h_image=overlays["weapon"][1]))
+            images.append(image.Image(tags=["overlay", "tab", i*6+j], image=img.misc["inventory"]["weapon"][0], relpos=(0.605+j/14.25, 0.25+i/8), h_event=True, h_image=img.misc["inventory"]["weapon"][1]))
     for i in range(len(inventory["hotbar"])):
-        images.append(image.Image(tags=["overlay", "hotbar", i], image=overlays["unset"][0], relpos=(0.605+i/14.25, 0.925), h_event=True, h_image=overlays["unset"][1]))
+        images.append(image.Image(tags=["overlay", "hotbar", i], image=img.misc["inventory"]["unset"][0], relpos=(0.605+i/14.25, 0.925), h_event=True, h_image=img.misc["inventory"]["unset"][1]))
 
     # add items
     for i in range(len(inventory["inventory"])):
         for j in range(len(inventory["inventory"][i][1])):
-            if item_tx[inventory["inventory"][i][1][j][1]] is not None:
-                images.append(image.Image(tags=["tab", inventory["inventory"][i][0], j, inventory["inventory"][i][1][j][1], inventory["inventory"][i][1][j][2], inventory["inventory"][i][1][j][3]], image=item_tx[inventory["inventory"][i][1][j][1]], relpos=(slots[j])))
+            if inventory["inventory"][i][1][j][1] != "unset":
+                images.append(image.Image(tags=["tab", inventory["inventory"][i][0], j, inventory["inventory"][i][1][j][1], inventory["inventory"][i][1][j][2], inventory["inventory"][i][1][j][3]], image=img.item[inventory["inventory"][i][1][j][1]], relpos=(slots[j])))
                 if inventory["inventory"][i][1][j][2] > 0:
                     labels.append(label.Label(tags=["tab", inventory["inventory"][i][0], j], text=str(inventory["inventory"][i][1][j][2]), anchor="topleft", relpos=(slots[j][0]-0.022, slots[j][1]+0.01), color=(255, 255, 255)))
     for i in range(len(inventory["hotbar"])):
-        if item_tx[inventory["hotbar"][i][1]] is not None:
-            images.append(image.Image(tags=["hotbar", inventory["hotbar"][i][0], i, inventory["hotbar"][i][1], inventory["hotbar"][i][2], inventory["hotbar"][i][3]], image=item_tx[inventory["hotbar"][i][1]], relpos=(0.605+i/14.25, 0.925)))
+        if inventory["hotbar"][i][1] != "unset":
+            images.append(image.Image(tags=["hotbar", inventory["hotbar"][i][0], i, inventory["hotbar"][i][1], inventory["hotbar"][i][2], inventory["hotbar"][i][3]], image=img.item[inventory["hotbar"][i][1]], relpos=(0.605+i/14.25, 0.925)))
             for j in images:
                 if j.tags[0] == "overlay" and j.tags[1] == "hotbar" and j.tags[2] == i:
-                    j.image, j.h_image = overlays[inventory["hotbar"][i][0]]
+                    j.image, j.h_image = img.misc["inventory"][inventory["hotbar"][i][0]]
             if inventory["hotbar"][i][2] > 0:
                 labels.append(label.Label(tags=["hotbar", inventory["hotbar"][i][0], i], text=str(inventory["hotbar"][i][2]), anchor="topleft", relpos=(0.605+i/14.25-0.022, 0.925+0.005), color=(255, 255, 255)))
 
@@ -365,7 +387,7 @@ def _show_inventory(window, background):
             if i.tags[0] == "tab" and i.tags[1] != current_tab:
                 i.set_visible(visible=False)
             if i.tags[0] == "overlay" and i.tags[1] == "tab":
-                i.image, i.h_image = overlays[current_tab]
+                i.image, i.h_image = img.misc["inventory"][current_tab]
         for i in inv_gui.labelgroup:
             i.set_visible(visible=True)
             if i.tags[0] == "tab" and i.tags[1] != current_tab:
@@ -472,8 +494,7 @@ def _show_inventory(window, background):
                                             # THERE IS NO ITEM HELD
                                             if target is None:
                                                 # pick up item
-                                                print("pickup")
-                                                ovlay.image, ovlay.h_image = overlays["unset"]
+                                                ovlay.image, ovlay.h_image = img.misc["inventory"]["unset"]
                                                 target = item
                                                 for labl in inv_gui.labelgroup:
                                                     if labl.tags[0] == "hotbar" and labl.tags[2] == ovlay.tags[2]:
@@ -492,7 +513,7 @@ def _show_inventory(window, background):
                                                 target.rect.center = item.rect.center
                                                 target.tags[2] = item.tags[2]
                                                 target.tags[0] = item.tags[0]
-                                                ovlay.image, ovlay.h_image = overlays[target.tags[1]]
+                                                ovlay.image, ovlay.h_image = img.misc["inventory"][target.tags[1]]
                                                 target_label = potential_label
                                                 target = item
                                             unsuccessful = False
@@ -513,7 +534,7 @@ def _show_inventory(window, background):
                                             target.rect.center = ovlay.rect.center
                                             target.tags[2] = ovlay.tags[2]
                                             target.tags[0] = ovlay.tags[1]
-                                            ovlay.image, ovlay.h_image = overlays[target.tags[1]]
+                                            ovlay.image, ovlay.h_image = img.misc["inventory"][target.tags[1]]
                                             target_label = None
                                             target = None
 

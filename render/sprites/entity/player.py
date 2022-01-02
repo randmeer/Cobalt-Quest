@@ -1,6 +1,6 @@
 import pygame
 
-from utils import play_sound
+from utils import img, play_sound
 from utils.texture import Texture
 from render.sprites.entity import Entity
 from render.sprites.particle import entity
@@ -14,11 +14,11 @@ class Player(Entity):
         self.velocity = 25
         self.dashing = 0
         Entity.__init__(self, particles, position=pos, health=health)
-        self.tex_up = Texture("player_animation_up")
-        self.tex_down = Texture("player_animation_down")
-        self.tex_right = Texture("player_animation_right")
-        self.tex_left = Texture("player_animation_left")
-        self.tex_idle = Texture("player_animation_idle")
+        self.tex_up = Texture(img.entity["player_up"], 0.1)
+        self.tex_down = Texture(img.entity["player_down"], 0.1)
+        self.tex_right = Texture(img.entity["player_right"], 0.1)
+        self.tex_left = Texture(img.entity["player_left"], 0.1)
+        self.tex_idle = Texture(img.entity["player_idle"], 0.4)
         self.image = self.tex_idle.get()
         self.rect = self.image.get_rect()
         self.rect.center = (0, 0)

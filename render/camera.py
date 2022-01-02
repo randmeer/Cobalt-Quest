@@ -1,8 +1,6 @@
 import pygame
 
-from utils import globs
-from utils.images import images
-from render.sprites import particle
+from utils import globs, img
 
 class Camera:
     def __init__(self):
@@ -54,7 +52,7 @@ class Scene:
     def draw(self, surface):
         self.surface = pygame.Surface((self.sidelength, self.sidelength), pygame.SRCALPHA)
         if globs.hard_debug:
-            self.surface.blit(images["debug_scene"], (0, 0))
+            self.surface.blit(img.textures["debug_scene"], (0, 0))
 
         for i in range(3, -1, -1):
             for j in self.objects_toblit:

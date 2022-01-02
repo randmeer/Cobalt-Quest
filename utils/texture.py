@@ -1,15 +1,9 @@
 import json
 import random
 import time
-import pygame
-from utils import DefaultError
+from utils import DefaultError, get_setting
 from json import JSONDecodeError
-from utils.images import images
 
-class TextureError(DefaultError):
-
-    def __init__(self, errmsg):
-        DefaultError.__init__(errmsg)
 
 class Texture:
     """
@@ -46,94 +40,35 @@ class Texture:
     "time" represents the timeout for this animation frame
     """
 
-    def __init__(self, image: str, single_run=False, set_height=False):
+    def __init__(self, image, frametime, randomized=False, random_start=False, single_run=False, set_height=False):
         self.init_time = time.time()
+        self.default_time = frametime
         self.single_run = single_run
         self.iterations = 0
         self.image = None
         self.img_str = image
         self.stop = False
         self.seth_bool = False
-        if set_height == False:
-            pass
-        else:
+        if set_height:
             self.seth_bool = True
             self.seth_value = set_height
 
-        try:
-            self.image = images[self.img_str]
-        except Exception:
-            raise TextureError(f'unable to load image "{self.img_str}" directory')
-        self.has_json = True
+        self.image = image
+        self.height, self.width = self.image.get_height(), self.image.get_width()
 
-        try:
-            self.script = json.load(open("resources/textures/" + self.img_str + ".json"))
+        if self.seth_bool:
+            self.frame_count = self.height // self.seth_value
+        else:
+            self.frame_count = self.height // self.width
 
-            self.height, self.width = self.image.get_height(), self.image.get_width()
-            if self.seth_bool:
-                # self.height, self.width = self.seth_value, self.image.get_width()
-                self.frame_count = self.height // self.seth_value
-            else:
-                self.frame_count = self.height // self.width
+        self.single_loop_time = self.frame_count * self.default_time
 
-            try:
-                self.default_time = self.script['time']
-            except Exception:
-                raise TextureError(f'image JSON must have valid "time" attribute')
+        if self.seth_bool:
+            self.images = [self.image.subsurface((0, self.seth_value * i, self.width, self.seth_value)) for i in range(self.frame_count)]
+        else:
+            self.images = [self.image.subsurface((0, self.width * i, self.width, self.width)) for i in range(self.frame_count)]
 
-            try:
-                self.randomized = self.script['randomized']
-            except KeyError:
-                self.randomized = False
-
-            try:
-                self.randomized = self.script['random_start']
-            except KeyError:
-                self.randomized = False
-
-            self.single_loop_time = self.frame_count * self.default_time
-
-            if self.seth_bool:
-                self.images = [self.image.subsurface((0, self.seth_value * i, self.width, self.seth_value)) for i in
-                               range(self.frame_count)]
-            else:
-                self.images = [self.image.subsurface((0, self.width * i, self.width, self.width)) for i in
-                               range(self.frame_count)]
-
-            try:
-                self.frame_list = self.script['frames']
-                print('made it here')
-
-                if len(self.frame_list) != self.frame_count:
-                    raise TextureError(
-                        f'image number ({self.frame_count}) and script items ({len(self.frame_list)}) are incoherent')
-
-                self.single_loop_time = 0
-                empty = []
-                for i in self.frame_list:
-                    if 'time' not in i:
-                        i['time'] = self.default_time
-                    if 'index' not in i:
-                        if self.randomized:
-                            empty.append(self.frame_list.index(i))
-                        else:
-                            i['index'] = self.frame_list.index(i)
-
-                if self.randomized:
-                    indexes = random.sample(empty, len(empty))
-                    for i in indexes:
-                        self.frame_list[i]['index'] = empty[indexes.index(i)]
-
-                for i in self.frame_list:
-                    self.single_loop_time += i['time']
-                self.init_time -= random.uniform(0, self.single_loop_time)
-
-            except KeyError:
-                self.frame_list = [{"index": i, "time": self.default_time} for i in range(self.frame_count)]
-
-        except JSONDecodeError:
-            self.has_json = False
-            print(f'unable to find json for "{self.img_str}"')
+        self.frame_list = [{"index": i, "time": self.default_time} for i in range(self.frame_count)]
 
     def get(self):
         """
@@ -141,21 +76,17 @@ class Texture:
         :return:
         """
         if self.stop: return False
-        if self.has_json:
-            now = time.time()
-            delta_time = now - self.init_time
-            delta_time %= self.single_loop_time
+        now = time.time()
+        delta_time = now - self.init_time
+        delta_time %= self.single_loop_time
 
-            for i in range(len(self.frame_list)):
-                if delta_time - self.frame_list[i]['time'] <= 0:
-                    if self.single_run:
-                        iters = self.iterations
-                        self.iterations = i
-                        if i < iters:
-                            self.stop = True
-                            return False
-                    return self.images[self.frame_list[i]['index']]
-                delta_time -= self.frame_list[i]['time']
-        else:
-            return self.image
-
+        for i in range(len(self.frame_list)):
+            if delta_time - self.frame_list[i]['time'] <= 0:
+                if self.single_run:
+                    iters = self.iterations
+                    self.iterations = i
+                    if i < iters:
+                        self.stop = True
+                        return False
+                return self.images[self.frame_list[i]['index']]
+            delta_time -= self.frame_list[i]['time']

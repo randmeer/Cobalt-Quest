@@ -1,12 +1,11 @@
 import pygame
 
-from utils.images import item_tx, overlays, images
 from render.sprites import progress_bar
 from render.elements import label
-from utils import globs, rta_height, rta_dual_height, rta_dual, render_multiline_text
+from utils import globs, img, rta_height, rta_dual_height, rta_dual, render_multiline_text
 
-damage_overlay = pygame.transform.scale(images["damage_overlay"], globs.SIZE)
-mana_overlay = pygame.transform.scale(images["mana_overlay"], globs.SIZE)
+damage_overlay = pygame.transform.scale(img.misc["overlay"]["damage"], globs.SIZE)
+mana_overlay = pygame.transform.scale(img.misc["overlay"]["mana"], globs.SIZE)
 
 class IngameGUI(pygame.sprite.Sprite):
     def __init__(self, invjson):
@@ -46,7 +45,7 @@ class IngameGUI(pygame.sprite.Sprite):
         self.last_chat = globs.chat
         self.update_chat()
 
-        self.selectangle = images["selection"]
+        self.selectangle = img.misc["inventory"]["selection"][0]
         self.overlangle = pygame.Surface(rta_dual_height(0.1, 0.1), pygame.SRCALPHA)
         self.overlangle.fill((255, 255, 255))
         self.overlangle.set_alpha(75)
@@ -54,9 +53,9 @@ class IngameGUI(pygame.sprite.Sprite):
             self.rects[i].size = rta_dual_height(0.1, 0.1)
             self.rects[i].center = (i * rta_height(0.1) + rta_height(0.05) + i * rta_height(0.025), rta_height(0.05))
 
-        self.bars = [progress_bar.ProgressBar(icon=images["heart"], maxvalue=100, colors=((255, 0, 0), (75, 75, 75)), relsize=(0.3, 0.0347), relpos=(0.02, 0.944), has_image=True, image_str="bar_health"),
-                     progress_bar.ProgressBar(icon=images["cross"], maxvalue=100, colors=((0, 0, 255), (75, 75, 75)), relsize=(0.3, 0.0347), relpos=(0.02, 0.903), has_image=True, image_str="bar_mana"),
-                     progress_bar.ProgressBar(icon=images["cross"], maxvalue=100, colors=((0, 255, 0), (75, 75, 75)), relsize=(0.3, 0.0347), relpos=(0.02, 0.861), has_image=True, image_str="bar_progress")]
+        self.bars = [progress_bar.ProgressBar(maxvalue=100, relsize=(0.3, 0.0347), relpos=(0.02, 0.944), image=img.misc["bar"]["health"]),
+                     progress_bar.ProgressBar(maxvalue=100, relsize=(0.3, 0.0347), relpos=(0.02, 0.903), image=img.misc["bar"]["mana"]),
+                     progress_bar.ProgressBar(maxvalue=100, relsize=(0.3, 0.0347), relpos=(0.02, 0.861), image=img.misc["bar"]["progress"])]
         self.bars[0].set(self.inventory["health"])
         self.bars[1].set(self.inventory["mana"])
 
@@ -84,7 +83,10 @@ class IngameGUI(pygame.sprite.Sprite):
 
         self.itemtextures = []
         for i in self.hotbar:
-            self.itemtextures.append(item_tx[i[1]])
+            if i[1] != "unset":
+                self.itemtextures.append(img.item[i[1]])
+            else:
+                self.itemtextures.append(None)
 
     def update_chat(self):
         if self.last_chat != globs.chat:
@@ -138,8 +140,9 @@ class IngameGUI(pygame.sprite.Sprite):
     def draw(self, surface, clock):
         if self.overlay is not None:
             surface.blit(self.overlay, (0, 0))
+        self.surf_selection = pygame.Surface(rta_dual_height(0.72, 0.1), pygame.SRCALPHA)
         for i in range(len(self.rects)):
-            self.surf_selection.blit(overlays[self.hotbar[i][0]][0], self.rects[i])
+            self.surf_selection.blit(img.misc["inventory"][self.hotbar[i][0]][1], self.rects[i])
             if self.itemtextures[i] is not None:
                 self.surf_selection.blit(self.itemtextures[i], (self.rects[i].x + 2, self.rects[i].y + 2))
         for i in self.itemlabels:

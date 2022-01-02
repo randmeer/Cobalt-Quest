@@ -2,10 +2,10 @@ import random
 import math
 import pygame
 
-from utils import globs, get_outline_mask
+from utils import globs, img, get_outline_mask
 
 class ParticleCloud(pygame.sprite.Sprite):
-    def __init__(self, center, radius, velocity, ptsize=1, color=(255, 255, 255), density=1, fadeout=False, dist=0.3,
+    def __init__(self, center, radius, velocity, preset=None, ptsize=1, color=(255, 255, 255), density=1, fadeout=False, dist=0.3,
                  damagecooldown=0.5, damage=0, colorvar=50, priority=2, no_debug=False, spawnradius=0,
                  spawnregion=(0, 0)):
         pygame.sprite.Sprite.__init__(self)
@@ -14,13 +14,18 @@ class ParticleCloud(pygame.sprite.Sprite):
         if self.damage > 0:
             self.dc = 0
             self.dc_max = damagecooldown
+        self.preset = preset
         self.no_debug = no_debug
         self.center = list(center)
         self.radius = radius
         self.fadeout = fadeout
         self.ptsize = ptsize
-        self.color = color
-        self.colorvar = colorvar
+        if self.preset:
+            self.color = img.particles[self.preset][0]
+            self.colorvar = img.particles[self.preset][1]
+        else:
+            self.color = color
+            self.colorvar = colorvar
         self.vel = velocity
         self.dist = dist
         self.spawnregion = spawnregion
@@ -87,8 +92,8 @@ class ParticleCloud(pygame.sprite.Sprite):
             surface.blit(outlinesurf, (self.rect.x + surface.get_width() / 2, self.rect.y + surface.get_height() / 2))
 
 class Emitter(ParticleCloud):
-    def __init__(self, center, radius, velocity, ptsize=1, color=(255, 255, 255), density=0, fadeout=False, dist=0.3, damagecooldown=0.5, damage=0, colorvar=50, priority=2, no_debug=False, spawnradius=0, spawnregion=(0, 0), pps=1):
-        ParticleCloud.__init__(self, center, radius, velocity, ptsize=ptsize, color=color, density=density, fadeout=fadeout, dist=dist, damagecooldown=damagecooldown, damage=damage, colorvar=colorvar, priority=priority, no_debug=no_debug, spawnradius=spawnradius, spawnregion=spawnregion)
+    def __init__(self, center, radius, velocity, preset=None, ptsize=1, color=(255, 255, 255), density=0, fadeout=False, dist=0.3, damagecooldown=0.5, damage=0, colorvar=50, priority=2, no_debug=False, spawnradius=0, spawnregion=(0, 0), pps=1):
+        ParticleCloud.__init__(self, center, radius, velocity, preset=preset, ptsize=ptsize, color=color, density=density, fadeout=fadeout, dist=dist, damagecooldown=damagecooldown, damage=damage, colorvar=colorvar, priority=priority, no_debug=no_debug, spawnradius=spawnradius, spawnregion=spawnregion)
         self.emitting = True
         self.pps = pps
         self.emit_timer = 1 / pps

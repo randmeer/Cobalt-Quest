@@ -1,5 +1,5 @@
 import pygame
-from utils import angle_deg, conv_deg_rad, sin, cos, get_outline_mask, globs
+from utils import img, angle_deg, conv_deg_rad, sin, cos, get_outline_mask, globs
 from utils.texture import Texture
 
 class Attack(pygame.sprite.Sprite):
@@ -58,9 +58,9 @@ class Attack(pygame.sprite.Sprite):
 
 class Swing(Attack):
     def __init__(self, mousepos, playerpos):
-        Attack.__init__(self, mousepos=mousepos, playerpos=playerpos, image=Texture("swing", single_run=True, set_height=16))
+        Attack.__init__(self, mousepos=mousepos, playerpos=playerpos, image=Texture(image=img.misc["attack"]["swing"], frametime=0.025, single_run=True, set_height=16))
         self.damage = 10
 class Stab(Attack):
     def __init__(self, mousepos, playerpos):
-        Attack.__init__(self, mousepos=mousepos, playerpos=playerpos, offset=90, image=Texture("stab", single_run=True, set_height=8))
+        Attack.__init__(self, mousepos=mousepos, playerpos=playerpos, offset=90, image=Texture(image=img.misc["attack"]["stab"], frametime=0.025, single_run=True, set_height=8))
         self.damage = 5

@@ -161,12 +161,11 @@ def atr_dual_width(input_x, input_y):
 def set_global_defaults():
     globs.quitgame = globs.exittomenu = globs.titlescreen = globs.menu = globs.map = globs.rndebug = globs.dungeon = False
 
-
 def setup_window():
     pygame.display.quit()
     pygame.display.init()
     pygame.display.set_caption(f"Cobalt Quest {globs.VERSION}")
-    pygame.display.set_icon(pygame.image.load('./resources/textures/' + "icon.png"))
+    pygame.display.set_icon(pygame.image.load('./resources/textures/icon.png'))
     if globs.fullscreen:
         window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     else:
