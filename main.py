@@ -1,54 +1,13 @@
 import pygame
-
-import utils
-from utils import globs
-import sys
-
-"""
-How the File Sytem works:
-
-logic: scripts chaning the state of the game
-    floor: floor (ingame) logic
-    gui: all user infaces and ingame overlays
-    
-render:  scripts displaying the state of the game
-    elements: user interface elements
-    sprites: ingame sprites
-    camera: ingame rendering script
-    gui: user interface template
-    
-resources: final non-script files like images, audio, json
-
-data: variable non-script files like settings, savegames, chat
-
-utils: useful functions
-    globs: global variables
-    img: globs, but with textures
-    texture: texture template class
-
-"""
-
+import octagon
+import globs
 
 if __name__ == '__main__':
-    pygame.freetype.init()
-    pygame.mixer.init()
+    octagon.init()
+    window = octagon.window()
 
-    #sys.stdout = open('./data/chat.txt', 'w')
-    utils.load_console()
-
-    # if music present play the music
-    if utils.get_setting('background_music'):
-        utils.play_music("menu")
-        pygame.mixer.music.set_volume(utils.get_setting('volume') / 10)
-
-    utils.set_global_defaults()
-    utils.set_resolution()
-    globs.titlescreen = True
-
-    window = utils.setup_window()
-
-    from logic.gui import menu, title_screen, map, dungeon
-    from logic.floor import Floor
+    from game.gui import menu, title_screen, map, dungeon
+    from game.floor import Floor
 
     # main game loop
     run = True
@@ -76,7 +35,8 @@ if __name__ == '__main__':
             floor.load()
             floor.start_loop()
         else:
-            print("yeah so there is no current state u f**ked up")
+            print("no current state")
             run = False
-    #sys.stdout.close()
-    utils.save_console()
+
+    octagon.quit()
+

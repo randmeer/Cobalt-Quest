@@ -1,7 +1,7 @@
-# English
+# Cobalt Quest
 
-A Dungeon Crawler made in python with the pygame-library.
+A Dungeon Crawler written in Python using the [Octagon Game Engine](https://github.com/Randmeer/octagon), which is based on PyGame.
 
-# Deutsch
+Developement is not only slow, but the code and gameplay are pretty bad. There's cool explosions though.
 
-Ein Dungeon Crawler in Python mit der Pygame library.
+My biggest project to date.
