@@ -1,4 +1,3 @@
-VERSION = "0.9.6"
 SIZE = (256, 144)
 SIZE_16TO9 = (256, 144)
 SIZE_16TO10 = (230, 144)
@@ -68,3 +67,4 @@ hard_debug = False
 render_all = False
 fps_meter = False
 
+ExplosionParticles = []

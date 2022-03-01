@@ -39,15 +39,14 @@ class Scene:
         self.surface = pygame.Surface((self.sidelength, self.sidelength), pygame.SRCALPHA)
         self.camera = Camera()
 
-    def update(self, playerentity, delta_time, blocks, entitys, particles, projectiles, melee):
+    def update(self, player, delta_time, blocks, entitys, particles, projectiles, melee):
         self.objects = entitys + projectiles + melee + particles
-        self.objects.append(playerentity)
+        self.objects.append(player)
         for i in self.objects:
-            i.update(delta_time=delta_time, blocks=blocks, particles=particles, projectiles=projectiles, player=playerentity, entitys=entitys, melee=melee)
+            i.update(delta_time=delta_time, blocks=blocks, particles=particles, projectiles=projectiles, player=player, entitys=entitys, melee=melee)
         self.objects += blocks
         self.camera.update()
         self.objects_toblit = self.camera.get_objects(objects=self.objects)
-        self.objects_toblit.append(playerentity)
         self.objects = []
 
     def draw(self, surface):

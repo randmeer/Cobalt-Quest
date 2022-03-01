@@ -1,8 +1,4 @@
-import json
-import random
 import time
-from octagon.utils import DefaultError, get_setting
-from json import JSONDecodeError
 
 
 class Texture:

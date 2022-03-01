@@ -2,7 +2,6 @@ import math
 import pygame
 
 from octagon.utils import play_sound, conv_rad_deg, debug_outlines, angle_deg, conv_deg_rad, var
-from octagon.sprites.particle import explosion
 
 
 def get_deltas(radians):
@@ -13,7 +12,7 @@ def get_deltas(radians):
 
 class Projectile(pygame.sprite.Sprite):
     def __init__(self, particles, image, pos, radians=None, homing=False, homing_target=None, hitbox=(3, 3), rotating=False,
-                 rotation_increment=0, velocity=3, exploding=False, damage=10, sender="player"):
+                 rotation_increment=0, velocity=3, exploding=False, explosion_particles:list[type]=None, damage=10, sender="player"):
         pygame.sprite.Sprite.__init__(self)
         self.priority = 2
         self.collided = False
@@ -39,7 +38,8 @@ class Projectile(pygame.sprite.Sprite):
         self.dxtotal, self.dytotal = 0, 0
         self.hitbox = pygame.Rect(pos, hitbox)
         if self.exploding:
-            self.spark_emitter = explosion.SparkEmitter(pos=pos)
+            self.ExplosionPts = explosion_particles
+            self.spark_emitter = self.ExplosionPts[3](pos=pos)
             particles.append(self.spark_emitter)
 
     def projectile_update(self, delta_time, blocks, entitys, player, particles, projectiles, melee):
@@ -114,9 +114,9 @@ class Projectile(pygame.sprite.Sprite):
             self.rect.centery = self.pc_target.hitbox.centery + self.pc_target_offset[1]
 
     def explode(self, particles):
-        particles.append(explosion.Smoke(self.rect.center))
-        particles.append(explosion.Fire(self.rect.center))
-        particles.append(explosion.Sparks(self.rect.center))
+        particles.append(self.ExplosionPts[0](self.rect.center))
+        particles.append(self.ExplosionPts[1](self.rect.center))
+        particles.append(self.ExplosionPts[2](self.rect.center))
 
     def draw(self, surface):
         image = self.image

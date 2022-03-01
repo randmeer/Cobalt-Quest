@@ -1,18 +1,18 @@
 import time
 import pygame
 import QuickJSON
+import copy
 
 from octagon.utils import render_text, rta_dual, var
 from octagon.utils import img
 from octagon.environment import hud, camera
 from octagon.sprites import block
-from octagon.sprites.entity import apprentice, player
-from octagon.sprites.particle import environment
+from game.sprites.particle import environment
 
 
 class Environment:
 
-    def __init__(self, window, envjsonpath, invjsonpath):
+    def __init__(self, window: pygame.Surface, envjsonpath: str, invjsonpath: str, player: type, entity: list[type], projectile: list[type]):
         """
         handles logic for player, blocks, entities, particles and more
         automatically calculates delta-time
@@ -36,23 +36,30 @@ class Environment:
         self.hud = hud.HUD(invjson=self.invjson)
         self.clock = pygame.time.Clock()
 
+        # index entities and projectiles
+        self.PlayerObj = player
+        self.EntityObj = {}
+        self.ProjectileObj = {}
+        for i in entity:
+            self.EntityObj[str(i.__name__).lower()] = i
+        for i in projectile:
+            self.ProjectileObj[str(i.__name__).lower()] = i
+
     def load(self):
         """
         loads the json of the respective floor and creates all the specified
         block & entity classes and the player class
         """
-        self.blocks, self.entitys, self.particles, self.projectiles, self.melee, self.events = [], [], [], [], [], []
-        self.now, self.prev_time, self.delta_time = 0, 0, 0
-        self.cooldown, self.sidelength = 0.5, 0
+        self.blocks, self.entities, self.particles, self.projectiles, self.melee, self.events = [], [], [], [], [], []
+        self.now, self.prev_time, self.delta_time, self.cooldown, self.sidelength= 0, 0, 0, 0.5, 0
         self.player, self.scene = None, None
-        self.run = True
-        self.click = False
+        self.run, self.click = True, False
 
         # load env json
         self.envjson.load()
         self.invjson.load()
         self.sidelength = self.envjson["size"] * 16 * 2
-        self.player = player.Player(particles=self.particles,
+        self.player = self.PlayerObj(particles=self.particles,
                                     pos=(self.envjson["player"][0], self.envjson["player"][1]),
                                     health=self.invjson["health"], mana=self.invjson["mana"])
         # read and convert blocks to Block()'s in list
@@ -72,12 +79,11 @@ class Environment:
                         y += 1
                     self.blocks.append(block.Block(block=blocks[i][j], pos=(x, y)))
 
-        # read and convert entitys to Entity()'s in list
-        for i in self.envjson["entitys"]:
-            if i[0] == "apprentice":
-                self.entitys.append(
-                    apprentice.Apprentice(particles=self.particles, pos=(i[1][0], i[1][1]), health=i[2], weapon=i[3],
-                                          floorjson=self.envjson))
+        # read and convert entitys/projectiles to instances of their classes
+        for i in self.envjson["entities"]:
+            self.entities.append(self.EntityObj[i[0]](particles=self.particles, pos=(i[1][0], i[1][1]), health=i[2], weapon=i[3], target=i[4], automove_grid=copy.deepcopy(self.envjson["blocks"])))
+        for i in self.envjson["projectiles"]:
+            self.projectiles.append(self.ProjectileObj[i[0]](particles=self.particles, pos=(i[1][0], i[1][1]), radians=i[2], exploding=i[3]))
 
         # create scene and set camera target
         self.scene = camera.Scene(sidelength=self.sidelength)
@@ -86,9 +92,16 @@ class Environment:
         self.particles.append(environment.Cinder(sidelength=self.sidelength))
 
     def save(self):
-        self.envjson["entitys"] = []
-        for i in self.entitys:
-            self.envjson["entitys"].append(["apprentice", [i.position[0], i.position[1]], i.health, i.weapon])
+        self.envjson["entities"] = []
+        self.envjson["projectiles"] = []
+        for i in self.entities:
+            if i.auto_move:
+                target = i.am_path[len(i.am_path)-1]
+            else:
+                target = None
+            self.envjson["entities"].append([str(type(i).__name__).lower(), [i.position[0], i.position[1]], i.health, i.weapon, target])
+        for i in self.projectiles:
+            self.envjson["projectiles"].append([str(type(i).__name__).lower(), [i.hitbox.centerx, i.hitbox.centery], i.radians, i.exploding])
         self.envjson["player"] = self.player.position
         self.envjson.save()
         self.hud.save_hotbar()

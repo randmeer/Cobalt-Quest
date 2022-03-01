@@ -4,10 +4,10 @@ import os
 import shutil
 from distutils.dir_util import copy_tree
 
-from octagon.utils import play_sound, set_global_defaults, mp_screen, get_setting, get_inventory, set_setting, img, var
+from octagon.utils import play_sound, mp_screen, get_setting, get_inventory, set_setting, img, var
 from octagon.gui import button, label, image
 from octagon import gui
-import globs
+from game import globs
 
 victory = pygame.transform.scale(img.misc["overlay"]["victory"], var.SIZE)
 defeat = pygame.transform.scale(img.misc["overlay"]["defeat"], var.SIZE)
@@ -15,7 +15,7 @@ defeat = pygame.transform.scale(img.misc["overlay"]["defeat"], var.SIZE)
 
 def pause_screen(window, background):
     play_sound('click')
-    set_global_defaults()
+    globs.set_global_defaults()
 
     pause_gui = gui.GUI(background=background, overlay=128, buttons=[
         button.Button(anchor="center", relsize=(0.4, 0.1), text="RESUME", relpos=(0.5, 0.44)),
@@ -52,7 +52,7 @@ def pause_screen(window, background):
 
 def end_screen(window, background, end):
     # TODO: end screen textures
-    set_global_defaults()
+    globs.set_global_defaults()
     images = []
     if end == "victory":
         play_sound('victory')
@@ -107,7 +107,7 @@ def _show_settings(window, background):
     """
 
     # dear future self, have fun trying to understand this
-    set_global_defaults()
+    globs.set_global_defaults()
     play_sound('click')
 
     saves = os.listdir("./data/savegames")
@@ -274,7 +274,7 @@ def _show_settings(window, background):
 
 
 def alert(window, background, message, color=(0, 0, 0), question=False, question_keyword="OK"):
-    set_global_defaults()
+    globs.set_global_defaults()
     play_sound('alert')
     labels = []
     buttons = []
@@ -329,7 +329,7 @@ def _show_inventory(window, background):
     to re-run this function, call 'return True'
     to exit this function, call 'return False'
     """
-    set_global_defaults()
+    globs.set_global_defaults()
     play_sound('click')
 
     # load inventory json
@@ -584,7 +584,7 @@ def _show_inventory(window, background):
 
 
 def stats(window, background):
-    set_global_defaults()
+    globs.set_global_defaults()
     play_sound('click')
     stats_gui = gui.GUI(background=background, overlay=192, buttons=[
         button.Button(tags=["return"], anchor="bottomleft", relsize=(0.4, 0.1), text="SAVE AND RETURN", relpos=(0.05, 0.95))], labels=[

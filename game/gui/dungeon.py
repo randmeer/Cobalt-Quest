@@ -1,13 +1,15 @@
 import pygame
 import QuickJSON
 
-from octagon.utils import mp_screen, set_global_defaults, play_sound, get_setting, img, var
-import globs
+from octagon.utils import mp_screen, play_sound, get_setting, img, var
 from octagon.gui import button, image, label
 from octagon import gui
 
+from game import globs
+
+
 def show_dungeon(window, dungeon):
-    set_global_defaults()
+    globs.set_global_defaults()
 
     blueprint = QuickJSON.QJSON(f"./data/savegames/{get_setting('current_savegame')}/dungeons/{dungeon}/blueprint.json")
     blueprint.load()

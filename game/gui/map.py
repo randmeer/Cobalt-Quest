@@ -1,13 +1,15 @@
 import pygame
 
-from octagon.utils import mp_screen, set_global_defaults, play_sound, img
-import globs
+from octagon.utils import mp_screen, play_sound, img
 from octagon.gui import button, image
 from octagon import gui
 from octagon.utils.texture import Texture
 
+from game import globs
+
+
 def show_map(window):
-    set_global_defaults()
+    globs.set_global_defaults()
 
     # TODO: make the map's dungeons clickable
     # create the lvl buttons and use a uneccessary complicated alorithm to align them in a 3x3 grid

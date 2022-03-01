@@ -19,3 +19,6 @@ class Sparks(ParticleCloud):
 class SparkEmitter(Emitter):
     def __init__(self, pos):
         Emitter.__init__(self, center=pos, radius=5, velocity=0.3, ptsize=1, density=0, dist=0.7, pps=40, preset="sparks")
+
+
+ExplosionPts = [Smoke, Fire, Sparks, SparkEmitter]

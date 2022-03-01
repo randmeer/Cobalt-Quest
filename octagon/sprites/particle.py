@@ -7,8 +7,8 @@ from octagon.utils import get_outline_mask, img, var
 
 class ParticleCloud(pygame.sprite.Sprite):
     def __init__(self, center, radius, velocity, preset=None, ptsize=1, color=(255, 255, 255), density=1, fadeout=False,
-                 dist=0.3, damage=None, damage_cooldown=0.5, damage_amount=0, colorvar=50, priority=2, no_debug=False, spawnradius=0,
-                 spawnregion=(0, 0)):
+                 dist=0.3, damage=None, damage_cooldown=0.5, damage_amount=0, colorvar=50, priority=2, no_debug=False,
+                 spawnradius=0, spawnregion=(0, 0)):
         """
         :param center: (x, y)
         :param radius: pixels
@@ -114,6 +114,7 @@ class ParticleCloud(pygame.sprite.Sprite):
             surf.fill((0, 0, 0))
             outlinesurf = get_outline_mask(surf, color=(255, 255, 255))
             surface.blit(outlinesurf, (self.rect.x + surface.get_width() / 2, self.rect.y + surface.get_height() / 2))
+
 
 class Emitter(ParticleCloud):
     def __init__(self, center, radius, velocity, preset=None, ptsize=1, color=(255, 255, 255), density=0, fadeout=False, dist=0.3, damage=None, damage_amount=5, damage_cooldown=0.5, colorvar=50, priority=2, no_debug=False, spawnradius=0, spawnregion=(0, 0), pps=1):

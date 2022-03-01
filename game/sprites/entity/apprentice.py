@@ -2,12 +2,14 @@ from octagon.utils.texture import Texture
 from octagon.sprites.entity import Entity
 from octagon.utils import img
 
+from game.sprites.particle.entity import Footstep, Die1, Die2, Damage
+
 
 class Apprentice(Entity):
 
-    def __init__(self, particles, pos, health=None, weapon=None, floorjson=None):
-        self.priority = 2
-        Entity.__init__(self, particles, auto_movement=True, position=pos, floorjson=floorjson)
+    def __init__(self, particles, pos, health=None, weapon=None, automove_grid=None, target=None):
+        Entity.__init__(self, priority=2, particles=particles, automove=True, position=pos, automove_grid=automove_grid,
+                        automove_target=target, footstep_particle=Footstep, death_particles=(Die1, Die2), damage_particle=Damage)
         self.weapon = weapon
         if health is not None:
             self.health = health

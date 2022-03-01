@@ -3,18 +3,17 @@ import pygame
 from octagon.utils import play_sound, img
 from octagon.utils.texture import Texture
 from octagon.sprites.entity import Entity
-from octagon.sprites.particle import entity
+
+from game.sprites.particle.entity import Damage, Dash, Footstep
 
 
 class Player(Entity):
     def __init__(self, particles, pos, health=100, mana=100):
-        self.priority = 1
+        Entity.__init__(self, priority=1, particles=particles, position=pos, health=health, velocity=25, max_health=100,
+                        footstep_particle=Footstep, damage_particle=Damage)
         self.mana = mana
         self.max_mana = 100
-        self.position = pos
-        self.velocity = 25
         self.dashing = 0
-        Entity.__init__(self, particles, position=pos, health=health)
         self.tex_up = Texture(img.entity["player_up"], 0.1)
         self.tex_down = Texture(img.entity["player_down"], 0.1)
         self.tex_right = Texture(img.entity["player_right"], 0.1)
@@ -23,7 +22,7 @@ class Player(Entity):
         self.image = self.tex_idle.get()
         self.rect = self.image.get_rect()
         self.rect.center = (0, 0)
-        self.dash_emitter = entity.Dash(pos=(self.hitbox.center[0], self.hitbox.center[1]), priority=self.priority + 1)
+        self.dash_emitter = Dash(pos=(self.hitbox.center[0], self.hitbox.center[1]), priority=self.priority + 1)
         self.dash_emitter.emitting = False
         particles.append(self.dash_emitter)
 

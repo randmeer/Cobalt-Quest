@@ -1,15 +1,16 @@
 import pygame
 
-from octagon.utils import mp_screen, set_global_defaults, play_sound, get_setting, var
-import globs
+from octagon.utils import mp_screen, play_sound, get_setting, var
 from octagon.utils import img
 from octagon.gui import button, image, label
 from octagon import gui
+
+from game import globs
 from game.gui.overlay import show_settings, alert, show_inventory, stats
 
 
 def show_menu(window):
-    set_global_defaults()
+    globs.set_global_defaults()
 
     menu_gui = gui.GUI(
         background=img.misc["background"]["menu"], overlay=160,
@@ -23,7 +24,7 @@ def show_menu(window):
         images=[
             image.Image(relpos=(0.5, 0.2), anchor="center", image=img.misc["logo"])],
         labels=[
-            label.Label(text=f"VERSION {var.VERSION}", relpos=(0.01, 0.98), anchor="bottomleft", color=(12, 18, 26)),
+            label.Label(text=f"VERSION {globs.VERSION}", relpos=(0.01, 0.98), anchor="bottomleft", color=(12, 18, 26)),
             label.Label(text="RANDE STUDIOS", relpos=(0.01, 0.94), anchor="bottomleft", color=(12, 18, 26))])
 
     clock = pygame.time.Clock()

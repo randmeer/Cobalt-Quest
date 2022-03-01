@@ -1,6 +1,5 @@
 import pygame
-from octagon.utils import load_console, get_setting, play_music, set_global_defaults, set_resolution
-import globs
+from octagon.utils import load_console, get_setting, play_music, set_resolution
 
 
 def init():
@@ -15,13 +14,11 @@ def init():
         utils.play_music("menu")
         pygame.mixer.music.set_volume(utils.get_setting('volume') / 10)
 
-    utils.set_global_defaults()
     utils.set_resolution()
-    globs.titlescreen = True
 
 
-def window():
-    window = utils.setup_window()
+def window(title):
+    window = utils.setup_window(title)
     return window
 
 

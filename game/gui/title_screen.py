@@ -1,13 +1,14 @@
 import pygame
 
-from octagon.utils import set_global_defaults, play_sound, img, var
-import globs
+from octagon.utils import play_sound, img, var
 from octagon import gui
 from octagon.gui import label
 
+from game import globs
+
 
 def show_title_screen(window):
-    set_global_defaults()
+    globs.set_global_defaults()
 
     title_screen_gui = gui.GUI(
         background=img.misc["background"]["menu"], overlay=192,

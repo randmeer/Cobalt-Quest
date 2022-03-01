@@ -5,10 +5,7 @@ import QuickJSON
 import math
 
 from octagon.utils import var
-import globs
 
-
-# math utils
 
 def hypo(a, b):
     """
@@ -160,14 +157,10 @@ def atr_dual_width(input_x, input_y):
     output_x, output_y = input_x / w, input_y / w
     return output_x, output_y
 
-
-def set_global_defaults():
-    globs.quitgame = globs.exittomenu = globs.titlescreen = globs.menu = globs.map = globs.rndebug = globs.dungeon = False
-
-def setup_window():
+def setup_window(title):
     pygame.display.quit()
     pygame.display.init()
-    pygame.display.set_caption(f"Cobalt Quest {var.VERSION}")
+    pygame.display.set_caption(title)
     pygame.display.set_icon(pygame.image.load('./resources/textures/icon.png'))
     if var.fullscreen:
         window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
@@ -432,7 +425,7 @@ def cord_to_block(posx, posy, image=None):
         width, height = 16, 16
     else:
         width, height = image.get_width(), image.get_height()
-    pos = [round(posx/width), round(posy/height)]
+    pos = [math.floor(posx/width), math.floor(posy/height)]
     return pos
 
 def cout(message):

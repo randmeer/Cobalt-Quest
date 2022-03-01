@@ -1,10 +1,13 @@
 import pygame
 import octagon
-import globs
+from game import globs
 
 if __name__ == '__main__':
     octagon.init()
-    window = octagon.window()
+    window = octagon.window(f"Cobalt Quest {globs.VERSION}")
+
+    globs.set_global_defaults()
+    globs.titlescreen = True
 
     from game.gui import menu, title_screen, map, dungeon
     from game.floor import Floor

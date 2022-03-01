@@ -1,22 +1,27 @@
 import time
 import pygame
 
-import globs
-from octagon.utils import mp_scene, get_setting, angle_deg, conv_deg_rad, cout, play_sound, set_global_defaults, var
-from octagon.utils import img
-from octagon.sprites.attack import dagger
-from game.gui.overlay import pause_screen, show_inventory, end_screen
-from octagon.sprites.projectile import arrow, shuriken
+from octagon.utils import mp_scene, get_setting, angle_deg, conv_deg_rad, cout, play_sound, var, img
 from octagon.environment import Environment
+
+from game import globs
+from game.sprites.attack import dagger
+from game.gui.overlay import pause_screen, show_inventory, end_screen
+from game.sprites.projectile import arrow, shuriken, fireball
+from game.sprites.entity.player import Player
+from game.sprites.entity.apprentice import Apprentice
 
 
 class Floor(Environment):
 
     def __init__(self, window):
-        set_global_defaults()
+        globs.set_global_defaults()
         Environment.__init__(self, window,
                              f"./data/savegames/{get_setting('current_savegame')}/dungeons/{globs.dungeon_str}/{globs.floor_str}.json",
-                             f"./data/savegames/{get_setting('current_savegame')}/inventory.json")
+                             f"./data/savegames/{get_setting('current_savegame')}/inventory.json",
+                             Player,
+                             [Apprentice],
+                             [arrow.Arrow, shuriken.Shuriken, fireball.Fireball])
 
     def update(self):
         """
@@ -26,7 +31,7 @@ class Floor(Environment):
         # update objects
         self.click = False
         mp = mp_scene(scene=self.scene)
-        self.scene.update(playerentity=self.player, delta_time=self.delta_time, blocks=self.blocks, entitys=self.entitys, particles=self.particles, projectiles=self.projectiles, melee=self.melee)
+        self.scene.update(player=self.player, delta_time=self.delta_time, blocks=self.blocks, entitys=self.entities, particles=self.particles, projectiles=self.projectiles, melee=self.melee)
         self.hud.update(player=self.player)
 
         if self.player.health <= 0:
