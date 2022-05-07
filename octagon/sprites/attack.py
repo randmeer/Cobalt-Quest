@@ -1,22 +1,25 @@
 import pygame
 
-from octagon.utils import angle_deg, conv_deg_rad, sin, cos, get_outline_mask, var
+from octagon.utils import get_outline_mask, var
+from octagon.utils.static import angle_deg, conv_deg_rad, sin, cos
 
 
 class Attack(pygame.sprite.Sprite):
-    def __init__(self, mousepos, playerpos, image, offset=0):
+    def __init__(self, env, image, offset=0, displacement=20):
         pygame.sprite.Sprite.__init__(self)
+        self.env = env
+        self.env.melee.append(self)
         self.priority = 2
         self.collided = False
-        self.mp = mousepos
-        self.pp = playerpos
+        self.mp = env.mousepos
+        self.pp = env.player.hitbox.center
         self.offset = offset
         self.damage = 10
         self.swing_deg = angle_deg(self.pp, self.mp)
         self.swing_rad = conv_deg_rad(self.swing_deg)
         dx = sin(self.swing_rad)
         dy = cos(self.swing_rad)
-        self.swing_target = (self.pp[0] + dx * 20, self.pp[1] - dy * 20)
+        self.swing_target = (self.pp[0] + dx * displacement, self.pp[1] - dy * displacement)
         self.swing_image = image
         self.image = pygame.transform.rotate(self.swing_image.get(), -self.swing_deg+self.offset)
         self.rect = self.image.get_rect()
@@ -24,23 +27,26 @@ class Attack(pygame.sprite.Sprite):
 
         self.mask = pygame.mask.from_surface(self.image)
 
-    def update(self, delta_time, blocks, entitys, particles, player, projectiles, melee):
-        if self.swing_image.get() == False:
-            melee.remove(self)
+    def update(self):
+        img = self.swing_image.get()
+        if not img:
+            self.env.melee.remove(self)
             return
         else:
-            self.image = pygame.transform.rotate(self.swing_image.get(), -self.swing_deg+self.offset)
-        if self.collided: return
+            self.image = pygame.transform.rotate(img, -self.swing_deg+self.offset)
+        if self.collided:
+            return
 
         self.mask = pygame.mask.from_surface(self.image)
 
-        for i in projectiles:
+        for i in self.env.projectiles:
             if pygame.sprite.collide_mask(self, i):
-                i.collide(particles=particles, projectiles=projectiles, despawn_seconds=0)
+                i.collide(despawn_seconds=0)
                 return
-        for i in entitys:
-            if pygame.sprite.collide_mask(self, i):
-                i.damage(damage=self.damage, particles=particles, pos=(self.rect[0] + pygame.sprite.collide_mask(self, i)[0], self.rect[1] + pygame.sprite.collide_mask(self, i)[1],))
+        for i in self.env.entities:
+            collision = pygame.sprite.collide_mask(self, i)
+            if collision:
+                i.damage(damage=self.damage, pos=(self.rect[0] + collision[0], self.rect[1] + collision[1],))
                 self.collided = True
                 return
         # TODO: get the collision between the swing mask and the entity rect, not the entity mask

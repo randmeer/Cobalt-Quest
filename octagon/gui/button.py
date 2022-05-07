@@ -14,7 +14,7 @@ class Button(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.relw, self.relh = relsize[0], relsize[1]
         self.relposx, self.relposy = relpos[0], relpos[1]
-        self.text = text
+        self.text = text.upper()
         self.textcolor = textcolor
         self.textanchor = textanchor
         self.textsize = textsize

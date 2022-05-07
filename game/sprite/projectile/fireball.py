@@ -1,7 +1,7 @@
 from octagon.utils import img
 from octagon.sprites.projectile import Projectile
 
-from game.sprites.particle.explosion import ExplosionPts
+from game.sprite.particle.explosion import ExplosionPts
 
 
 class Fireball(Projectile):

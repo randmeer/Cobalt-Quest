@@ -1,6 +1,6 @@
 import pygame
 
-from octagon.utils import img, var
+from octagon.utils import var
 
 
 class Camera:
@@ -32,36 +32,38 @@ class Camera:
 
 
 class Scene:
-    def __init__(self, sidelength):
+    def __init__(self, env):
+        self.env = env
         self.surface, rect = None, None
-        self.sidelength = sidelength
+        self.sidelength = env.sidelength
         self.objects, self.objects_toblit = [], []
         self.surface = pygame.Surface((self.sidelength, self.sidelength), pygame.SRCALPHA)
+        self.rect = self.surface.get_rect()
         self.camera = Camera()
 
-    def update(self, player, delta_time, blocks, entitys, particles, projectiles, melee):
-        self.objects = entitys + projectiles + melee + particles
-        self.objects.append(player)
+    def update(self):
+        self.objects = self.env.entities + self.env.projectiles + self.env.melee + self.env.particles
+        self.objects.append(self.env.player)
         for i in self.objects:
-            i.update(delta_time=delta_time, blocks=blocks, particles=particles, projectiles=projectiles, player=player, entitys=entitys, melee=melee)
-        self.objects += blocks
+            i.update()
+        self.objects += self.env.blocks
         self.camera.update()
         self.objects_toblit = self.camera.get_objects(objects=self.objects)
         self.objects = []
 
     def draw(self, surface):
-        self.surface = pygame.Surface((self.sidelength, self.sidelength), pygame.SRCALPHA)
-        if var.hard_debug:
-            self.surface.blit(img.misc["debug_scene"], (0, 0))
+        # self.surface = pygame.Surface((self.sidelength, self.sidelength), pygame.SRCALPHA)
+        # self.surface.fill((0, 0, 0, 0))
+        self.surface.fill((0, 0, 0, 0), pygame.Rect(self.camera.rect.centerx + self.env.sidelength / 2 - self.camera.rect.width / 2,
+                                      self.camera.rect.centery + self.env.sidelength / 2 - self.camera.rect.height / 2,
+                                      self.camera.rect.width, self.camera.rect.height))
 
         for i in range(3, -1, -1):
             for j in self.objects_toblit:
                 if j.priority == i:
                     j.draw(surface=self.surface)
 
-        self.rect = self.surface.get_rect()
         if var.hard_debug:
-            self.rect.center = (0, 0)
             surf = pygame.transform.scale(self.surface, (surface.get_height(), surface.get_height()))
             surface.blit(surf, (0, 0))
         else:

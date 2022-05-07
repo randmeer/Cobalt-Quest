@@ -1,94 +1,32 @@
-import random
 import pygame
 import pygame.freetype
 import QuickJSON
 import math
+import random
 
 from octagon.utils import var
 
 
-def hypo(a, b):
-    """
-    right-angled triangle:
-    kathete a, kathete b --> hypothenuse c
-    """
-    c = math.sqrt(a ** 2 + b ** 2)
-    return c
-
-def angle_deg(p1, p2):
-    """
-    point p1, point p2 --> angle in degrees
-    """
-    dx = p2[0] - p1[0]
-    dy = p2[1] - p1[1]
-    if dx == 0:
-        if dy == 0:
-            deg = 0
-        else:
-            deg = 0 if p1[1] > p2[1] else 180
-    elif dy == 0:
-        deg = 90 if p1[0] < p2[0] else 270
-    else:
-        deg = math.atan(dy / dx) / math.pi * 180
-        lowering = p1[1] < p2[1]
-        if (lowering and deg < 0) or (not lowering and deg > 0):
-            deg += 270
-        else:
-            deg += 90
-    return deg
-
-def conv_deg_rad(deg):
-    """
-    degrees --> radiants
-    """
-    rad = deg * math.pi / 180
-    return rad
-
-def conv_rad_deg(rad):
-    """
-    radiants --> degrees
-    """
-    deg = rad * 180 / math.pi
-    return deg
-
-def sign(num):
-    """
-    positive value --> 1
-    negative value --> -1
-    zero --> 0
-    """
-    try:
-        return num / abs(num)
-    except ZeroDivisionError:
-        return 0
-
-def flip(num):
-    """
-    flips a values sign (+/-)
-    """
-    return 1 ^ num
-
-def sin(num):
-    return math.sin(num)
-
-def cos(num):
-    return math.cos(num)
-
 settings = QuickJSON.QJSON("./data/settings.json")
+
 
 def set_setting(setting, value):
     settings[setting] = value
     settings.save()
 
+
 def get_setting(setting):
     settings.load()
     return settings[setting]
 
+
 inventory = QuickJSON.QJSON(f"./data/savegames/{get_setting('current_savegame')}/inventory.json")
+
 
 def get_inventory(value):
     inventory.load()
     return inventory[value]
+
 
 def set_resolution():
     aspect_ratio = get_setting('aspect_ratio')
@@ -115,78 +53,70 @@ class DefaultError(Exception):
         return self.__class__, self.errmsg
 
 
-w, h = 256, 144
+w, h = var.SIZE
+
 
 def rta_width(input_value):
     output = w * input_value
     return round(output)
 
+
 def atr_width(input_value):
     output = input_value / w
     return output
+
 
 def rta_height(input_value):
     output = h * input_value
     return round(output)
 
+
 def atr_height(input_value):
     output = input_value / h
     return output
+
 
 def rta_dual(input_x, input_y):
     output_x, output_y = w * input_x, h * input_y
     return round(output_x), round(output_y)
 
+
 def atr_dual(input_x, input_y):
     output_x, output_y = input_x / w, input_y / h
     return output_x, output_y
+
 
 def rta_dual_height(input_x, input_y):
     output_x, output_y = h * input_x, h * input_y
     return round(output_x), round(output_y)
 
+
 def atr_dual_height(input_x, input_y):
     output_x, output_y = input_x / h, input_y / h
     return output_x, output_y
+
 
 def rta_dual_width(input_x, input_y):
     output_x, output_y = w * input_x, w * input_y
     return round(output_x), round(output_y)
 
+
 def atr_dual_width(input_x, input_y):
     output_x, output_y = input_x / w, input_y / w
     return output_x, output_y
 
-def setup_window(title):
-    pygame.display.quit()
-    pygame.display.init()
-    pygame.display.set_caption(title)
-    pygame.display.set_icon(pygame.image.load('./resources/textures/icon.png'))
-    if var.fullscreen:
-        window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-    else:
-        window = pygame.display.set_mode(var.res_size)
-    return window
 
-
-def render_text(window, text, pos, color, size=5, antialiased=False, vertical=False, font="game"):
-    if font == "game":
-        f = pygame.freetype.Font("./resources/fonts/PortableVengeance.ttf", size)
-    elif font == "debug":
-        f = pygame.freetype.Font("./resources/fonts/standart.otf", size)
-    # PortableVengeance by Pixel Kitchen on fontspace.com, Licensed as Public Domain
-    # The dot (.) has been modified
-    # px * .75 = pt (example: 8px is equivalent to 6pt)
+def render_text(window, text, pos, color=var.WHITE, size=5, antialiased=False, vertical=False):
+    f = pygame.freetype.Font("./resources/fonts/PixelQuest.otf", size)
     f.antialiased = antialiased
     f.vertical = vertical
     f.render_to(surf=window, dest=pos, text=text, fgcolor=color)
 
-def get_text_rect(text, size=5, font="game"):
-    if font == "game":
-        f = pygame.freetype.Font("./resources/fonts/PortableVengeance.ttf", size)
-    elif font == "debug":
-        f = pygame.freetype.Font("./resources/fonts/standart.otf", size)
+
+def get_text_rect(text, size=5):
+    f = pygame.freetype.Font("./resources/fonts/PixelQuest.otf", size)
     return f.get_rect(text=text)
+
 
 # https://stackoverflow.com/questions/42014195/rendering-text-with-multiple-lines-in-pygame
 def render_multiline_text(surface, text, pos, linebreak=False, fadeout=None, color=(255, 255, 255)):
@@ -194,7 +124,7 @@ def render_multiline_text(surface, text, pos, linebreak=False, fadeout=None, col
         words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words.
     else:
         words = text.splitlines()
-    #space = font.size(' ')[0]  # The width of a space.
+    # space = font.size(' ')[0]  # The width of a space.
     space = 5
     word_width, word_height = 5, 5
     max_width, max_height = surface.get_size()
@@ -206,9 +136,9 @@ def render_multiline_text(surface, text, pos, linebreak=False, fadeout=None, col
     rendercolor = [color[0], color[1], color[2], alpha]
     for line in words:
         if fadeout == "up":
-            rendercolor[3] += 255/len(words)
+            rendercolor[3] += 255 / len(words)
         elif fadeout == "down":
-            rendercolor[3] -= 255/len(words)
+            rendercolor[3] -= 255 / len(words)
         if linebreak:
             for word in line:
                 bingorect = get_text_rect(word)
@@ -216,14 +146,14 @@ def render_multiline_text(surface, text, pos, linebreak=False, fadeout=None, col
                 bingosurf = pygame.Surface((word_width, word_height), pygame.SRCALPHA)
                 if x + word_width >= max_width:
                     x = pos[0]  # Reset the x.
-                    y += word_height+1  # Start on new row.
+                    y += word_height + 1  # Start on new row.
                 render_text(window=bingosurf, text=word, pos=(0, 0), color=rendercolor)
                 surface.blit(bingosurf, (x, y))
                 x += word_width + space
         else:
             render_text(window=surface, text=line, pos=(x, y), color=rendercolor)
         x = pos[0]  # Reset the x.
-        y += word_height+1  # Start on new row.
+        y += word_height + 1  # Start on new row.
 
 
 def gradient_rect(width, height, colors):
@@ -253,7 +183,7 @@ def play_sound(sound):
     elif sound == 'alert':
         pygame.mixer.Channel(2).play(pygame.mixer.Sound("./resources/sounds/hurt.wav"))
     elif sound == 'step':
-        if pygame.mixer.Channel(3).get_busy() == False:
+        if not pygame.mixer.Channel(3).get_busy():
             num = random.randint(1, 5)
             pygame.mixer.Channel(3).play(pygame.mixer.Sound("./resources/sounds/step" + str(num) + ".wav"))
             threshold = 20
@@ -286,6 +216,7 @@ def mp_screen():
     return (pygame.mouse.get_pos()[0] / (var.res_size[0] / var.SIZE[0]),
             pygame.mouse.get_pos()[1] / (var.res_size[1] / var.SIZE[1]))
 
+
 def mp_scene(scene):
     """
     returns mouse position relative to the scene
@@ -293,6 +224,7 @@ def mp_scene(scene):
     """
     mp = mp_screen()
     return scene.camera.rect.centerx - var.SIZE[0] / 2 + mp[0], scene.camera.rect.centery - var.SIZE[1] / 2 + mp[1]
+
 
 def set_anchor_point(rect, pos, anchor):
     if anchor == "midtop" or anchor == "mt":
@@ -314,6 +246,7 @@ def set_anchor_point(rect, pos, anchor):
     elif anchor == "center" or anchor == "c":
         rect.center = pos
 
+
 def dual_rect_anchor(rect1, rect2, anchor):
     if anchor == "midtop" or anchor == "mt":
         rect1.midtop = rect2.midtop
@@ -334,6 +267,7 @@ def dual_rect_anchor(rect1, rect2, anchor):
     elif anchor == "center" or anchor == "c":
         rect1.center = rect2.center
 
+
 def draw_outline_mask(surface, img, loc, thickness=1, color=(255, 255, 255)):
     mask = pygame.mask.from_surface(img)
     mask_outline = mask.outline()
@@ -342,6 +276,7 @@ def draw_outline_mask(surface, img, loc, thickness=1, color=(255, 255, 255)):
         mask_outline[n] = (point[0] + loc[0], point[1] + loc[1])
         n += 1
     pygame.draw.polygon(surface, color, mask_outline, thickness)
+
 
 def get_outline_mask(img, thickness=1, color=(255, 255, 255)):
     surface = pygame.Surface((img.get_width(), img.get_height()), pygame.SRCALPHA)
@@ -354,6 +289,7 @@ def get_outline_mask(img, thickness=1, color=(255, 255, 255)):
     pygame.draw.polygon(surface, color, mask_outline, thickness)
     return surface
 
+
 def perfect_outline(surface, img, loc):
     mask = pygame.mask.from_surface(img)
     mask_surf = mask.to_surface()
@@ -362,6 +298,7 @@ def perfect_outline(surface, img, loc):
     surface.blit(mask_surf, (loc[0] + 1, loc[1]))
     surface.blit(mask_surf, (loc[0], loc[1] - 1))
     surface.blit(mask_surf, (loc[0], loc[1] + 1))
+
 
 def perfect_outline_2(surface, img, loc):
     mask = pygame.mask.from_surface(img)
@@ -375,6 +312,7 @@ def perfect_outline_2(surface, img, loc):
     surface.blit(mask_surf, (loc[0], loc[1] - 1))
     surface.blit(mask_surf, (loc[0], loc[1] + 1))
 
+
 def debug_outlines(image, hitbox, rect, anchor="center"):
     rectcopy = pygame.Rect((0, 0), rect.size)
     hitboxcopy = pygame.Rect((0, 0), hitbox.size)
@@ -387,9 +325,10 @@ def debug_outlines(image, hitbox, rect, anchor="center"):
     surf.fill((0, 0, 0))
     outlinesurf = get_outline_mask(surf, color=(255, 255, 255))
     img.blit(outlinesurf, (0, 0))
-    #img.blit(hitoutlinesurf, (rect.width / 2 - hitbox.width / 2, rect.height / 2 - hitbox.height / 2))
+    # img.blit(hitoutlinesurf, (rect.width / 2 - hitbox.width / 2, rect.height / 2 - hitbox.height / 2))
     img.blit(hitoutlinesurf, hitboxcopy)
     return img
+
 
 def mask_overlay(image, color=(255, 0, 0), opacity=64):
     image = image.copy()
@@ -398,6 +337,7 @@ def mask_overlay(image, color=(255, 0, 0), opacity=64):
     surf.set_alpha(opacity)
     image.blit(surf, (0, 0))
     return image
+
 
 def block_to_cord(pos, image=None, center=False):
     if image is None:
@@ -416,25 +356,29 @@ def block_to_cord(pos, image=None, center=False):
     elif posx < 0 and posy > 0:
         posy -= height
     if center:
-        return[posx+width/2, posy+height/2]
+        return [posx + width / 2, posy + height / 2]
     else:
         return [posx, posy]
+
 
 def cord_to_block(posx, posy, image=None):
     if image is None:
         width, height = 16, 16
     else:
         width, height = image.get_width(), image.get_height()
-    pos = [math.floor(posx/width), math.floor(posy/height)]
+    pos = [math.floor(posx / width), math.floor(posy / height)]
     return pos
+
 
 def cout(message):
     var.chat += message + "\n"
+
 
 def load_console():
     f = open('./data/chat.txt', 'r')
     var.chat = f.read()
     f.close()
+
 
 def save_console():
     f = open('./data/chat.txt', 'w')

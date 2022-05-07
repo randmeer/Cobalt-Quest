@@ -4,10 +4,6 @@ from octagon.utils import var
 
 
 class GUI:
-    """
-    is used to create a surface with a given background and buttons & images on it,
-    preferrably handeled by a script in game.gui
-    """
     def __init__(self, background, buttons=None, labels=None, images=None, overlay=None, overlaycolor=(0, 0, 0), priority=None):
         if priority is None:
             self.priority = ["buttons", "labels", "images"]

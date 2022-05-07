@@ -1,6 +1,6 @@
 import pygame
 
-from octagon.utils import play_sound, img, var
+from octagon.utils import img, var, play_sound
 from octagon import gui
 from octagon.gui import label
 
@@ -12,8 +12,7 @@ def show_title_screen(window):
 
     title_screen_gui = gui.GUI(
         background=img.misc["background"]["menu"], overlay=192,
-        labels=[
-            label.Label(text="PRESS ANY KEY TO START", relpos=(0.5, 0.5), anchor="center", color=(255, 255, 255))])
+        labels=[label.Label(text="PRESS ANY KEY TO START", relpos=(0.5, 0.5), anchor="center", color=(255, 255, 255))])
     title_screen_gui.draw(window=window)
 
     clock = pygame.time.Clock()

@@ -35,7 +35,6 @@ if __name__ == '__main__':
         elif globs.floor:
             globs.floor_str = "entrance"
             floor = Floor(window=window)
-            floor.load()
             floor.start_loop()
         else:
             print("no current state")

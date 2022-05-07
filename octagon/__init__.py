@@ -1,10 +1,12 @@
 import pygame
-from octagon.utils import load_console, get_setting, play_music, set_resolution
+
+from octagon.utils import load_console, get_setting, play_music, set_resolution, var
 
 
 def init():
     pygame.freetype.init()
     pygame.mixer.init()
+    pygame.display.init()
 
     # sys.stdout = open('./data/chat.txt', 'w')
     utils.load_console()
@@ -18,8 +20,12 @@ def init():
 
 
 def window(title):
-    window = utils.setup_window(title)
-    return window
+    pygame.display.set_caption(title)
+    pygame.display.set_icon(pygame.image.load('./resources/textures/icon.png'))
+    if var.fullscreen:
+        return pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    else:
+        return pygame.display.set_mode(var.res_size)
 
 
 def quit():

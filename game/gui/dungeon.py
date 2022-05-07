@@ -1,7 +1,7 @@
 import pygame
 import QuickJSON
 
-from octagon.utils import mp_screen, play_sound, get_setting, img, var
+from octagon.utils import mp_screen, get_setting, img, var, play_sound
 from octagon.gui import button, image, label
 from octagon import gui
 

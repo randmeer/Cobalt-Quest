@@ -12,7 +12,7 @@ class Label(pygame.sprite.Sprite):
     > selection: call set_outline() on click
     > textbox: call text_input() on keystroke
     """
-    def __init__(self, text, relpos, color=(var.GRAYSHADES[0]), textsize=5, anchor="center", font="game", h_event=False,
+    def __init__(self, text, relpos, color=(var.GRAYSHADES[0]), textsize=5, anchor="center", h_event=False,
                  h_color=(var.GRAYSHADES[0]), default_outlined=False, h_outlined=False, outlinecolor=(
             var.GRAYSHADES[0]),
                  visible=True, tags=None):
@@ -28,7 +28,6 @@ class Label(pygame.sprite.Sprite):
         self.textsize = textsize
         self.relpos = relpos
         self.anchor = anchor
-        self.font = font
         self.surface = self.clone = self.outlinesurf = pygame.Surface
         self.hoverbool = self.outlinebool = False
         self.visible = visible
@@ -47,14 +46,14 @@ class Label(pygame.sprite.Sprite):
     def render(self):
         self.rect = get_text_rect(self.text, self.textsize)
         self.surface = pygame.Surface((self.rect.width, self.rect.height), pygame.SRCALPHA)
-        render_text(window=self.surface, text=self.text, pos=(0, 0), color=self.color, size=self.textsize, font=self.font)
+        render_text(window=self.surface, text=self.text, pos=(0, 0), color=self.color, size=self.textsize)
         pos = rta_dual(self.relpos[0], self.relpos[1])
         set_anchor_point(self.rect, pos, self.anchor)
         self.image = self.surface
 
     def render_hover(self):
         self.hoversurf = pygame.Surface((self.rect.width, self.rect.height), pygame.SRCALPHA)
-        render_text(window=self.hoversurf, text=self.text, pos=(0, 0), color=self.hovercolor, size=self.textsize, font=self.font)
+        render_text(window=self.hoversurf, text=self.text, pos=(0, 0), color=self.hovercolor, size=self.textsize)
 
     def render_outline(self):
         self.clone = pygame.Surface((self.surface.get_width() + 4, self.surface.get_height() + 4))
