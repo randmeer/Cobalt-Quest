@@ -29,7 +29,7 @@ def alert(window, background, message, color=(0, 0, 0), question=False, question
         clock.tick(60)
         mp = mp_screen()
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT or event.type == pygame.KEYDOWN:
                 run = False
                 globs.quitgame = True
             if event.type == pygame.MOUSEBUTTONDOWN:

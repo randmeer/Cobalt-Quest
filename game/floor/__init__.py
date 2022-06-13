@@ -1,13 +1,13 @@
 import time
 import pygame
 
-from octagon.utils import get_setting, img
+from octagon.utils import get_setting, img, var
 from octagon.environment import Environment
 
 from game import globs
 from game.sprite.projectile import shuriken, arrow
 from game.sprite.attack import dagger, hands, katana
-from game.overlay import pause, inventory, end_screen
+from game.overlay import pause, inventory, end_screen, console, alert
 from game.sprite.entity.player import Player
 from game.sprite.entity.apprentice import Apprentice
 from game.sprite.particle import environment
@@ -21,7 +21,7 @@ items = {
     "bow":      ["weapon",      "a very interesting bow description",       100,    arrow.Arrow,        None],
     "rande":    ["weapon",      "test item",                                None,   dagger.Stab,        None],
     "shuriken": ["projectile",  "a very interesting shuriken description",  99,     shuriken.Shuriken,  None],
-    "arrow":    ["projectile",  "a very interesting arrow description",     99,     None,               None]
+    "arrow":    ["projectile",  "a very interesting arrow description",     99,     arrow.Arrow,        None]
 }
 
 
@@ -68,8 +68,11 @@ class Floor(Environment):
                     self.hud.load_hotbar()
                     self.hud.update()
                     self.prev_time = time.time()
-                elif event.key == pygame.K_SPACE and self.player.mana > 0:
-                    self.player.dash()
+                elif event.key == pygame.K_t:
+                    try:
+                        exec(console.console(self.window, self.surface))
+                    except Exception as e:
+                        alert.alert(self.window, self.surface, ["THAT DOESN'T SEEM RIGHT..."])
 
         # end loop if exittomenu order is detected
         if globs.exittomenu:

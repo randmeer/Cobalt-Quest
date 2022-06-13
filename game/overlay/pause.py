@@ -12,9 +12,9 @@ def pause_screen(window, background):
     globs.set_global_defaults()
 
     pause_gui = GUI(background=background, overlay=128, buttons=[
-        button.Button(anchor="center", relsize=(0.4, 0.1), text="RESUME", relpos=(0.5, 0.44)),
-        button.Button(anchor="center", relsize=(0.4, 0.1), text="BAck TO MENU", relpos=(0.5, 0.62)),
-        button.Button(anchor="bottomright", relsize=(0.4, 0.1), text="SETTINGS", relpos=(0.95, 0.95))])
+        button.Button(anchor="center", relsize=(0.4, 0.1), text="RESUME", relpos=(0.5, 0.35)),
+        button.Button(anchor="center", relsize=(0.4, 0.1), text="BACK TO MENU", relpos=(0.5, 0.65)),
+        button.Button(anchor="center", relsize=(0.4, 0.1), text="SETTINGS", relpos=(0.5, 0.5))])
 
     clock = pygame.time.Clock()
     run = True

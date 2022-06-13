@@ -2,11 +2,12 @@ import pygame
 import os
 from distutils.dir_util import copy_tree
 from shutil import rmtree
-from octagon.utils import img, var, get_setting, set_setting, mp_screen, play_sound
+from octagon.utils import img, var, get_setting, set_setting, mp_screen, play_sound, save_settings
 from octagon.gui import label, button, GUI
 
 from game import globs
 from game.overlay.alert import alert
+
 
 def show_settings(window, background):
     """
@@ -34,33 +35,26 @@ def _show_settings(window, background):
 
     # saves tab labels
     for i in range(len(saves)):
-        labels.append(label.Label(tags=["saves", "saveslist"], text=saves[i], relpos=(0.05, 0.2+0.05*i+0.02*i+0.1), anchor="topleft", color=
-        var.GRAYSHADES[2]))
+        labels.append(label.Label(tags=["saves", "saveslist"], text=saves[i], relpos=(0.05, 0.2+0.05*i+0.02*i+0.1), anchor="topleft", color=var.GRAYSHADES[2]))
     if len(saves) == 0:
-        labels.append(label.Label(tags=["saves", "nosaves"], text="NO SAVES YET", relpos=(0.05, 0.2 + 0.05 * 0 + 0.02 * 0 + 0.1), anchor="topleft", color=
-        var.GRAYSHADES[1]))
-    labels.append(label.Label(tags=["saves", ""], text="SELECT SAVEGAME", relpos=(0.05, 0.2), anchor="topleft", color=
-    var.GRAYSHADES[0]))
-    labels.append(label.Label(tags=["saves", ""], text="CREATE NEW SAVEGAME", relpos=(0.5, 0.2), anchor="topleft", color=
-    var.GRAYSHADES[0]))
+        labels.append(label.Label(tags=["saves", "nosaves"], text="NO SAVES YET", relpos=(0.05, 0.2 + 0.05 * 0 + 0.02 * 0 + 0.1), anchor="topleft", color=var.GRAYSHADES[1]))
+    labels.append(label.Label(tags=["saves", ""], text="SELECT SAVEGAME", relpos=(0.05, 0.2), anchor="topleft", color=var.GRAYSHADES[0]))
+    labels.append(label.Label(tags=["saves", ""], text="CREATE NEW SAVEGAME", relpos=(0.5, 0.2), anchor="topleft", color=var.GRAYSHADES[0]))
     labels.append(label.Label(tags=["saves", "input"], text="NAME: ", relpos=(0.5, 0.3), anchor="topleft", color=var.GRAYSHADES[2]))
-    labels.append(label.Label(tags=["saves", "create"], text="CREATE", relpos=(0.5, 0.4), anchor="topleft", h_event=True, h_color=
-    var.GRAYSHADES[4], color=var.GRAYSHADES[2]))
-    labels.append(label.Label(tags=["saves", "delete"], text="DELETE SAVEGAME", relpos=(0.55, 0.6), anchor="topleft", h_event=True, h_color=
-    var.REDSHADES[3], color=var.REDSHADES[2]))
-    labels.append(label.Label(tags=["saves", "unselect"], text="UNSELECT SAVEGAME", relpos=(0.55, 0.7), anchor="topleft", h_event=True, h_color=
-    var.GRAYSHADES[2], color=var.GRAYSHADES[0]))
+    labels.append(label.Label(tags=["saves", "create"], text="CREATE", relpos=(0.5, 0.4), anchor="topleft", h_event=True, h_color=var.GRAYSHADES[4], color=var.GRAYSHADES[2]))
+    labels.append(label.Label(tags=["saves", "delete"], text="DELETE SAVEGAME", relpos=(0.55, 0.6), anchor="topleft", h_event=True, h_color=var.REDSHADES[3], color=var.REDSHADES[2]))
+    labels.append(label.Label(tags=["saves", "unselect"], text="UNSELECT SAVEGAME", relpos=(0.55, 0.7), anchor="topleft", h_event=True, h_color=var.GRAYSHADES[2], color=var.GRAYSHADES[0]))
 
     # audio tab labels
-    labels.append(label.Label(tags=["audio"], text="VOLUME:", relpos=(0.05, 0.2), anchor="topleft"))
-    labels.append(label.Label(tags=["audio"], text="BACKGROUND MUSIC:", relpos=(0.05, 0.3), anchor="topleft"))
+    labels.append(label.Label(tags=["audio", "volume"], text=f"VOLUME: {get_setting('volume')}", relpos=(0.05, 0.2), anchor="topleft"))
+    labels.append(label.Label(tags=["audio", "music"], text=f"BACKGROUND MUSIC: {get_setting('background_music')}", relpos=(0.05, 0.3), anchor="topleft"))
 
     # video tab labels
     resourcepacks = os.listdir("./resources/resourcepacks")
     for i in range(len(resourcepacks)):
-        labels.append(label.Label(tags=["video", "packlist"], text=resourcepacks[i], relpos=(0.05, 0.2+0.05*i+0.02*i+0.1), anchor="topleft", color=
-        var.GRAYSHADES[2]))
+        labels.append(label.Label(tags=["video", "packlist"], text=resourcepacks[i], relpos=(0.05, 0.2+0.05*i+0.02*i+0.1), anchor="topleft", color=var.GRAYSHADES[2]))
 
+    # for i in range(len(var.res))
     labels.append(label.Label(tags=["video", ""], text="SELECT PACK", relpos=(0.05, 0.2), anchor="topleft", color=var.GRAYSHADES[0]))
     labels.append(label.Label(tags=["video", "res"], text="RESOLUTION:", relpos=(0.5, 0.2), anchor="topleft"))
     labels.append(label.Label(tags=["video", "part"], text="PARTICLES:", relpos=(0.5, 0.4), anchor="topleft"))
@@ -175,6 +169,24 @@ def _show_settings(window, background):
                                     img.load()
                                     play_sound('click')
 
+                            if i.tags[0] == "audio":
+
+                                # clicked label is audio.volume
+                                if i.tags[1] == "volume":
+                                    set_setting('volume', get_setting('volume') + 1)
+                                    if get_setting('volume') > 10:
+                                        set_setting('volume', 0)
+                                    i.text = f"VOLUME: {get_setting('volume')}"
+                                    i.render()
+                                    play_sound('click')
+
+                                # clicked label is audio.music
+                                if i.tags[1] == "music":
+                                    set_setting('background_music', not get_setting('background_music'))
+                                    i.text = f"BACKGROUND MUSIC: {get_setting('background_music')}"
+                                    i.render()
+                                    play_sound('click')
+
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False
@@ -188,5 +200,6 @@ def _show_settings(window, background):
         if run:
             settings_gui.draw(window=window)
 
+    save_settings()
     play_sound('click')
     return False

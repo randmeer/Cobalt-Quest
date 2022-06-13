@@ -1,4 +1,4 @@
-VERSION = "0.9.8"
+VERSION = "0.9.9"
 
 quitgame = exittomenu = titlescreen = menu = map = dungeon = dungeon_str = floor = floor_str = None
 

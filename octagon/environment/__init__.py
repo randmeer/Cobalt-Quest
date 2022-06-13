@@ -1,3 +1,4 @@
+import random
 import time
 import pygame
 import QuickJSON
@@ -66,6 +67,11 @@ class Environment:
 
         # read and convert blocks to Block()'s in list
         blocks = list(self.envjson["blocks"])
+        """
+        for i in range(self.envjson["size"] * 2):
+            for j in range(self.envjson["size"] * 2):
+                blocks.json[i][j] = random.choice([0, 2])
+        """
         for i in range(self.envjson["size"] * 2):
             for j in range(self.envjson["size"] * 2):
                 if blocks[i][j] != 0:
@@ -79,7 +85,7 @@ class Environment:
                         y += 1
                     elif x < 0 and y > 0:
                         y += 1
-                    self.blocks.append(block.Block(block=blocks[i][j], pos=(x, y)))
+                    self.blocks.append(block.Block(blocks, (i, j), (x, y)))
 
         # pathfinder
         self.pathfinder_blocks = copy.deepcopy(self.envjson["blocks"])
@@ -94,9 +100,13 @@ class Environment:
 
         # read and convert entitys/projectiles to instances of their classes
         for i in self.envjson["entities"]:
-            self.entities.append(self.EntityObj[i[0]](env=self, pos=(i[1][0], i[1][1]), health=i[2], weapon=i[3], target=i[4]))
+            args = list(i)
+            args.pop(0)
+            self.entities.append(self.EntityObj[i[0]](env=self, args=args))
         for i in self.envjson["projectiles"]:
-            self.projectiles.append(self.items[i[0]][3](env=self, pos=(i[1][0], i[1][1]), radians=i[2], exploding=i[3]))
+            args = list(i)
+            args.pop(0)
+            self.projectiles.append(self.items[i[0]][3](env=self, args=args))
 
         # create scene and set camera target
         self.scene = camera.Scene(self)
@@ -106,13 +116,13 @@ class Environment:
         self.envjson["entities"] = []
         self.envjson["projectiles"] = []
         for i in self.entities:
-            if i.auto_move:
-                target = i.am_path[len(i.am_path)-1]
-            else:
-                target = None
-            self.envjson["entities"].append([str(type(i).__name__).lower(), [i.position[0], i.position[1]], i.health, i.weapon, target])
+            args = i.save()
+            if args:
+                self.envjson["entities"].append([str(type(i).__name__).lower()] + args)
         for i in self.projectiles:
-            self.envjson["projectiles"].append([str(type(i).__name__).lower(), [i.hitbox.centerx, i.hitbox.centery], i.radians, i.exploding])
+            args = i.save()
+            if args:
+                self.envjson["projectiles"].append([str(type(i).__name__).lower()] + args)
         self.envjson["player"] = self.player.position
         self.envjson.save()
         self.hud.save_hotbar()
@@ -171,8 +181,6 @@ class Environment:
                     self.hud.set_selectangle(4)
                 elif event.key == pygame.K_6:
                     self.hud.set_selectangle(5)
-                elif event.key == pygame.K_x:
-                    self.save()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if self.cooldown <= 0:
                     if event.button == pygame.BUTTON_LEFT:
@@ -208,7 +216,15 @@ class Environment:
             self.scene.draw(surface)
             render_text(window=surface, text=str(round(self.clock.get_fps())) + "", pos=(surface.get_width() - 60 , 20), color=var.WHITE, size=20)
         else:
-            self.surface.blit(img.misc["background"]["game"], (0, 0))
+
+            # background
+            x = self.player.hitbox.centerx % 255
+            y = self.player.hitbox.centery % 144
+            self.surface.blit(img.misc["background"]["game"], (255-x, 144-y))
+            self.surface.blit(img.misc["background"]["game"], (255-x, 144-y-144))
+            self.surface.blit(img.misc["background"]["game"], (255-x-255, 144-y))
+            self.surface.blit(img.misc["background"]["game"], (255-x-255, 144-y-144))
+
             self.scene.draw(self.surface)
             self.hud.draw(self.surface)
             surface = pygame.transform.scale(self.surface, var.res_size)
@@ -229,5 +245,6 @@ class Environment:
         self.prev_time = time.time()
         self.run = True
         while self.run:
-            self.clock.tick(60)
+            self.clock.tick(var.FPS)
             self._single_loop()
+        self.save()

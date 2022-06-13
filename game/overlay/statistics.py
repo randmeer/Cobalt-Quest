@@ -1,10 +1,18 @@
 import pygame
+import QuickJSON
 
-from octagon.utils import mp_screen, get_setting, get_inventory, var, play_sound
+from octagon.utils import mp_screen, get_setting, var, play_sound
 from octagon.gui import button, label
 from octagon import gui
 
 from game import globs
+
+inventory = QuickJSON.QJSON(f"./data/savegames/{get_setting('current_savegame')}/inventory.json")
+
+
+def get_inventory(value):
+    inventory.load()
+    return inventory[value]
 
 
 def stats(window, background):

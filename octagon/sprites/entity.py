@@ -1,19 +1,21 @@
 import random
 import pygame
 
+from octagon.utils.img import Texture
 from octagon.utils import dual_rect_anchor, set_anchor_point, debug_outlines, mask_overlay, cord_to_block, var
+from octagon.utils.static import vector_from_points, list_round
 
 
 class Entity(pygame.sprite.Sprite):
     def __init__(self, env, priority=2, max_health=100, health=100, damage_overlay_on=True, immune_to_web=False,
                  hurt_cooldown=0.5, position=(0, 0), rotation=0, velocity=25, hitboxsize=(16, 16), hitboxanchor="midbottom",
                  automove=False, automove_type='wander', automove_target=None,
-                 footstep_particle: type = None, death_particles: tuple[type, type] = None, damage_particle: type = None):
+                 footstep_particle: type = None, death_particles: list[type] = None, damage_particle: type = None,
+                 animation_textures: list[Texture] = None):
         pygame.sprite.Sprite.__init__(self)
         self.env = env
         self.tex_down = self.tex_up = self.tex_left = self.tex_right = self.tex_idle = None
         self.priority = priority
-        self.offset = [0, 0]
         self.position = list(position)
         self.hc = 0
         self.hc_max = hurt_cooldown
@@ -22,12 +24,21 @@ class Entity(pygame.sprite.Sprite):
         self.damage_overlay_on = damage_overlay_on
         self.health = health
         self.max_health = max_health
-        self.speed_multiplier = 1
         self.rotation = rotation
         self.velocity = velocity
+
+        self.tex_up = animation_textures[0]
+        self.tex_down = animation_textures[1]
+        self.tex_right = animation_textures[2]
+        self.tex_left = animation_textures[3]
+        self.tex_idle = animation_textures[4]
+        self.image = self.tex_idle.get()
+        self.rect = self.image.get_rect()
         self.hitbox = pygame.Rect((0, 0), hitboxsize)
         self.hitboxanchor = hitboxanchor
-        set_anchor_point(self.hitbox, self.position, self.hitboxanchor)
+        self._move_update_rect()
+
+        self.move_vector = None
         self.auto_move = automove
         self.am_type = automove_type
         if self.auto_move:
@@ -51,8 +62,6 @@ class Entity(pygame.sprite.Sprite):
             pass
 
     def entity_update(self):
-        self.rect = self.image.get_rect()
-        self.move()
         if self.health <= 0:
             if self.DeathPt is not None:
                 for DeathParticle in self.DeathPt:
@@ -75,28 +84,47 @@ class Entity(pygame.sprite.Sprite):
                 self.env.particles.append(self.DamagePt(self.env, pos=pos))
 
     def check_block_collision(self):
-        # return pygame.sprite.spritecollideany(self, blocks)
+        # return pygame.sprite.spritecollideany(self, blocks.json)
         for i in self.env.blocks:
             if self.hitbox.colliderect(i.rect):
                 return True
 
-    def _undo_move(self, direction):
-        if direction == "x" or direction == "xy":
-            self.position = [self.position[0] - (self.offset[0] * self.speed_multiplier), self.position[1]]
-        if direction == "y" or direction == "xy":
-            self.position = [self.position[0], self.position[1] - (self.offset[1] * self.speed_multiplier)]
+    def _move_update_rect(self):
         pos = (round(self.position[0]), round(self.position[1]))
         self.hitbox.center = pos
         dual_rect_anchor(self.rect, self.hitbox, self.hitboxanchor)
 
-    def _move(self, direction):
-        if direction == "x" or direction == "xy":
-            self.position[0] += self.offset[0] * self.speed_multiplier
-        if direction == "y" or direction == "xy":
-            self.position[1] += self.offset[1] * self.speed_multiplier
-        pos = (round(self.position[0]), round(self.position[1]))
-        self.hitbox.center = pos
-        dual_rect_anchor(self.rect, self.hitbox, self.hitboxanchor)
+    def _move(self, movement: pygame.Vector2 = pygame.Vector2(0, 0)):
+        """
+        Moves the entity by a given vector. Handles block collision and Textures.
+        """
+        self.move_vector = movement
+        # TODO: check if vector intersects with block, dont just collide and undo
+
+        if movement == (0, 0):
+            self.image = self.tex_idle.get()
+            return
+
+        self.position[0] += movement.x * self.env.delta_time
+        self._move_update_rect()
+        if self.check_block_collision():
+            self.position[0] -= movement.x * self.env.delta_time
+            self._move_update_rect()
+
+        self.position[1] += movement.y * self.env.delta_time
+        self._move_update_rect()
+        if self.check_block_collision():
+            self.position[1] -= movement.y * self.env.delta_time
+            self._move_update_rect()
+
+        if movement.x > 0:
+            self.image = self.tex_right.get()
+        elif movement.x < 0:
+            self.image = self.tex_left.get()
+        elif movement.y > 0:
+            self.image = self.tex_down.get()
+        elif movement.y < 0:
+            self.image = self.tex_up.get()
 
     def _am_settarget(self):
         target = [self.am_path[self.am_todo][0] - self.hsize, self.am_path[self.am_todo][1] - self.vsize]
@@ -130,26 +158,26 @@ class Entity(pygame.sprite.Sprite):
 
         # finder
         self.am_path, self.am_runs = self.env.pathfinder.find_path(start, end, self.env.pathfinder_grid)
+        if not self.am_path:
+            print("entity> found no path to target")
+            self.auto_move = False
+            return
         self.env.pathfinder_grid.cleanup()
         self._am_settarget()
 
     def _am_approachtarget(self):
-        ott_x = self.am_target[0] - self.position[0]  # offset to target x
-        ott_y = self.am_target[1] - self.position[1]  # offset to target y
-        if ott_x > 0:
-            self.offset[0] = self.velocity
-        elif ott_x < 0:
-            self.offset[0] = -self.velocity
-        if ott_y > 0:
-            self.offset[1] = self.velocity
-        elif ott_y < 0:
-            self.offset[1] = -self.velocity
+        offset = vector_from_points(self.am_target, list_round(self.position))
+        if offset == (0, 0):
+            return 0, 0
+        movement = pygame.Vector2(offset).normalize() * self.velocity
+        return movement
 
     def _automove(self):
+        movement = pygame.Vector2(0, 0)
         if self.am_type == "wander":
             if round(self.position[0]) != self.am_target[0] or round(self.position[1]) != self.am_target[1]:
                 # the entity has not reached its target yet --> keep moving in the target's direction
-                self._am_approachtarget()
+                movement = self._am_approachtarget()
             else:
                 # the entity has reached its target --> set target to next coordinate on path
                 if self.am_todo == len(self.am_path):
@@ -158,31 +186,22 @@ class Entity(pygame.sprite.Sprite):
                 else:
                     # set next target to approach
                     self._am_settarget()
+                movement = self._am_approachtarget()
+        self._move(movement)
 
-        self._move("x")
-        if self.check_block_collision():
-            self._undo_move("x")
-        self._move("y")
-        if self.check_block_collision():
-            self._undo_move("y")
-
-    def move(self):
-        self.speed_multiplier = self.env.delta_time
+    def move(self, direction: pygame.Vector2 = pygame.Vector2(0, 0), velocity_factor: float = 1):
         if self.auto_move:
-            self.image = self.tex_idle.get()
-            self.offset = [0, 0]
             self._automove()
         else:
-            self._move("x")
-            if self.check_block_collision():
-                self._undo_move("x")
-            self._move("y")
-            if self.check_block_collision():
-                self._undo_move("y")
-
+            if direction == [0, 0]:
+                self._move()
+            else:
+                self._move(direction.normalize() * self.velocity * velocity_factor)
         dual_rect_anchor(self.hitbox, self.rect, self.hitboxanchor)
+
+        # footsteps
         if self.FootstepPt is not None:
-            if self.offset == [0, 0]:
+            if direction == [0, 0] and not self.auto_move:
                 self.footstep_emitter.emitting = False
             else:
                 self.footstep_emitter.update_emitter([self.hitbox.midbottom[0], self.hitbox.midbottom[1] - 2])
@@ -191,7 +210,7 @@ class Entity(pygame.sprite.Sprite):
     def draw(self, surface):
         image = self.image
         if var.soft_debug:
-            image = debug_outlines(self.image, self.hitbox, self.rect, anchor="midbottom")
+            image = debug_outlines(self.image, self.hitbox, self.rect, anchor=self.hitboxanchor)
 
             if self.auto_move:
                 cords = self.am_path.copy()

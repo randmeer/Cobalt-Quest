@@ -57,7 +57,7 @@ class Projectile(pygame.sprite.Sprite):
                 if not i.collided:
                     if self.hitbox.colliderect(i.rect):
                         self.collide(sound="hit", despawn_seconds=0)
-                        i.collide(particles=self.env.particles, projectiles=self.env.projectiles, despawn_seconds=0)
+                        i.collide(particles=self.env.particle_json, projectiles=self.env.projectiles, despawn_seconds=0)
                         return
 
         if self.sender == "player":

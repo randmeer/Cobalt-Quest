@@ -10,38 +10,32 @@ from octagon.utils import var
 settings = QuickJSON.QJSON("./data/settings.json")
 
 
-def set_setting(setting, value):
-    settings[setting] = value
+def save_settings():
     settings.save()
 
 
-def get_setting(setting):
+def load_settings():
     settings.load()
+
+
+def set_setting(setting, value):
+    settings[setting] = value
+
+
+def get_setting(setting):
     return settings[setting]
-
-
-inventory = QuickJSON.QJSON(f"./data/savegames/{get_setting('current_savegame')}/inventory.json")
-
-
-def get_inventory(value):
-    inventory.load()
-    return inventory[value]
 
 
 def set_resolution():
     aspect_ratio = get_setting('aspect_ratio')
     resolution = get_setting('resolution')
     fullscreen = get_setting('fullscreen')
-    if aspect_ratio == "16to9":
-        var.res = var.RES_16TO9[resolution]
-    elif aspect_ratio == "16to10":
-        var.res = var.RES_16TO10[resolution]
-    elif aspect_ratio == "4to3":
-        var.res = var.RES_4TO3[resolution]
+
     var.fullscreen = fullscreen
+    var.SIZE = var.DISPLAY[aspect_ratio][0]
+    var.res = var.DISPLAY[aspect_ratio][1][resolution]
     var.res_size = var.res[0]
     var.res_name = var.res[1]
-    print("RESOLUTION: " + str(var.res))
 
 
 class DefaultError(Exception):
@@ -53,56 +47,53 @@ class DefaultError(Exception):
         return self.__class__, self.errmsg
 
 
-w, h = var.SIZE
-
-
 def rta_width(input_value):
-    output = w * input_value
+    output = var.SIZE[0] * input_value
     return round(output)
 
 
 def atr_width(input_value):
-    output = input_value / w
+    output = input_value / var.SIZE[0]
     return output
 
 
 def rta_height(input_value):
-    output = h * input_value
+    output = var.SIZE[1] * input_value
     return round(output)
 
 
 def atr_height(input_value):
-    output = input_value / h
+    output = input_value / var.SIZE[1]
     return output
 
 
 def rta_dual(input_x, input_y):
-    output_x, output_y = w * input_x, h * input_y
+    output_x, output_y = var.SIZE[0] * input_x, var.SIZE[1] * input_y
     return round(output_x), round(output_y)
 
 
 def atr_dual(input_x, input_y):
-    output_x, output_y = input_x / w, input_y / h
+    output_x, output_y = input_x / var.SIZE[0], input_y / var.SIZE[1]
     return output_x, output_y
 
 
 def rta_dual_height(input_x, input_y):
-    output_x, output_y = h * input_x, h * input_y
+    output_x, output_y = var.SIZE[1] * input_x, var.SIZE[1] * input_y
     return round(output_x), round(output_y)
 
 
 def atr_dual_height(input_x, input_y):
-    output_x, output_y = input_x / h, input_y / h
+    output_x, output_y = input_x / var.SIZE[1], input_y / var.SIZE[1]
     return output_x, output_y
 
 
 def rta_dual_width(input_x, input_y):
-    output_x, output_y = w * input_x, w * input_y
+    output_x, output_y = var.SIZE[0] * input_x, var.SIZE[0] * input_y
     return round(output_x), round(output_y)
 
 
 def atr_dual_width(input_x, input_y):
-    output_x, output_y = input_x / w, input_y / w
+    output_x, output_y = input_x / var.SIZE[0], input_y / var.SIZE[0]
     return output_x, output_y
 
 
@@ -345,7 +336,7 @@ def block_to_cord(pos, image=None, center=False):
     else:
         width, height = image.get_width(), image.get_height()
     posx, posy = pos[0] * width, pos[1] * height
-    # this converts the positions of the blocks from my system to something pygame can use
+    # this converts the positions of the blocks.json from my system to something pygame can use
     if posx < 0 and posy < 0:
         pass
     elif posx > 0 and posy < 0:

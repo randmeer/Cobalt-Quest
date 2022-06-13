@@ -100,5 +100,15 @@ class Label(pygame.sprite.Sprite):
                     or key_str == "return" or key_str == "up" or key_str == "down" or key_str == "left" or key_str == "right" or key_str == "backspace":
                 pass
             else:
+                key = pygame.key.get_pressed()
+                if key[pygame.K_LSHIFT] or key[pygame.K_RSHIFT]:
+                    key_str = key_str.upper()
+                    if key_str == "9":
+                        key_str = "("
+                    elif key_str == "0":
+                        key_str = ")"
+                    elif key_str == "-":
+                        key_str = "_"
                 self.text = self.text + key_str
         self.render()
+
