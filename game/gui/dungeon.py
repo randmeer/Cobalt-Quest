@@ -28,7 +28,8 @@ def show_dungeon(window, dungeon):
 
     dungeon_gui = gui.GUI(background=img.misc["background"]["dungeon"], overlay=128, labels=labels,
                           buttons=[button.Button(anchor="br", relsize=(0.2, 0.1), text="PLAY", relpos=(0.95, 0.95)),
-                                   button.Button(anchor="br", relsize=(0.2, 0.1), text="CANCEL", relpos=(0.7, 0.95))],
+                                   button.Button(anchor="br", relsize=(0.2, 0.1), text="CANCEL", relpos=(0.7, 0.95)),
+                                   button.Button(anchor="br", relsize=(0.2, 0.1), text="EDIT", relpos=(0.45, 0.95))],
                           images=[image.Image(image=img.misc["map"][dungeon], anchor="topleft", relpos=(0.5, 0.25))])
     for i in dungeon_gui.labelgroup:
         i.set_outline(outline=False)
@@ -56,12 +57,19 @@ def show_dungeon(window, dungeon):
                                 j.set_outline(outline=False)
                             dungeon_gui.labelgroup[i*2].set_outline(outline=True)
                     if dungeon_gui.buttongroup[0].rect.collidepoint(mp):
+                        globs.set_global_defaults()
                         run = False
                         globs.floor = True
                         globs.floor_str = selected_floor
                     if dungeon_gui.buttongroup[1].rect.collidepoint(mp):
+                        globs.set_global_defaults()
                         run = False
                         globs.map = True
+                        globs.floor_str = selected_floor
+                    if dungeon_gui.buttongroup[2].rect.collidepoint(mp):
+                        globs.set_global_defaults()
+                        run = False
+                        globs.editor = True
                         globs.floor_str = selected_floor
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:

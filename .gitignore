@@ -1,4 +1,5 @@
 *~
+*.sublime*
 .fuse_hidden*
 .directory
 .Trash-*

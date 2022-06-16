@@ -11,6 +11,7 @@ if __name__ == '__main__':
 
     from game.gui import menu, title_screen, map, dungeon
     from game.floor import Floor
+    from game.editor import Editor
 
     # main game loop
     run = True
@@ -32,6 +33,10 @@ if __name__ == '__main__':
             map.show_map(window=window)
         elif globs.dungeon:
             dungeon.show_dungeon(window=window, dungeon=globs.dungeon_str)
+        elif globs.editor:
+            globs.floor_str = "entrance"
+            editor = Editor(window=window)
+            editor.start_loop()
         elif globs.floor:
             globs.floor_str = "entrance"
             floor = Floor(window=window)

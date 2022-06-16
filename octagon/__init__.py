@@ -31,3 +31,6 @@ def window(title):
 def quit():
     # sys.stdout.close()
     utils.save_console()
+    pygame.display.quit()
+    pygame.quit()
+    sys.exit()

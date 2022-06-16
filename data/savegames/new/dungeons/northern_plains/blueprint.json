@@ -1,0 +1,23 @@
+{
+  "display_name": "Northern Plains",
+  "floors": {
+    "entrance": {
+      "display_name": "Entrance",
+      "size": 20,
+      "unlocked": true,
+      "progress": 0
+    },
+    "main_floor": {
+      "display_name": "Main Floor",
+      "size": 50,
+      "unlocked": false,
+      "progress": 0
+    },
+    "cellar": {
+      "display_name": "Cellar",
+      "size": 40,
+      "unlocked": false,
+      "progress": 0
+    }
+  }
+}
