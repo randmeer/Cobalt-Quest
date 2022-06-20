@@ -63,7 +63,7 @@ class Scene(cameraScene):
         self.env = env
         self.surface, rect = None, None
         self.sidelength = env.sidelength
-        self.objects, self.objects_toblit = [], []
+        self.objects, self.objects_to_blit = [], []
         self.surface = pygame.Surface((self.sidelength, self.sidelength), pygame.SRCALPHA)
         self.rect = self.surface.get_rect()
         self.camera = Camera()
@@ -73,7 +73,7 @@ class Scene(cameraScene):
         self.objects.append(self.env.player)
         self.objects += self.env.blocks
         self.camera.update()
-        self.objects_toblit = self.camera.get_objects(objects=self.objects)
+        self.objects_to_blit = self.camera.get_objects(objects=self.objects)
         self.objects = []
 
     def draw(self, surface):
@@ -84,7 +84,7 @@ class Scene(cameraScene):
                                       self.camera.rect.width, self.camera.rect.height))
 
         for i in range(3, -1, -1):
-            for j in self.objects_toblit:
+            for j in self.objects_to_blit:
                 if j.priority == i:
                     j.draw(surface=self.surface)
 

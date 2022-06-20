@@ -103,12 +103,13 @@ class Editor(Environment):
                         y += 1
                     elif x < 0 and y > 0:
                         y += 1
-                    self.blocks.append(block.Block(block=blocks[i][j], pos=(x, y)))
+                    self.blocks.append(block.Block(blocks, (i, j), (x, y)))
 
         # read and convert entitys/projectiles to instances of their classes
         for i in self.envjson["entities"]:
-            self.entities.append(self.EntityObj[i[0]](env=self, pos=(i[1][0], i[1][1]), health=i[2], weapon=i[3], target=i[4]))
-
+            args = list(i)
+            args.pop(0)
+            self.entities.append(self.EntityObj[i[0]](env=self, args=args))
         # create scene and set camera target
 
         self.hud = hud.HUD(self)
@@ -191,6 +192,18 @@ class Editor(Environment):
             #     elif event.button == pygame.BUTTON_WHEELDOWN:
             #         self.hud.set_selectangle(self.hud.slot + 1)
 
+    def save(self):
+        self.envjson["entities"] = []
+        for i in self.entities:
+            args = i.save()
+            if args:
+                self.envjson["entities"].append([str(type(i).__name__).lower()] + args)
+        self.envjson["player"] = self.player.position
+        self.envjson.save()
+        self.invjson["health"] = self.player.health
+        self.invjson["mana"] = self.player.mana
+        self.invjson.save()
+
     def update(self):
         """
         updates the game surface and handles user input
@@ -259,8 +272,17 @@ class Editor(Environment):
             self.scene.draw(surface)
             render_text(window=surface, text=str(round(self.clock.get_fps())) + "", pos=(surface.get_width() - 60 , 20), color=var.WHITE, size=20)
         else:
-            self.surface.blit(img.misc["background"]["game"], (0, 0))
+
+            # background
+            x = self.scene.camera.rect.centerx % 255
+            y = self.scene.camera.rect.centery % 144
+            self.surface.blit(img.misc["background"]["game"], (255-x, 144-y))
+            self.surface.blit(img.misc["background"]["game"], (255-x, 144-y-144))
+            self.surface.blit(img.misc["background"]["game"], (255-x-255, 144-y))
+            self.surface.blit(img.misc["background"]["game"], (255-x-255, 144-y-144))
+
             self.scene.draw(self.surface)
+            self.hud.draw(self.surface)
             surface = pygame.transform.scale(self.surface, var.res_size)
 
         self.window.blit(surface, (0, 0))

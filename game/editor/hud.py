@@ -157,7 +157,7 @@ class HUD(pygame.sprite.Sprite):
         #     i.draw(surface=self.surf_selection)
         surf_selection_2 = pygame.Surface(rta_dual_height(0.74, 0.12), pygame.SRCALPHA)
         surf_selection_2.blit(self.surf_selection, rta_dual_height(0.01, 0.01))
-        surf_selection_2.blit(self.selectangle, (self.rects[self.slot].x, self.rects[self.slot].y))
+        # surf_selection_2.blit(self.selectangle, (self.rects[self.slot].x, self.rects[self.slot].y))
         surface.blit(surf_selection_2, self.surf_selection_rect)
 
         # chat

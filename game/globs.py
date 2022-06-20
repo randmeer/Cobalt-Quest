@@ -4,5 +4,5 @@ quitgame = exittomenu = titlescreen = menu = map = dungeon = dungeon_str = floor
 
 
 def set_global_defaults():
-    global quitgame, exittomenu, titlescreen, menu, map, dungeon
+    global quitgame, exittomenu, titlescreen, menu, map, dungeon, editor
     quitgame = exittomenu = titlescreen = menu = map = dungeon = editor = False

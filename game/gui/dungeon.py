@@ -32,8 +32,8 @@ def show_dungeon(window, dungeon):
     dungeon_gui = gui.GUI(background=img.misc["background"]["dungeon"], overlay=128, labels=labels, images=images,
                           buttons=[button.Button(anchor="br", relsize=(0.2, 0.1), text="PLAY", relpos=(0.95, 0.95)),
                                    button.Button(anchor="br", relsize=(0.2, 0.1), text="CANCEL", relpos=(0.7, 0.95)),
-                                   button.Button(anchor="br", relsize=(0.2, 0.1), text="EDIT", relpos=(0.45, 0.95))],
-                          images=[image.Image(image=img.misc["map"][dungeon], anchor="topleft", relpos=(0.5, 0.25))])
+                                   button.Button(anchor="br", relsize=(0.2, 0.1), text="EDIT", relpos=(0.45, 0.95))])
+                          
     for i in dungeon_gui.labelgroup:
         i.set_outline(False)
     for j in dungeon_gui.imagegroup:

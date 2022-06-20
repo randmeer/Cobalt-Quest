@@ -1,4 +1,5 @@
 import pygame
+import sys
 
 from octagon.utils import load_console, save_console, load_settings, get_setting, play_music, set_resolution, var
 
