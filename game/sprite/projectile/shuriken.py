@@ -6,7 +6,23 @@ from game.sprite.particle.explosion import ExplosionPts
 
 
 class Shuriken(Projectile):
-    def __init__(self, env, pos=None, radians=None, exploding=False):
+    def __init__(self, env, args=None):
+
+        # arguments
+        # [i.hitbox.centerx, i.hitbox.centery], i.radians, [enchantments]
+
+        if args is None:
+            args = [None, None, ["explosion"]]
+
+        pos = args[0]
+        radians = args[1]
+        self.enchantments = args[2]
+
+        exploding = False
+        for i in self.enchantments:
+            if i == "explosion":
+                exploding = True
+
         if pos is None and env.cooldown > 0:
             return
         # shuriken was thrown by player -> get data from env
@@ -21,3 +37,9 @@ class Shuriken(Projectile):
 
     def update(self):
         self.projectile_update()
+
+    def save(self):
+        if self.collided:
+            return False
+        else:
+            return [[self.hitbox.centerx, self.hitbox.centery], self.radians, self.enchantments]

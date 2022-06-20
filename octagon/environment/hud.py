@@ -186,3 +186,4 @@ class HUD(pygame.sprite.Sprite):
             # environment
             render_text(window=surface, text="ENV SIZE: " + str(self.env.sidelength), pos=(0, 90))
             render_text(window=surface, text="PLAYER HITBOX CENTER: " + str(self.env.player.hitbox.center), pos=(0, 98))
+            render_text(window=surface, text="PLAYER VELOCITY: " + str(round(self.env.player.move_vector.length())) + " PPS", pos=(0, 106))

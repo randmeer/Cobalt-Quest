@@ -7,8 +7,8 @@
       "unlocked": true,
       "progress": 0
     },
-    "main_floor": {
-      "display_name": "Main Floor",
+    "weapons_stash": {
+      "display_name": "Weapons Stash",
       "size": 50,
       "unlocked": false,
       "progress": 0

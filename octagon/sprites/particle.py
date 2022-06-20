@@ -54,8 +54,8 @@ class ParticleCloud(pygame.sprite.Sprite):
 
         # colors
         if self.preset:
-            self.color = img.particles[self.preset][0]
-            self.colorvar = img.particles[self.preset][1]
+            self.color = img.particle_json[self.preset][0]
+            self.colorvar = img.particle_json[self.preset][1]
         else:
             self.color = color
             self.colorvar = colorvar

@@ -1,0 +1,6 @@
+{
+  "example": ["string path", "bool connected texture?", "[r, g, b] for connected outline, else false", "bool connect to other block-types too?"],
+  "cobblestone": ["block/cobblestone.png", false, false, false],
+  "stone_brick": ["block/stone_brick.png", false, [50, 50, 50], false],
+  "torch": ["block/torch.png", true, false, true]
+}

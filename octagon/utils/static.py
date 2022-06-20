@@ -1,4 +1,5 @@
 import math
+from pygame import Vector2
 
 
 def hypo(a, b):
@@ -78,6 +79,16 @@ def flip(num):
     return 1 ^ num
 
 
+def equal_sign(num1, num2):
+    """
+    returns True if the signs of two numbers are equal
+    """
+    if num1 * num2 > 0:
+        return True
+    else:
+        return False
+
+
 def sin(num):
     """
     sine
@@ -119,3 +130,18 @@ def list_add(list1, list2):
     """
     for i in range(len(list1)):
         list1[i] += list2[i]
+
+
+def list_round(list1):
+    rounded_list = []
+    for i in list1:
+        rounded_list.append(round(i))
+    return rounded_list
+
+
+def xor(x, y):
+    return bool((x and not y) or (not x and y))
+
+
+def vector_from_points(point1, point2):
+    return Vector2(tuple_subtract(point1, point2))

@@ -22,6 +22,7 @@ class ProgressBar:
             self.maxvalue = maxvalue
         if self.original_image:
             surf = self.surf.copy()
+            surf.fill((0, 0, 0, 0))
             surf.blit(self.passivesurf, (-(self.value / self.maxvalue) * self.surf.get_width(), 0))
             passivesurf = surf
             self.surf.blit(self.original_image, (0, 0))
