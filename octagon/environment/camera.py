@@ -1,13 +1,7 @@
 import pygame
 import pygame.gfxdraw
-from pygame.math import Vector2
 
-from octagon.utils import var, img
-from octagon.utils.static import tuple_factor, tuple_add, tuple_subtract, hypo, xor, vector_from_points, sign
-
-
-def rect_to_scene(position, env):
-    return position[0] + env.sidelength / 2, position[1] + env.sidelength / 2
+from octagon.utils import var, img, render_text
 
 
 class Camera:
@@ -39,40 +33,24 @@ class Camera:
 
 
 class Scene:
+
+    def convert_debug(self, position):
+        return position[0] + self.env.sidelength//2, position[1] + self.env.sidelength//2
+
+    def convert(self, position):
+        return position[0] - self.env.player.rect.center[0] + var.SIZE[0]//2, position[1] - self.env.player.rect.center[1] + var.SIZE[1]//2
+
     def __init__(self, env):
         self.env = env
-        self.surface, rect = None, None
+        self.debug_surface, rect = None, None
         self.sidelength = env.sidelength
         self.objects, self.objects_toblit = [], []
-        self.surface = pygame.Surface((self.sidelength, self.sidelength), pygame.SRCALPHA)
-        self.rect = self.surface.get_rect()
+        self.debug_surface = pygame.Surface((self.sidelength, self.sidelength), pygame.SRCALPHA)
+        self.light_surface = pygame.Surface(var.SIZE, pygame.SRCALPHA)
+        self.do_lighting = False
         self.camera = Camera()
+        self.env.surface = self.debug_surface.subsurface(self.camera.rect)
 
-        # LIGHTING
-        """
-        # calculate edge points
-        self.edges = []
-        size = self.env.envjson["size"] * 2
-        blocks = list(self.env.envjson["blocks"])
-        for i in range(size + 1):
-            for j in range(size + 1):
-                count = 0
-                block = ()
-                if j < size and i < size and blocks[i][j] != 0:  # bottom right
-                    count += 1
-                    block = (j, i)
-                if j > 0 and i < size and blocks[i][j - 1] != 0:  # bottom left
-                    count += 1
-                    block = (j-1, i)
-                if j < size and i > 0 and blocks[i - 1][j] != 0:  # top right
-                    count += 1
-                    block = (j, i-1)
-                if j > 0 and i > 0 and blocks[i - 1][j - 1] != 0:  # top left
-                    count += 1
-                    block = (j - 1, i - 1)
-                if count == 1:
-                    self.edges.append([(j, i), block])
-        """
     def update(self):
         self.objects = self.env.entities + self.env.projectiles + self.env.melee + self.env.particles
         self.objects.append(self.env.player)
@@ -83,69 +61,92 @@ class Scene:
         self.objects_toblit = self.camera.get_objects(objects=self.objects)
         self.objects = []
 
-    def draw(self, surface):
-        if var.hard_debug:
-            self.surface.fill((0, 0, 0, 0))
-        else:
-            self.surface.fill((0, 0, 0, 0), pygame.Rect(
-                self.camera.rect.centerx + self.env.sidelength / 2 - self.camera.rect.width / 2,
-                self.camera.rect.centery + self.env.sidelength / 2 - self.camera.rect.height / 2,
-                self.camera.rect.width, self.camera.rect.height))
-
+    def render_objects(self, surface, coordinate_conversion):
         for i in range(3, -1, -1):
             for j in self.objects_toblit:
                 if j.priority == i:
-                    j.draw(surface=self.surface)
+                    j.draw(surface, coordinate_conversion)
 
-        # LIGHTING
-        """
-        player = (self.env.player.hitbox.centerx + self.surface.get_width() / 2, self.env.player.hitbox.centery + self.surface.get_height() / 2)
+    def render_background(self, surface, coordinate_conversion):
+        x, y = self.camera.rect.center
+        x -= var.SIZE[0] // 2
+        y -= var.SIZE[1] // 2
+        x = var.SIZE[0] * (x // var.SIZE[0])
+        y = var.SIZE[1] * (y // var.SIZE[1])
+        posx, posy = coordinate_conversion((x, y))
+        surface.blit(img.misc["background"]["game"], (posx, posy))
+        surface.blit(img.misc["background"]["game"], (posx, posy + 144))
+        surface.blit(img.misc["background"]["game"], (posx + 256, posy))
+        surface.blit(img.misc["background"]["game"], (posx + 256, posy + 144))
 
-        important_edges = []
+    def render_lighting(self, surface):
+        if not self.do_lighting:
+            return
+        surface.blit(self.light_surface, (0, 0))
+        self.light_surface.fill((0, 0, 0, 128))
 
-        for i in self.edges:
-            edge = tuple_factor(i[0], 16)
-            block = tuple_add(tuple_factor(i[1], 16), (8, 8))
+    def light_point(self, position, size, coordinate_conversion):
+        if not self.do_lighting:
+            return
+        gradient = pygame.transform.scale(img.misc["radial_gradient"], size)
+        rect = gradient.get_rect()
+        rect.center = position
+        self.light_surface.blit(gradient, coordinate_conversion(rect.topleft), special_flags=pygame.BLEND_RGBA_SUB)
 
-            ### DEBUG
-            pygame.draw.circle(self.surface, (255, 0, 0), edge, 2)
-            pygame.draw.circle(self.surface, (0, 255, 0), block, 2)
-            pygame.draw.line(self.surface, (255, 255, 255), edge, block)
-            ### DEBUG
+    def render_camera(self, surface):
+        # background
+        self.render_background(surface, self.convert)
 
-            if xor(abs(edge[0]-player[0]) < abs(block[0]-player[0]), abs(edge[1]-player[1]) < abs(block[1]-player[1])) and vector_from_points(edge, player).length() < 100:
-                important_edges.append([edge, block])
+        # objects
+        self.render_objects(surface, self.convert)
 
-        for i in important_edges:
-            # two points: edge, player
-            edge = i[0]
-            block = i[1]
+        # lighting
+        self.render_lighting(surface)
 
-            # vector from edge to player:
-            delta = vector_from_points(edge, player)
+    def draw(self, surface):
+        if var.debug_scene:
+            self.debug_surface.fill((0, 0, 0))
+            self.render_background(self.debug_surface, self.convert_debug)
 
-            # unit vector:
-            unit = delta.normalize()
+            # objects
+            self.render_objects(self.debug_surface, self.convert_debug)
 
-            # print(hypo(unit[0], unit[1]))
+            # draw debug subsurface
+            surface.fill((0, 0, 0))
+            subsurface_surf = pygame.Surface(var.SIZE, pygame.SRCALPHA)
+            subsurface_surf.blit(self.debug_surface, (0 - self.camera.rect.topleft[0] - self.env.sidelength//2, 0 - self.camera.rect.topleft[1] - self.env.sidelength//2))
+            surface.blit(subsurface_surf, (surface.get_height() + 20, 20))
+            render_text(window=surface, text="DEBUG SUBSURFACE", pos=(surface.get_height() + 20, var.SIZE[1] + 20), color=var.WHITE, size=20)
 
-            stuff = tuple_add(edge, tuple_factor(unit, 100))
+            # draw camera view
+            camera_surf = pygame.Surface(var.SIZE, pygame.SRCALPHA)
+            self.render_camera(camera_surf)
+            surface.blit(camera_surf, (surface.get_height()+20, var.SIZE[1]+50))
+            render_text(window=surface, text="CAMERA RENDER", pos=(surface.get_height()+20, var.SIZE[1]*2 + 50), color=var.WHITE, size=20)
 
-            pygame.draw.line(self.surface, (255, 255, 255), edge, stuff)
+            # check if surfaces match
+            match = True
+            if subsurface_surf.get_size() != camera_surf.get_size():
+                match = False
+            else:
+                for i in range(camera_surf.get_width()):
+                    for j in range(camera_surf.get_height()):
+                        if subsurface_surf.get_at((i, j)) != camera_surf.get_at((i, j)):
+                            match = False
+            render_text(window=surface, text="SURFACES MATCH: " + str(match), pos=(surface.get_height()+20, surface.get_height()-40), color=var.WHITE, size=20)
 
-            third = list(block)
-            third[0] += sign(third[0] - edge[0]) * 50
-            third[1] += sign(third[1] - edge[1]) * 50
+            # display debug information
+            render_text(window=surface, text="RENDER_ALL: " + str(var.render_all), pos=(surface.get_height()+20, surface.get_height()-120), color=var.WHITE, size=20)
+            render_text(window=surface, text="SOFT_DEBUG: " + str(var.show_hitboxes), pos=(surface.get_height() + 20, surface.get_height() - 160), color=var.WHITE, size=20)
+            render_text(window=surface, text="DO_LIGHTING: " + str(self.do_lighting), pos=(surface.get_height()+20, surface.get_height()-200), color=var.WHITE, size=20)
 
-            pygame.gfxdraw.filled_trigon(self.surface, int(edge[0]), int(edge[1]), int(stuff[0]), int(stuff[1]),
-                                         int(third[0]), int(third[1]), (255, 0, 0), )
+            # draw camera edges
+            pygame.draw.polygon(self.debug_surface, var.WHITE, [self.convert_debug(self.camera.rect.topleft), self.convert_debug(self.camera.rect.bottomleft),
+                                                                self.convert_debug(self.camera.rect.bottomright), self.convert_debug(self.camera.rect.topright)], 1)
 
-            # pygame.gfxdraw.filled_trigon(self.surface, int(edge[0]), int(edge[1]), int(stuff[0]), int(stuff[1]), int(edge[0]+100), int(edge[1]), (0, 0, 0, 128))
-        """
-
-        if var.hard_debug:
-            surf = pygame.transform.scale(self.surface, (surface.get_height(), surface.get_height()))
+            # draw debug surface
+            surf = pygame.transform.scale(self.debug_surface, (surface.get_height(), surface.get_height()))
             surface.blit(surf, (0, 0))
+
         else:
-            self.rect.center = (-self.camera.rect.centerx + surface.get_width() / 2, -self.camera.rect.centery + surface.get_height() / 2)
-            surface.blit(self.surface, self.rect)
+            self.render_camera(surface)

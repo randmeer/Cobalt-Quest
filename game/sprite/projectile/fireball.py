@@ -1,5 +1,5 @@
 from octagon.utils import img
-from octagon.sprites.projectile import Projectile
+from octagon.environment.object.projectile import Projectile
 
 from game.sprite.particle.explosion import ExplosionPts
 

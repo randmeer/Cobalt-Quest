@@ -1,6 +1,6 @@
 from octagon.utils import img
 from octagon.utils.static import angle_deg, conv_deg_rad
-from octagon.sprites.projectile import Projectile
+from octagon.environment.object.projectile import Projectile
 
 from game.sprite.particle.explosion import ExplosionPts
 

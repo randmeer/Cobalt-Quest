@@ -14,5 +14,5 @@ class Block(pygame.sprite.Sprite):
         self.posx, self.posy = block_to_cord(pos, self.image)
         self.rect.x, self.rect.y = (self.posx, self.posy)
 
-    def draw(self, surface):
-        surface.blit(self.texture.get(), (self.rect.x+surface.get_width()/2, self.rect.y+surface.get_height()/2))
+    def draw(self, surface, convert):
+        surface.blit(self.texture.get(), convert(self.rect.topleft))

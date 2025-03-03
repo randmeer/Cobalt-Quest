@@ -64,7 +64,7 @@ blockname = {
 """
 block texturing process
 +------------+-------------------------------+-------------------+-----------------------+-------------------+
-|neighbors   |   bit-array                   |   big-endian int  |   lookup table        |   texture index   |
+|neighbors   |   bit-array                   |              int  |   lookup table        |   texture index   |
 |            |                               |                   |                       |                   |
 |0 1 1       |                               |                   |                       |                   |
 |0 x 0       |   [0, 1, 1, 0, 1, 1, 1, 0]    |   110             |   blockalign[110]     |   2               |

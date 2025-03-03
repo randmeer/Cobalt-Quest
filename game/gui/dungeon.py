@@ -2,14 +2,30 @@ import pygame
 import QuickJSON
 
 from octagon.utils import mp_screen, get_setting, img, var, play_sound
-from octagon.gui import button, image, label
-from octagon import gui
+from octagon.gui import GUI
 
 from game import globs
 
+class Dungeon(GUI):
+    def __init__(self, window):
+        super().__init__(window)
+        self.add_button(text="play", id="play")
+        self.add_leftclick_events(self.play)
+        self.add_keypress_function(self.keypress)
 
-def show_dungeon(window, dungeon):
-    globs.set_global_defaults()
+    def play(self):
+        globs.floor_str = "entrance"
+        self.exit("floor")
+
+    def keypress(self, key):
+        if key == pygame.K_ESCAPE:
+            self.exit()
+
+
+'''
+def show_dungeon(window):
+    play_sound('click')
+    dungeon = globs.dungeon_str
 
     blueprint = QuickJSON.QJSON(f"./data/savegames/{get_setting('current_savegame')}/dungeons/{dungeon}/blueprint.json")
     blueprint.load()
@@ -19,6 +35,7 @@ def show_dungeon(window, dungeon):
     labels = []
     images = []
     selected_floor = ""
+    globs.floor_str = list(floors.keys())[0]
     for i in range(len(floors)):
         color1, color2, hcolor = (199, 207, 204), (87, 114, 119), (235, 237, 233)
         if not floors[str(list(floors.keys())[i])]["unlocked"]:
@@ -40,23 +57,19 @@ def show_dungeon(window, dungeon):
     dungeon_gui.imagegroup[0].set_visible(True)
 
     clock = pygame.time.Clock()
-    run = True
-    while run:
-        clock.tick(60)
-        if globs.quitgame:
-            run = False
+    while True:
+        clock.tick(30)
         mp = mp_screen()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False
-                globs.quitgame = True
+                return "quit"
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == var.LEFT:
                     for i in range(len(floors)):
                         # *2 because only every second label is a floor title
                         if dungeon_gui.labelgroup[i*2].rect.collidepoint(mp):
                             selected_floor = str(list(floors.keys())[i])
-
+                            globs.floor_str = selected_floor
                             play_sound('click')
                             for j in dungeon_gui.labelgroup:
                                 j.set_outline(outline=False)
@@ -67,16 +80,14 @@ def show_dungeon(window, dungeon):
                                     k.set_visible(False)
                             dungeon_gui.labelgroup[i*2].set_outline(outline=True)
                     if dungeon_gui.buttongroup[0].rect.collidepoint(mp):
-                        run = False
-                        globs.floor = True
-                        globs.floor_str = selected_floor
+                        return "floor"
                     if dungeon_gui.buttongroup[1].rect.collidepoint(mp):
-                        run = False
-                        globs.map = True
-                        globs.floor_str = selected_floor
+                        return
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    run = False
-                    globs.map = True
+                    return
+        if globs.quitgame:
+            return "quit"
         dungeon_gui.draw(window=window)
-    play_sound('click')
+
+'''

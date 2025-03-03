@@ -1,4 +1,4 @@
-from octagon.sprites.particle import ParticleCloud, Emitter
+from octagon.environment.object.particle import ParticleCloud, Emitter
 
 
 class Smoke(ParticleCloud):

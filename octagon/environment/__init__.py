@@ -1,4 +1,3 @@
-import random
 import time
 import pygame
 import QuickJSON
@@ -7,12 +6,13 @@ from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 
-from octagon.utils import render_text, var, img, cout, mp_scene
+from octagon.state import State
+from octagon.utils import var, cout, mp_scene, play_sound
 from octagon.environment import hud, camera
-from octagon.sprites import block
+from octagon.environment.object import block, Object
 
 
-class Environment:
+class Environment(State):
 
     def __init__(self, window: pygame.Surface, envjsonpath: str, invjsonpath: str, player: type, entity: list[type],
                  items: dict, ):
@@ -52,6 +52,22 @@ class Environment:
         self.player, self.scene, self.pathfinder = None, None, None
         self.run, self.click = True, False
         self.load()
+        self.do_exit = False
+        self.exit_command = False
+
+    def show_overlay(self, overlay_obj, arguments=None):
+        if arguments is None:
+            arguments = {}
+        command = "rerun"
+        returnvalue = None
+        while command == "rerun":
+            overlay = overlay_obj(window=self.window, background=self.surface, arguments=arguments)
+            command, returnvalue = overlay.execute()
+        if command == "quit":
+            self.do_exit = True
+            self.exit_command = "quit"
+        play_sound("click")
+        return returnvalue
 
     def load(self):
         """
@@ -150,25 +166,36 @@ class Environment:
 
         # handle events
         self.key = pygame.key.get_pressed()
+        f3 = self.key[pygame.K_F3]
         self.events = list(pygame.event.get())
         for event in self.events:
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_b:
-                    if self.key[pygame.K_F3]:
-                        var.soft_debug = not var.soft_debug
-                        cout("soft_debug = " + str(var.soft_debug))
-                elif event.key == pygame.K_h:
-                    if self.key[pygame.K_F3]:
-                        var.hard_debug = not var.hard_debug
-                        cout("hard_debug = " + str(var.hard_debug))
-                elif event.key == pygame.K_g:
-                    if self.key[pygame.K_F3]:
+                if f3:
+                    if event.key == pygame.K_b:
+                        var.show_hitboxes = not var.show_hitboxes
+                        cout("show_hitboxes = " + str(var.show_hitboxes))
+                    elif event.key == pygame.K_g:
+                        var.debug_scene = not var.debug_scene
+                        cout("debug_scene = " + str(var.debug_scene))
+                    elif event.key == pygame.K_r:
                         var.render_all = not var.render_all
                         cout("render_all = " + str(var.render_all))
-                elif event.key == pygame.K_f:
-                    if self.key[pygame.K_F3]:
-                        var.fps_meter = not var.fps_meter
-                        cout("fps_meter = " + str(var.fps_meter))
+                    elif event.key == pygame.K_i:
+                        var.debug_performance = not var.debug_performance
+                        cout("debug_performance = " + str(var.debug_performance))
+                        self.hud.frametimes = [0, 0]
+                    elif event.key == pygame.K_v:
+                        var.debug_environment = not var.debug_environment
+                        cout("debug_environment = " + str(var.debug_environment))
+                    elif event.key == pygame.K_l:
+                        self.scene.do_lighting = not self.scene.do_lighting
+                        cout("do_lighting = " + str(self.scene.do_lighting))
+                    elif event.key == pygame.K_h:
+                        var.no_hud = not var.no_hud
+                        cout("no_hud = " + str(var.no_hud))
+                    elif event.key == pygame.K_f:
+                        var.fps_overlay = not var.fps_overlay
+                        cout("fps_overlay = " + str(var.fps_overlay))
                 elif event.key == pygame.K_1:
                     self.hud.set_selectangle(0)
                 elif event.key == pygame.K_2:
@@ -210,26 +237,14 @@ class Environment:
         renders the gui and game surface
         """
 
-        if var.hard_debug:
-            surface = pygame.Surface(self.window.get_size())
-            surface.blit(pygame.transform.scale(img.misc["background"]["game"], self.window.get_size()), (0, 0))
-            self.scene.draw(surface)
-            render_text(window=surface, text=str(round(self.clock.get_fps())) + "", pos=(surface.get_width() - 60 , 20), color=var.WHITE, size=20)
+        if var.debug_scene:
+            self.scene.draw(self.window)
         else:
-
-            # background
-            x = self.player.hitbox.centerx % 255
-            y = self.player.hitbox.centery % 144
-            self.surface.blit(img.misc["background"]["game"], (255-x, 144-y))
-            self.surface.blit(img.misc["background"]["game"], (255-x, 144-y-144))
-            self.surface.blit(img.misc["background"]["game"], (255-x-255, 144-y))
-            self.surface.blit(img.misc["background"]["game"], (255-x-255, 144-y-144))
-
             self.scene.draw(self.surface)
-            self.hud.draw(self.surface)
-            surface = pygame.transform.scale(self.surface, var.res_size)
+            if not var.no_hud:
+                self.hud.draw(self.surface)
+            self.window.blit(pygame.transform.scale(self.surface, var.res_size), (0, 0))
 
-        self.window.blit(surface, (0, 0))
         pygame.display.update()
 
     def _single_loop(self):
@@ -238,13 +253,14 @@ class Environment:
         after the game loop and octagon. call _update() to perform a raw iteration and _render() to render stuff out
         """
         self._update()
-        self.update()
         self._render()
+        self.update()
 
-    def start_loop(self):
+    def execute(self):
         self.prev_time = time.time()
         self.run = True
         while self.run:
             self.clock.tick(var.FPS)
             self._single_loop()
+
         self.save()

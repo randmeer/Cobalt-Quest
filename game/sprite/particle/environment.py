@@ -1,4 +1,4 @@
-from octagon.sprites.particle import Emitter
+from octagon.environment.object.particle import Emitter
 
 
 class Cinder(Emitter):

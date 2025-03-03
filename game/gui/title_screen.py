@@ -1,38 +1,21 @@
 import pygame
 
-from octagon.utils import img, var, play_sound
+from octagon.utils import var
 from octagon import gui
-from octagon.gui import label
-
-from game import globs
 
 
-def show_title_screen(window):
-    globs.set_global_defaults()
+class TitleScreen(gui.GUI):
+    def __init__(self, window):
+        super().__init__(window, overlay_alpha=192)
+        self.add_label(text="PRESS ANY KEY TO START", relpos=(0.5, 0.5), anchor="center", color=var.WHITE)
+        self.add_leftclick_function(self.leftclick)
+        self.add_keypress_function(self.keypress)
+        self.silent = True
 
-    title_screen_gui = gui.GUI(
-        background=img.misc["background"]["menu"], overlay=192,
-        labels=[label.Label(text="PRESS ANY KEY TO START", relpos=(0.5, 0.5), anchor="center", color=(255, 255, 255))])
-    title_screen_gui.draw(window=window)
+    def leftclick(self, pos):
+        self.exit("menu")
 
-    clock = pygame.time.Clock()
-    run = True
-    while run:
-        clock.tick(60)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-                globs.quitgame = True
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                globs.menu = True
-                run = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_r or event.key == pygame.K_ESCAPE:
-                    pass
-                # the following statement lets the user use the CMD-Q (macOS) or ALT-F4 (windows) -shortcut.
-                elif event.key == var.COMMAND or event.key == pygame.K_q or event.key == var.ALT or event.key == var.KEY_F4:
-                    pass
-                else:
-                    globs.menu = True
-                    run = False
-    play_sound('click')
+    def keypress(self, key):
+        if not (key == var.COMMAND or key == pygame.K_q or key == var.ALT or key == var.KEY_F4 or key == pygame.K_ESCAPE):
+            self.exit("menu")
+

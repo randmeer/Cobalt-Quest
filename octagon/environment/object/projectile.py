@@ -117,8 +117,8 @@ class Projectile(pygame.sprite.Sprite):
         self.env.particles.append(self.ExplosionPts[1](self.env, self.rect.center))
         self.env.particles.append(self.ExplosionPts[2](self.env, self.rect.center))
 
-    def draw(self, surface):
+    def draw(self, surface, convert):
         image = self.image
-        if var.soft_debug:
+        if var.show_hitboxes:
             image = debug_outlines(self.image, self.hitbox, self.rect)
-        surface.blit(image, (self.rect.x + surface.get_width() / 2, self.rect.y + surface.get_height() / 2))
+        surface.blit(image, convert(self.rect.topleft))

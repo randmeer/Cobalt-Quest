@@ -1,5 +1,5 @@
 from octagon.utils.img import Texture
-from octagon.sprites.entity import Entity
+from octagon.environment.object.entity import Entity
 from octagon.utils import img
 
 from game.sprite.particle.entity import Footstep, Die1, Die2, Damage, ManaDrop

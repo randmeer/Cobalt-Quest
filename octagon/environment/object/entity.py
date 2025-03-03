@@ -1,7 +1,7 @@
 import random
 import pygame
 
-from octagon.utils.img import Texture
+from octagon.utils.img import Texture, misc
 from octagon.utils import dual_rect_anchor, set_anchor_point, debug_outlines, mask_overlay, cord_to_block, var
 from octagon.utils.static import vector_from_points, list_round
 
@@ -13,6 +13,8 @@ class Entity(pygame.sprite.Sprite):
                  footstep_particle: type = None, death_particles: list[type] = None, damage_particle: type = None,
                  animation_textures: list[Texture] = None):
         pygame.sprite.Sprite.__init__(self)
+        if abs(position[0]) > env.sidelength//2 or abs(position[1]) > env.sidelength//2:
+            raise Exception("Entity - Position " + str(position) + " out of level boundaries")
         self.env = env
         self.tex_down = self.tex_up = self.tex_left = self.tex_right = self.tex_idle = None
         self.priority = priority
@@ -132,7 +134,6 @@ class Entity(pygame.sprite.Sprite):
         self.am_todo += 1
 
     def _am_newpath(self, target=None):
-
         # start node
         start_block = cord_to_block(self.position[0], self.position[1])
         start_unsigned = [0, 0]
@@ -159,9 +160,7 @@ class Entity(pygame.sprite.Sprite):
         # finder
         self.am_path, self.am_runs = self.env.pathfinder.find_path(start, end, self.env.pathfinder_grid)
         if not self.am_path:
-            print("entity> found no path to target")
-            self.auto_move = False
-            return
+            raise Exception("Entity - Found no possible path to target")
         self.env.pathfinder_grid.cleanup()
         self._am_settarget()
 
@@ -207,9 +206,9 @@ class Entity(pygame.sprite.Sprite):
                 self.footstep_emitter.update_emitter([self.hitbox.midbottom[0], self.hitbox.midbottom[1] - 2])
                 self.footstep_emitter.emitting = True
 
-    def draw(self, surface):
+    def draw(self, surface, convert):
         image = self.image
-        if var.soft_debug:
+        if var.show_hitboxes:
             image = debug_outlines(self.image, self.hitbox, self.rect, anchor=self.hitboxanchor)
 
             if self.auto_move:
@@ -219,8 +218,7 @@ class Entity(pygame.sprite.Sprite):
                     cord[0] -= self.hsize
                     cord[1] -= self.vsize
                     cord = [cord[0] * 16 + self.hitbox.width / 2, cord[1] * 16 + self.hitbox.height / 2]
-                    cord[0] += surface.get_width() / 2
-                    cord[1] += surface.get_height() / 2
+                    cord = convert(cord)
                     cords[i] = cord
                 try:
                     pygame.draw.lines(surface, (255, 255, 0), False, cords, 1)
@@ -230,6 +228,8 @@ class Entity(pygame.sprite.Sprite):
                 except:
                     pass
 
-                pygame.draw.circle(surface, (255, 0, 0), (self.am_target[0] + surface.get_width() / 2, self.am_target[1] + surface.get_height() / 2), 2)
+                pygame.draw.circle(surface, (255, 0, 0), convert(self.am_target), 2)
 
-        surface.blit(image, (self.rect.x + surface.get_width() / 2, self.rect.y + surface.get_height() / 2))
+        surface.blit(image, convert(self.rect.topleft))
+
+        self.env.scene.light_point(self.rect.center, (200, 200), convert)

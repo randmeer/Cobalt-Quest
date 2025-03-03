@@ -10,6 +10,9 @@ victory = pygame.transform.scale(img.misc["overlay"]["victory"], var.SIZE)
 defeat = pygame.transform.scale(img.misc["overlay"]["defeat"], var.SIZE)
 
 
+# TODO: rework as OOP
+
+
 def end_screen(window, background, end):
     # TODO: end screen textures
     globs.set_global_defaults()

@@ -1,12 +1,13 @@
 import pygame
 
+from octagon.environment import Object
 from octagon.utils import get_outline_mask, var
 from octagon.utils.static import angle_deg, conv_deg_rad, sin, cos
 
 
-class Attack(pygame.sprite.Sprite):
+class Attack(Object):
     def __init__(self, env, image, offset=0, displacement=20):
-        pygame.sprite.Sprite.__init__(self)
+        Object.__init__(self)
         self.env = env
         self.env.melee.append(self)
         self.priority = 2
@@ -51,9 +52,9 @@ class Attack(pygame.sprite.Sprite):
                 return
         # TODO: get the collision between the swing mask and the entity rect, not the entity mask
 
-    def draw(self, surface):
+    def draw(self, surface, convert):
         image = self.image
-        if var.soft_debug:
+        if var.show_hitboxes:
             image = self.image.copy()
             clone = image.copy()
             clone.fill((0, 0, 0))
@@ -61,5 +62,5 @@ class Attack(pygame.sprite.Sprite):
             mask2 = get_outline_mask(image, 1, (255, 0, 0))
             image.blit(mask1, (0, 0))
             image.blit(mask2, (0, 0))
-        surface.blit(image, (self.rect.x + surface.get_width() / 2, self.rect.y + surface.get_height() / 2))
+        surface.blit(image, convert(self.rect.topleft))
 

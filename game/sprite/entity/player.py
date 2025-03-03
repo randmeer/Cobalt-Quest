@@ -2,7 +2,7 @@ import pygame
 
 from octagon.utils import img, play_sound
 from octagon.utils.img import Texture
-from octagon.sprites.entity import Entity
+from octagon.environment.object.entity import Entity
 
 from game.sprite.particle.entity import Damage, Dash, Footstep
 

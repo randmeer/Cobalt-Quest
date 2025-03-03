@@ -163,18 +163,21 @@ class ParticleCloud(pygame.sprite.Sprite):
             if self.damage == "single":
                 self.damage = None
 
-    def draw(self, surface):
+    def draw(self, surface, convert):
         for i in self.particles:
             if self.ptsize > 1:
-                pygame.draw.circle(surface, i[3], (i[0][0]+surface.get_width()/2, i[0][1]+surface.get_height()/2), i[2])
-            else:
-                surface.set_at((int(i[0][0]+surface.get_width()/2), int(i[0][1]+surface.get_height()/2)), i[3])
+                pygame.draw.circle(surface, i[3], convert(i[0]), i[2])
+                self.env.scene.light_point(i[0], (i[2]*10, i[2]*10), convert)
 
-        if var.soft_debug and not self.no_debug:
+            else:
+                surface.set_at(convert((int(i[0][0]), int(i[0][1]))), i[3])
+                self.env.scene.light_point(i[0], (10, 10), convert)
+
+        if var.show_hitboxes and not self.no_debug:
             surf = pygame.Surface((self.rect.width, self.rect.height))
             surf.fill((0, 0, 0))
             outlinesurf = get_outline_mask(surf, color=(255, 255, 255))
-            surface.blit(outlinesurf, (self.rect.x + surface.get_width() / 2, self.rect.y + surface.get_height() / 2))
+            surface.blit(outlinesurf, convert(self.rect.topleft))
 
 
 class Emitter(ParticleCloud):

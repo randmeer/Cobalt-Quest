@@ -2,15 +2,32 @@ import pygame
 
 from octagon.utils import mp_screen, img, play_sound
 from octagon.utils.static import tuple_subtract, tuple_add
-from octagon.gui import button, image, label
-from octagon import gui
+from octagon.gui import GUI
 from octagon.utils.img import Texture
 
 from game import globs
 
 
+class Map(GUI):
+    def __init__(self, window):
+        super().__init__(window)
+
+        self.add_button(text="go", id="go")
+        self.add_leftclick_events(self.go)
+        self.add_keypress_function(self.keypress)
+
+    def go(self):
+        globs.dungeon_str = "northern_plains"
+        self.exit("dungeon")
+
+    def keypress(self, key):
+        if key == pygame.K_ESCAPE:
+            self.exit("back")
+
+
+'''
 def show_map(window):
-    globs.set_global_defaults()
+    play_sound('click')
 
     northern_plains = button.Button(relsize=(0.06, 0.1), text="", relpos=(0.25, 0.4), visible=False)
     map = Texture(img.misc["map"]["map"], 0.1)
@@ -20,35 +37,27 @@ def show_map(window):
                       buttons=[button.Button(anchor="topleft", relsize=(0.4, 0.1), text="BACK TO MENU", relpos=(0.05, 0.05)), northern_plains],
                       images=[image.Image(image=map.get(), anchor="center", relpos=(0.5, 0.5))])
 
-    clock = pygame.time.Clock()
-    run = True
     selected_rect = None
 
     northern_plains_offset = tuple_subtract(northern_plains.rect.topleft, map_gui.imagegroup[0].rect.topleft)
 
-    # main game loop
-    while run:
+    clock = pygame.time.Clock()
+    while True:
         clock.tick(60)
         mp = mp_screen()
         map_gui.imagegroup[0].image = map.get()
         # event iteration
         for event in pygame.event.get():
-            # quit event
             if event.type == pygame.QUIT:
-                run = False
-                globs.quitgame = True
-            # mouse event
+                return "quit"
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     if map_gui.buttongroup[0].rect.collidepoint(mp):
-                        # back to menu
-                        run = False
-                        globs.menu = True
+                        return
                     if map_gui.buttongroup[1].rect.collidepoint(mp):
                         # northern plains dungeon
-                        run = False
-                        globs.dungeon = True
                         globs.dungeon_str = "northern_plains"
+                        return "dungeon"
                 if event.button == 3:
                     if map_gui.imagegroup[0].rect.collidepoint(mp):
                         # map
@@ -63,7 +72,7 @@ def show_map(window):
                     northern_plains.rect.topleft = tuple_add(selected_rect.topleft, northern_plains_offset)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    run = False
-                    globs.menu = True
+                    return
         map_gui.draw(window=window)
-    play_sound('click')
+
+'''

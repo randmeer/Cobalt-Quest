@@ -1,6 +1,6 @@
 import pygame
 
-from octagon.utils import rta_dual, render_text, get_text_rect, set_anchor_point, get_outline_mask, var
+from octagon.utils import rta_dual, render_text, get_text_rect, set_anchor_point, get_outline_mask, scale, var
 
 
 class Label(pygame.sprite.Sprite):
@@ -12,10 +12,9 @@ class Label(pygame.sprite.Sprite):
     > selection: call set_outline() on click
     > textbox: call text_input() on keystroke
     """
-    def __init__(self, text, relpos, color=(var.GRAYSHADES[0]), textsize=5, anchor="center", h_event=False,
-                 h_color=(var.GRAYSHADES[0]), default_outlined=False, h_outlined=False, outlinecolor=(
-            var.GRAYSHADES[0]),
-                 visible=True, tags=None):
+    def __init__(self, text, relpos, color=(var.GRAYSHADES[0]), textsize=5, anchor="center", visible=True, tags=None,
+                 h_event=False, h_color=(var.GRAYSHADES[0]), default_outlined=False, h_outlined=False,
+                 outlinecolor=(var.GRAYSHADES[0]), double_size=False):
         pygame.sprite.Sprite.__init__(self)
         if tags is None:
             self.tags = []
@@ -34,6 +33,7 @@ class Label(pygame.sprite.Sprite):
         self.default_outlined = default_outlined
         self.hoveroutlined = h_outlined
         self.outlinecolor = outlinecolor
+        self.double_size = double_size
         self.surface = None
         self.hoversurf = None
         self.outlinesurf = None
@@ -43,10 +43,13 @@ class Label(pygame.sprite.Sprite):
         if self.default_outlined or self.hoveroutlined:
             self.render_outline()
 
+
     def render(self):
         self.rect = get_text_rect(self.text, self.textsize)
         self.surface = pygame.Surface((self.rect.width, self.rect.height), pygame.SRCALPHA)
         render_text(window=self.surface, text=self.text, pos=(0, 0), color=self.color, size=self.textsize)
+        if self.double_size:
+            self.surface = scale(self.surface, 2)
         pos = rta_dual(self.relpos[0], self.relpos[1])
         set_anchor_point(self.rect, pos, self.anchor)
         self.image = self.surface
@@ -54,12 +57,16 @@ class Label(pygame.sprite.Sprite):
     def render_hover(self):
         self.hoversurf = pygame.Surface((self.rect.width, self.rect.height), pygame.SRCALPHA)
         render_text(window=self.hoversurf, text=self.text, pos=(0, 0), color=self.hovercolor, size=self.textsize)
+        if self.double_size:
+            self.hoversurf = scale(self.hoversurf, 2)
 
     def render_outline(self):
         self.clone = pygame.Surface((self.surface.get_width() + 4, self.surface.get_height() + 4))
         self.clone.fill((0, 0, 0))
         self.outlinesurf = pygame.Surface((0, 0))
         self.outlinesurf = get_outline_mask(self.clone)
+        if self.double_size:
+            self.outlinesurf = scale(self.outlinesurf, 2)
 
     def set_outline(self, outline):
         self.default_outlined = outline

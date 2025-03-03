@@ -1,8 +1,5 @@
-VERSION = "0.9.9"
+VERSION = "22.09"
 
-quitgame = exittomenu = titlescreen = menu = map = dungeon = dungeon_str = floor = floor_str = None
+dungeon_str = floor_str = None
 
-
-def set_global_defaults():
-    global quitgame, exittomenu, titlescreen, menu, map, dungeon
-    quitgame = exittomenu = titlescreen = menu = map = dungeon = False
+quitgame = exittomenu = False

@@ -13,6 +13,13 @@ from game.sprite.entity.apprentice import Apprentice
 from game.sprite.particle import environment
 
 
+def show_floor(window):
+    floor = Floor(window=window)
+    floor.start_loop()
+    if floor.quitgame:
+        return "quit"
+    return
+
 # "id": ["category", "description", max durability/stack_size, leftclick, rightclick]
 items = {
     "unset":    ["weapon",      "your hands",                               None,   hands.Punch,        hands.Block],
@@ -28,7 +35,6 @@ items = {
 class Floor(Environment):
 
     def __init__(self, window):
-        globs.set_global_defaults()
         Environment.__init__(self, window,
                              f"./data/savegames/{get_setting('current_savegame')}/dungeons/{globs.dungeon_str}/{globs.floor_str}.json",
                              f"./data/savegames/{get_setting('current_savegame')}/inventory.json",
@@ -36,6 +42,7 @@ class Floor(Environment):
                              [Apprentice],
                              items=items)
         self.particles.append(environment.Cinder(env=self))
+        self.quitgame = False
 
     def update(self):
         """
@@ -53,15 +60,14 @@ class Floor(Environment):
             # quitevent
             if event.type == pygame.QUIT:
                 self.end_loop()
-                globs.quitgame = True
+                self.quitgame = True
 
             # keyevents
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    pause.pause_screen(window=self.window, background=self.surface)
+                    self.show_overlay(pause.Pause)
                     self.prev_time = time.time()
                 elif event.key == pygame.K_e:
-                    self.surface.blit(img.misc["background"]["game"], (0, 0))
                     self.scene.draw(self.surface)
                     self.hud.save_hotbar()
                     inventory.show_inventory(window=self.window, background=self.surface, itemdict=self.items)
@@ -71,10 +77,9 @@ class Floor(Environment):
                 elif event.key == pygame.K_t:
                     try:
                         exec(console.console(self.window, self.surface))
-                    except Exception as e:
-                        alert.alert(self.window, self.surface, ["THAT DOESN'T SEEM RIGHT..."])
+                    except:
+                        alert.Alert(self.window, self.surface, {"message": "THAT DOESN'T SEEM RIGHT..."})
 
-        # end loop if exittomenu order is detected
-        if globs.exittomenu:
+        if globs.quitgame:
             self.end_loop()
-            globs.menu = True
+            self.quitgame = True

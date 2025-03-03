@@ -1,4 +1,4 @@
-from octagon.sprites.attack import Attack
+from octagon.environment.object.attack import Attack
 from octagon.utils.img import Texture
 from octagon.utils import img
 

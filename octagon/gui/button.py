@@ -60,6 +60,10 @@ class Button(pygame.sprite.Sprite):
         pos = rta_dual(self.relposx, self.relposy)
         set_anchor_point(self.rect, pos, self.anchor)
 
+        # testrect = get_text_rect(self.text, self.textsize)
+        # testsurf = pygame.Surface((testrect.w, testrect.h))
+        # testsurf.fill(var.WHITE)
+        # self.surface.blit(testsurf, (self.textposition()))
         render_text(window=self.surface, text=self.text, pos=self.textposition(), color=self.textcolor, size=self.textsize)
         render_text(window=self.hoversurface, text=self.text, pos=self.textposition(), color=self.textcolor, size=self.textsize)
         render_text(window=self.presssurface, text=self.text, pos=self.textposition(), color=self.textcolor, size=self.textsize)

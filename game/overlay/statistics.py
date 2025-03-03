@@ -10,13 +10,15 @@ from game import globs
 inventory = QuickJSON.QJSON(f"./data/savegames/{get_setting('current_savegame')}/inventory.json")
 
 
+# TODO: rework as OOP
+
+
 def get_inventory(value):
     inventory.load()
     return inventory[value]
 
 
 def stats(window, background):
-    globs.set_global_defaults()
     play_sound('click')
     stats_gui = gui.GUI(background=background, overlay=192, buttons=[
         button.Button(tags=["return"], anchor="bottomleft", relsize=(0.4, 0.1), text="SAVE AND RETURN", relpos=(0.05, 0.95))], labels=[

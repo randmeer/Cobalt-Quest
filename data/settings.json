@@ -4,6 +4,6 @@
   "fullscreen": false,
   "background_music": false,
   "volume": 10,
-  "current_savegame": "",
+  "current_savegame": "test",
   "resourcepack": "default"
 }

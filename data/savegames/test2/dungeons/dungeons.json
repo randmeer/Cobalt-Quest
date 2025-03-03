@@ -1,0 +1,42 @@
+{
+    "northern_plains" : {
+        "display_name" : "Northern Plains",
+        "cleared": false
+    },
+    "southern_plains" : {
+        "display_name" : "Southern Plains",
+        "cleared": false
+    },
+    "tundra" : {
+        "display_name" : "Tundra",
+        "cleared": false
+    },
+    "meadow" : {
+        "display_name" : "Meadow",
+        "cleared": false
+    },
+    "snowy_tundra" : {
+        "display_name" : "Snowy Tundra",
+        "cleared": false
+    },
+    "desert" : {
+        "display_name" : "Desert",
+        "cleared": false
+    },
+    "mushroom_island" : {
+        "display_name" : "Mushroom Island",
+        "cleared": false
+    },
+    "steppe" : {
+        "display_name" : "Steppe",
+        "cleared": false
+    },
+    "ocean" : {
+        "display_name" : "Southern Plains",
+        "cleared": false
+    },
+    "volcano_island" : {
+        "display_name" : "Volcano Island",
+        "cleared": false
+    }
+}

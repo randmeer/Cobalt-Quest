@@ -1,15 +1,24 @@
 import pygame
 
 from octagon.utils import var, mp_screen, play_sound
-from octagon.gui import button, GUI
+from octagon.gui import button, GUI, Overlay
 
 from game import globs
-from game.overlay.settings import show_settings
+from game.overlay import settings
+
+
+# TODO: rework as OOP 
+
+class Pause(Overlay):
+    def __init__(self, window, background, arguments):
+        super().__init__(window, background, arguments)
+        self.add_button(text="Resume", relpos=(0.5, 0.35), anchor="center")
+        self.add_button(text="Settings", relpos=(0.5, 0.5), anchor="center")
+        self.add_button(text="Back to Menu", relpos=(0.5, 0.65), anchor="center")
 
 
 def pause_screen(window, background):
     play_sound('click')
-    globs.set_global_defaults()
 
     pause_gui = GUI(background=background, overlay=128, buttons=[
         button.Button(anchor="center", relsize=(0.4, 0.1), text="RESUME", relpos=(0.5, 0.35)),
@@ -19,12 +28,11 @@ def pause_screen(window, background):
     clock = pygame.time.Clock()
     run = True
     while run:
-        clock.tick(60)
+        clock.tick(30)
         mp = mp_screen()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-                globs.exittomenu = True
                 globs.quitgame = True
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == var.LEFT:
@@ -38,7 +46,9 @@ def pause_screen(window, background):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False
-        pause_gui.draw(window=window)
-        if globs.exittomenu:
+        if globs.quitgame:
             run = False
+        if run:
+            pause_gui.draw(window=window)
+
     play_sound('click')

@@ -145,3 +145,18 @@ def xor(x, y):
 
 def vector_from_points(point1, point2):
     return Vector2(tuple_subtract(point1, point2))
+
+
+def gcd(a, b):
+    """returns the greatest common divisor of a and b"""
+    while b:
+        a, b = b, a % b
+    return a
+
+
+def simplify_fraction(numerator, denominator):
+    """returns (numerator, denominator) of the simplified fraction"""
+    if denominator == 0:
+        raise Exception("Division by 0")
+    common_divisor = gcd(numerator, denominator)
+    return (numerator // common_divisor, denominator // common_divisor)

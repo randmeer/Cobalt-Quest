@@ -4,7 +4,7 @@ import QuickJSON
 import math
 import random
 
-from octagon.utils import var
+from octagon.utils import var, static
 
 
 settings = QuickJSON.QJSON("./data/settings.json")
@@ -27,15 +27,26 @@ def get_setting(setting):
 
 
 def set_resolution():
+    # TODO: rework resolution handling
     aspect_ratio = get_setting('aspect_ratio')
     resolution = get_setting('resolution')
     fullscreen = get_setting('fullscreen')
 
     var.fullscreen = fullscreen
-    var.SIZE = var.DISPLAY[aspect_ratio][0]
-    var.res = var.DISPLAY[aspect_ratio][1][resolution]
-    var.res_size = var.res[0]
-    var.res_name = var.res[1]
+    if var.fullscreen:
+        infos = pygame.display.Info()
+        screen_size = (infos.current_w, infos.current_h)
+        ar = static.simplify_fraction(screen_size[0], screen_size[1])
+        ar_string = f"{ar[0]}to{ar[1]}"
+        var.SIZE = var.DISPLAY[ar_string][0]
+        var.res = (screen_size, 'Fullscreen')
+        var.res_size = screen_size
+        var.res_name = "Fullscreen"
+    else:
+        var.SIZE = var.DISPLAY[aspect_ratio][0]
+        var.res = var.DISPLAY[aspect_ratio][1][resolution]
+        var.res_size = var.res[0]
+        var.res_name = var.res[1]
 
 
 class DefaultError(Exception):
@@ -98,14 +109,14 @@ def atr_dual_width(input_x, input_y):
 
 
 def render_text(window, text, pos, color=var.WHITE, size=5, antialiased=False, vertical=False):
-    f = pygame.freetype.Font("./resources/fonts/PixelQuest.otf", size)
+    f = pygame.freetype.Font("./resources/fonts/PixelQuest.ttf", size)
     f.antialiased = antialiased
     f.vertical = vertical
     f.render_to(surf=window, dest=pos, text=text, fgcolor=color)
 
 
 def get_text_rect(text, size=5):
-    f = pygame.freetype.Font("./resources/fonts/PixelQuest.otf", size)
+    f = pygame.freetype.Font("./resources/fonts/PixelQuest.ttf", size)
     return f.get_rect(text=text)
 
 
@@ -119,7 +130,7 @@ def render_multiline_text(surface, text, pos, linebreak=False, fadeout=None, col
     space = 5
     word_width, word_height = 5, 5
     max_width, max_height = surface.get_size()
-    x, y = pos
+    x, y = pos[0], pos[1]+5
     alpha = 255
     if fadeout == "up":
         alpha = 0
@@ -137,9 +148,10 @@ def render_multiline_text(surface, text, pos, linebreak=False, fadeout=None, col
                 bingosurf = pygame.Surface((word_width, word_height), pygame.SRCALPHA)
                 if x + word_width >= max_width:
                     x = pos[0]  # Reset the x.
-                    y += word_height + 1  # Start on new row.
+                    y += word_height + 2  # Start on new row.
                 render_text(window=bingosurf, text=word, pos=(0, 0), color=rendercolor)
-                surface.blit(bingosurf, (x, y))
+                bingorect.bottomleft = (x, y)
+                surface.blit(bingosurf, bingorect)
                 x += word_width + space
         else:
             render_text(window=surface, text=line, pos=(x, y), color=rendercolor)
@@ -375,3 +387,7 @@ def save_console():
     f = open('./data/chat.txt', 'w')
     f.write(var.chat)
     f.close()
+
+
+def scale(surface, factor):
+    return pygame.transform.scale(surface, (surface.get_width()*factor, surface.get_height()*factor))

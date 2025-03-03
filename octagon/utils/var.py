@@ -112,9 +112,13 @@ GRAYSHADES = [(235, 237, 233), (199, 207, 204), (168, 181, 178), (129, 151, 150)
 REDSHADES = [(218, 134, 62), (207, 87, 60), (165, 48, 48), (117, 36, 56), (65, 29, 49), (36, 21, 39)]
 FPS = 60
 
-soft_debug = False
-hard_debug = False
+show_hitboxes = False
 render_all = False
-fps_meter = False
+no_hud = False
+fps_overlay = False
+
+debug_scene = False
+debug_performance = False
+debug_environment = False
 
 ExplosionParticles = []

@@ -6,7 +6,8 @@ from octagon.gui import image, label, button, GUI
 
 from game import globs
 
-# TODO: Fix inventory
+
+# TODO: rework as OOP
 
 
 def show_inventory(window, background, itemdict):
@@ -25,7 +26,6 @@ def _show_inventory(window, background, itemdict):
     to re-run this function, call 'return True'
     to exit this function, call 'return False'
     """
-    globs.set_global_defaults()
     play_sound('click')
 
     # load inventory json
@@ -148,7 +148,6 @@ def _show_inventory(window, background, itemdict):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-                globs.exittomenu = True
                 globs.quitgame = True
 
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -168,7 +167,7 @@ def _show_inventory(window, background, itemdict):
                             set_current_tab()
                             play_sound('click')
 
-                    '''
+                    #'''
                     
                     # item
                     for ovlay in inv_gui.imagegroup:  # all the images
@@ -303,7 +302,7 @@ def _show_inventory(window, background, itemdict):
                                             ovlay.image, ovlay.h_image = img.misc["inventory"][target.tags[1]]
                                             target_label = None
                                             target = None
-                    '''
+                    #'''
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     run = False
